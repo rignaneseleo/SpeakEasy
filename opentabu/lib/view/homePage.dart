@@ -34,19 +34,26 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Material(
-        child: new Column(
-      children: <Widget>[
-        _settingsContainer,
-        new MaterialButton(
-          onPressed: () {
-            _newGame(_settings, _dr.words);
-          },
-          child: new Text(
-            "START",
+        child: new Container(
+      padding: new EdgeInsets.all(8.0),
+      child: new Column(
+        children: <Widget>[
+          new Text(
+            "Set your preferences: ",
             style: new TextStyle(fontSize: 30.0),
           ),
-        )
-      ],
+          _settingsContainer,
+          new MaterialButton(
+            onPressed: () {
+              _newGame(_settings, _dr.words);
+            },
+            child: new Text(
+              "START",
+              style: new TextStyle(fontSize: 30.0),
+            ),
+          )
+        ],
+      ),
     ));
   }
 

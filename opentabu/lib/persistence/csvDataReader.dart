@@ -23,19 +23,6 @@ class CSVDataReader extends DataReader {
     });
   }
 
-/*  Future<List<Word>> loadList() {
-    _words = new List<Word>();
-    var completer = new Completer();
-
-    _loadAsset().then((wordsCSV) {
-      List<List<String>> words = const CsvToListConverter().convert(wordsCSV);
-      words.forEach((row) => _words.add(_createWord(row)));
-      completer.complete(_words);
-
-      return completer.future;
-    });
-  }*/
-
   Word _createWord(List<String> row) {
     return new Word(row[0], row.sublist(1));
   }

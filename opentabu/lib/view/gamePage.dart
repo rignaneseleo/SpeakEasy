@@ -48,7 +48,16 @@ class GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return new Material(
       child: new Column(
-        children: <Widget>[_gameInfo, new Divider(), _word, new Divider(height: 20.0), _buttons],
+        children: <Widget>[_gameInfo, new Divider(), _turns, _word, new Divider(height: 10.0), _buttons],
+      ),
+    );
+  }
+
+  get _turns {
+    return new Center(
+      child: new Text(
+        "Turn " + (_gameController.currentTurn).toString(),
+        style: new TextStyle(fontSize: 18.0, color: Colors.black54),
       ),
     );
   }
@@ -62,9 +71,12 @@ class GamePageState extends State<GamePage> {
         children: <Widget>[
           new Text(
             "Team " + (i + 1).toString(),
-            style: new TextStyle(color: _gameController.currentTeam == i ? Colors.red : Colors.black),
+            style: new TextStyle(fontSize: 15.0, color: _gameController.currentTeam == i ? Colors.red : Colors.black),
           ),
-          new Text(_gameController.scores[i].toString())
+          new Text(
+            _gameController.scores[i].toString(),
+            style: new TextStyle(fontSize: 28.0),
+          )
         ],
       )));
     }
@@ -73,12 +85,6 @@ class GamePageState extends State<GamePage> {
       padding: new EdgeInsets.all(8.0),
       child: new Column(
         children: <Widget>[
-          new Center(
-            child: new Text(
-              "Turn " + (_gameController.currentTurn).toString(),
-              style: new TextStyle(fontSize: 18.0, color: Colors.black54),
-            ),
-          ),
           new Row(
             children: teams,
           )
@@ -93,42 +99,50 @@ class GamePageState extends State<GamePage> {
     for (String taboo in _gameController.currentWord.taboos) {
       taboos.add(new Text(
         taboo,
-        style: new TextStyle(fontSize: 20.0),
+        style: new TextStyle(fontSize: 30.0),
       ));
     }
 
-    return new Container(
+    return new Expanded(
+        child: new Container(
       padding: new EdgeInsets.all(15.0),
       child: new Column(
         children: <Widget>[
-          new Text(
-            _gameController.currentWord.wordToGuess,
-            style: new TextStyle(fontSize: 50.0),
-          ),
+          new Padding(
+              padding: new EdgeInsets.symmetric(vertical: 20.0),
+              child: new Text(
+                _gameController.currentWord.wordToGuess,
+                style: new TextStyle(fontSize: 60.0),
+              )),
           new Column(children: taboos)
         ],
       ),
-    );
+    ));
   }
 
   get _buttons {
-    return new Row(
-      children: <Widget>[
-        new Expanded(
-            child: new IconButton(
-                icon: new Icon(Icons.done, color: Colors.lightGreen),
-                iconSize: 50.0,
-                onPressed: () => _buttonHandler(true))),
-        new FlatButton(
-            child: new Text(
-              _gameController.skipLeftCurrentTeam.toString() + " SKIP",
-              style: new TextStyle(fontSize: 20.0),
-            ),
-            onPressed: _gameController.skipLeftCurrentTeam == 0 ? null : () => _buttonHandler(null)),
-        new Expanded(
-            child: new IconButton(
-                icon: new Icon(Icons.close, color: Colors.red), iconSize: 50.0, onPressed: () => _buttonHandler(false)))
-      ],
+    return new Padding(
+      padding: new EdgeInsets.all(15.0),
+      child: new Row(
+        children: <Widget>[
+          new Expanded(
+              child: new IconButton(
+                  icon: new Icon(Icons.done, color: Colors.lightGreen),
+                  iconSize: 70.0,
+                  onPressed: () => _buttonHandler(true))),
+          new FlatButton(
+              child: new Text(
+                _gameController.skipLeftCurrentTeam.toString() + " SKIP",
+                style: new TextStyle(fontSize: 20.0),
+              ),
+              onPressed: _gameController.skipLeftCurrentTeam == 0 ? null : () => _buttonHandler(null)),
+          new Expanded(
+              child: new IconButton(
+                  icon: new Icon(Icons.close, color: Colors.red),
+                  iconSize: 70.0,
+                  onPressed: () => _buttonHandler(false)))
+        ],
+      ),
     );
   }
 
@@ -171,11 +185,10 @@ class GamePageState extends State<GamePage> {
               _backToTheHome();
             else
               initTimer();
+            setState(null);
           },
         ),
       ]),
     );
-
-    setState(() {});
   }
 }
