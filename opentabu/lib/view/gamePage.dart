@@ -29,17 +29,19 @@ class GamePageState extends State<GamePage> {
 
   GameController _gameController;
   Timer turnTimer;
+  int secondsTimer;
 
   //info to show:
   Map<String, int> matchInfo; //team name, score
 
   GamePageState(Settings settings, List<Word> words, this._backToTheHome) {
     _gameController = new GameController(settings, words);
+    secondsTimer = settings.turnDurationInSeconds;
     initTimer();
   }
 
   void initTimer() {
-    turnTimer = new Timer(new Duration(seconds: 2), timeOut);
+    turnTimer = new Timer(new Duration(seconds: secondsTimer), timeOut);
   }
 
   @override
