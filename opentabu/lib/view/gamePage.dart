@@ -30,6 +30,7 @@ class GamePageState extends State<GamePage> {
   GameController _gameController;
   Timer turnTimer;
   int secondsTimer;
+  int nTaboo = 5;
 
   //info to show:
   Map<String, int> matchInfo; //team name, score
@@ -68,17 +69,20 @@ class GamePageState extends State<GamePage> {
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
       teams.add(new Expanded(
           child: new Column(
-        children: <Widget>[
-          new Text(
-            "Team " + (i + 1).toString(),
-            style: new TextStyle(fontSize: 15.0, color: _gameController.currentTeam == i ? Colors.red : Colors.black),
-          ),
-          new Text(
-            _gameController.scores[i].toString(),
-            style: new TextStyle(fontSize: 28.0),
-          )
-        ],
-      )));
+            children: <Widget>[
+              new Text(
+                "Team " + (i + 1).toString(),
+                style: new TextStyle(
+                    fontSize: _gameController.currentTeam == i ? 17.0 : 15.0,
+                    //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
+                    color: _gameController.currentTeam == i ? Colors.red : Colors.black),
+              ),
+              new Text(
+                _gameController.scores[i].toString(),
+                style: new TextStyle(fontSize: 28.0),
+              )
+            ],
+          )));
     }
 
     return new Padding(
@@ -96,28 +100,31 @@ class GamePageState extends State<GamePage> {
   get _word {
     List<Widget> taboos = new List<Widget>();
 
-    for (String taboo in _gameController.currentWord.taboos) {
+    var _taboos = _gameController.currentWord.taboos;
+    for (int i = 0; i < nTaboo; i++) {
       taboos.add(new Text(
-        taboo,
-        style: new TextStyle(fontSize: 30.0),
+        _taboos[i],
+        style: new TextStyle(fontSize: 35.0, color: Colors.black54),
+        maxLines: 1,
       ));
     }
 
     return new Expanded(
         child: new Container(
-      padding: new EdgeInsets.all(15.0),
-      child: new Column(
-        children: <Widget>[
-          new Padding(
-              padding: new EdgeInsets.symmetric(vertical: 20.0),
-              child: new Text(
-                _gameController.currentWord.wordToGuess,
-                style: new TextStyle(fontSize: 60.0),
-              )),
-          new Column(children: taboos)
-        ],
-      ),
-    ));
+          padding: new EdgeInsets.all(15.0),
+          child: new Column(
+            children: <Widget>[
+              new Padding(
+                  padding: new EdgeInsets.symmetric(vertical: 20.0),
+                  child: new Text(
+                    _gameController.currentWord.wordToGuess,
+                    style: new TextStyle(fontSize: 56.0),
+                    maxLines: 1,
+                  )),
+              new Column(children: taboos)
+            ],
+          ),
+        ));
   }
 
   get _buttons {
@@ -127,9 +134,9 @@ class GamePageState extends State<GamePage> {
         children: <Widget>[
           new Expanded(
               child: new IconButton(
-                  icon: new Icon(Icons.done, color: Colors.lightGreen),
+                  icon: new Icon(Icons.close, color: Colors.red),
                   iconSize: 70.0,
-                  onPressed: () => _buttonHandler(true))),
+                  onPressed: () => _buttonHandler(false))),
           new FlatButton(
               child: new Text(
                 _gameController.skipLeftCurrentTeam.toString() + " SKIP",
@@ -138,9 +145,9 @@ class GamePageState extends State<GamePage> {
               onPressed: _gameController.skipLeftCurrentTeam == 0 ? null : () => _buttonHandler(null)),
           new Expanded(
               child: new IconButton(
-                  icon: new Icon(Icons.close, color: Colors.red),
+                  icon: new Icon(Icons.done, color: Colors.lightGreen),
                   iconSize: 70.0,
-                  onPressed: () => _buttonHandler(false)))
+                  onPressed: () => _buttonHandler(true)))
         ],
       ),
     );
@@ -158,22 +165,25 @@ class GamePageState extends State<GamePage> {
   void timeOut() {
     Text title;
     Text button;
+    Text content;
 
     bool end = _gameController.changeTurn();
 
     //Check if it's the end
+
     if (end) {
       title = new Text("Team " + _gameController.winner.toString() + " win!");
       button = new Text('Main menu');
     } else {
-      title = new Text("Ready for the next turn?");
+      title = new Text("TIME IS OVER");
+      content = new Text("Give the phone to the next player.");
       button = new Text('Start!');
     }
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      child: new AlertDialog(title: title, actions: <Widget>[
+      child: new AlertDialog(title: title, content: content, actions: <Widget>[
         new FlatButton(
           child: button,
           onPressed: () {
@@ -185,7 +195,7 @@ class GamePageState extends State<GamePage> {
               _backToTheHome();
             else
               initTimer();
-            setState(null);
+            setState(() {});
           },
         ),
       ]),

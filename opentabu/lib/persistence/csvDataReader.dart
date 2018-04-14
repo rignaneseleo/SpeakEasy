@@ -24,7 +24,7 @@ class CSVDataReader extends DataReader {
   }
 
   Word _createWord(List<String> row) {
-    return new Word(row[0], row.sublist(1));
+    return new Word(row[0][0].toUpperCase() + row[0].substring(1), row.sublist(1));
   }
 
   Future<String> _loadAsset() async {

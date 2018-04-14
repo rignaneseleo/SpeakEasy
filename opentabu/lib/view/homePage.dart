@@ -51,6 +51,10 @@ class HomePageState extends State<HomePage> {
               "START",
               style: new TextStyle(fontSize: 30.0),
             ),
+          ),
+          new Text(
+            "ALPHA Version",
+            style: new TextStyle(fontSize: 12.0),
           )
         ],
       ),
@@ -63,6 +67,7 @@ class HomePageState extends State<HomePage> {
       child: new Column(
         children: <Widget>[
           _numberOfTeamsSelector,
+          // _numberOfTaboosSelector,
           _numberOfTurnsSelector,
           _numberOfSkipSelector,
           _secondsPerTurnSelector
@@ -74,7 +79,7 @@ class HomePageState extends State<HomePage> {
   get _numberOfTeamsSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Number of teams: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(child: new Text("Teams: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nPlayers.toDouble(),
             divisions: 3,
@@ -90,10 +95,29 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  get _numberOfTaboosSelector {
+    return new Row(
+      children: <Widget>[
+        new Expanded(child: new Text("Taboos: ", style: new TextStyle(fontSize: 18.0))),
+        new Slider(
+            value: _settings.nPlayers.toDouble(),
+            divisions: 3,
+            min: 3.0,
+            max: 5.0,
+            onChanged: (value) {
+              setState(() {
+                _settings.nTaboos = value.toInt();
+              });
+            }),
+        new Text(_settings.nTaboos.toString())
+      ],
+    );
+  }
+
   get _numberOfSkipSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Skips number per turn: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(child: new Text("Skips per turn: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nSkip.toDouble(),
             divisions: 10,
@@ -112,7 +136,7 @@ class HomePageState extends State<HomePage> {
   get _numberOfTurnsSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Turns number: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(child: new Text("Turns: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nTurns.toDouble(),
             divisions: 17,

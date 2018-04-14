@@ -9,8 +9,10 @@ class Settings {
   int _turnDurationInSeconds;
   int _nSkip;
   int _nTurns;
+  int _nTaboos;
 
-  Settings([this._nPlayers = 2, this._turnDurationInSeconds = 90, this._nSkip = 3, this._nTurns = 10]);
+  Settings(
+      [this._nPlayers = 2, this._turnDurationInSeconds = 90, this._nSkip = 3, this._nTurns = 10, this._nTaboos = 5]);
 
   int get nSkip => _nSkip;
 
@@ -18,7 +20,14 @@ class Settings {
 
   int get nPlayers => _nPlayers;
 
+  int get nTaboos => _nTaboos;
+
+  set nTaboos(int value) {
+    _nTaboos = value;
+  }
+
   int get nTurns => _nTurns;
+
   set nSkip(int value) {
     _nSkip = value;
   }

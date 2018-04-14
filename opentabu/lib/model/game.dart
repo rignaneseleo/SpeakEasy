@@ -33,7 +33,10 @@ class Game {
     _wordIndex++;
 
     //TODO actually if it's the end, starts again from 0
-    if (_wordIndex == _words.length) _wordIndex = 0;
+    if (_wordIndex == _words.length) {
+      _wordIndex = 0;
+      _words.shuffle();
+    }
 
     return _words[_wordIndex];
   }

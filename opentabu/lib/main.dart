@@ -46,8 +46,8 @@ class OpenTabuState extends State<OpenTabu> {
   }
 
   Future<bool> _willPopCallback() async {
+
     //TODO maybe this is not the best way to do it
-    backToTheHome();
     return false; // return false so the route is not popped
   }
 
