@@ -1,54 +1,176 @@
-Mistero,Segreto,Oscuro,Rivelare,Giallo,Sapere
-Volante,Polizia,Automobile,Macchina ,Guidare ,Uccello
-Asilo,Bambini,Politico,Suore,Nido,Scuola
-Tulipano,Fiore,Prato,Profumo ,Olanda,Colorato
-Compagnia,Persone,Insieme,Solo,Amicizia,Stare
-Dama,Scacchi,Pedina,Bianco,Nero,Bianco
-Analisi ,Logica,Matematica,Sangue,Statistica,Ingegneria 
-Pesce,Canna,Barca,Acqua,Mare,Rete
-Gladiatore,Roma,Film,Colosseo ,Combattere,Arena
-Clorofilla,Verde,Piante,Fotosintesi,Foglie,Linfa
-Riordinare,Casa,Mai,Camera,Sempre,Ordine
-Letto ,Piazza,Lenzuola,Cuscino,Divano,Dormire
-Sega,Legno,Porno,Falegname,Attrezzo,Alberi
-Puntura,Droga,Siringa,Iniezione,Prelievo,Ago
-Carta,Credito,Igienica ,Scala,Mano,Scrivere
-Ritardato,Disabile,Speciale,Mentale,Stupido,Indietro 
-Oscurità ,Buio,Nero,Luce,Paura ,Notte
-Spongebob,Patrick,Spugna,Squiddy,Nikelodeon,Giallo
-Simpson ,Bart,Meggie,Marge,Homer,Cartone animato
-Sito,Internet,Pc,Luogo,Web,Online 
-Cattedra,Scuola ,Professore,Classe,Insegnante ,Aula
-Micheal Jordan ,Bulls,Nba,Basket,Abbigliamento ,Pallacanestro 
-Spiderman ,Uomo ragno,Ragnatela,Arrampicarsi,Marvel,Eroe
-Arricchire,Denaro,Incrementare ,Guadagnare ,Accrescere ,Ricco
-Cuscino,Dormire,Letto,Testa,Appoggiare,Morbido
-Maradona,Calcio,Napoli,Argentina,Mano,Mondiale
-Istruzione,Cultura,Scuola,Ministro,Laurea,Pubblica
-Pirandello ,Il fu Mattia Pascal,Scrittore,Letteratura ,Italiano,Maschera
-Dante,Divina Commedia,Inferno,Cammin,Paradiso,Poeta
-Informatica,Computer,Pc,Ingegneria ,Programmazione,Binario
-Scoreggia,Puzza ,Aria,Culo,Schifo,Cacca
-Porno,Sito,Masturbarsi ,Nudo ,Sesso,Guardare
-Accoltellare,Ferire,Uccidere,Posata,Lama,Omicidio
-Gravità ,Fatto,Newton,Mela,Accaduto,Grave
-Stima,Valore,Apprezzamento,Ammirazione,Rispetto,Valore
-Panorama,Giornale,Guardare,Vedere,Montagna ,Paesaggio
-Decameron,Boccaccio,Letteratura,Novelle,Scrittore,Giornate
-Terra,Pianeta,Zappare,Mare,Vivere,Piedi
-Io,Tu,Sono,Nome,Persona,Singolare
-Scuola ,Insegnamento,Imparare,Maestra,Alunno,Lavagna
-Nebbia,Vedere,Nord,Pianura,Fari,Macchina
-Droga,Marjuana ,Cocaina,Lsd,Eroina,Sballo
-Calcio,Goal,Stadio,Tifosi ,Palla,Sport
-Imprevedibile ,Capire ,Pensare,Sapere,Persona,Decidere
-Cin Cin,Salute,Brindisi,Bicchieri ,Calici,Champagne 
-Amico,Compagno,Migliore,Affetto,Tesoro,Nemico
-Onda,Mare,Schiuma,Vento,Surf ,Anomala
-Carbonio ,Chimica,Biossido,Organico,Elemento,Fibra 
-Relax,Riposo,Stress,Pausa ,Stendersi,Rilassarsi
-Pirlo,Andrea ,Milan,Juve,Punizioni,Goal
-Ronaldo,Cristiano,Calcio,Real Madrid,Pallone,Portogallo
-Nadal,Tennis ,Wimbledon ,Campione,Racchetta ,Spagna
-Berlusconi,Silvio,Forza Italia,Politica,Mediaset,Milan
-Mussolini,Fascismo,Dittatura,Fascio,Leggi,Politica
+Cactus,piante,spine,vaso,verde,acqua,,,,,,,,,
+Puntura,Droga,Siringa,Iniezione,Prelievo,Ago,,,,,,,,,
+Sega,Legno,Porno,Falegname,Attrezzo,Alberi,,,,,,,,,
+gatto,stivali,cane,topo,miagolare,animale,amico,uomo,fusa,gomitolo,peli,baffi,micio,,
+Onda,Mare,Schiuma,Vento,Surf ,Anomala,,,,,,,,,
+macchina,auto,automatica,meccanica,congegno,apparecchio,strumento,,,,,,,,
+volta,carta,gabbana,pagina,gira,arco,,,,,,,,,
+Gladiatore,Roma,Film,Colosseo ,Combattere,Arena,,,,,,,,,
+accettare,rifiutare,invito,essere d'accordo,disponibile,ascia,sì,esito positivo,,,,,,,
+luna,buio ,sole,cielo,notte,astronomia,stelle ,telescopio,,,,,,,
+Cattedra,Scuola ,Professore,Classe,Insegnante ,Aula,,,,,,,,,
+aggiungere,piú,sommare,diminuire,sottrarre,aumentare,incrementare,numero,ingredienti,,,,,,
+Anatema,maledizione,sortilegio,incntesimo,uccide,avada kevadra,,,,,,,,,
+Silente,preside,Harry Potter,Hogwarts,mago,barba,,,,,,,,,
+limite,funzione,confine,permesso,mettere,barriera,stabilire,,,,,,,,
+vita,morte,miracoli,nascita,tornare,bella,,,,,,,,,
+latte,mucca ,scremato,lattosio,formaggio,bianco,calcio,,,,,,,,
+acqua,fonte,H2O,vita,bottiglia,bicchiere,bere,liquido,sete,introdurre,mare,,,,
+Informatica,Computer,Pc,Ingegneria ,Programmazione,Binario,,,,,,,,,
+viso,volto,faccia,occhi,naso,bocca,cattivo,,,,,,,,
+Stella,cometa,punte,sole,gialla,brillare,,,,,,,,,
+Scoreggia,Puzza ,Aria,Culo,Schifo,Cacca,,,,,,,,,
+Brindisi,città,Puglia,capodanno,mezzanotte,calici,,,,,,,,,
+lira,soldi,euro,valuta,vecchia,cambio,,,,,,,,,
+Musica,suonare,note,strumento,spartito,canzone,,,,,,,,,
+voltare,girare,macchina,strada,sterzo,capitolo,,,,,,,,,
+Simpson ,Bart,Meggie,Marge,Homer,Cartone animato,,,,,,,,,
+accogliere,benvenuto,lampedusa,ospitale,gentile,casa,accomodarsi,prego,,,,,,,
+via,strada,civico,abitare,vai,casa,indirizzo,,,,,,,,
+Principe,azzurro,ranocchio,mantello,cavallo,castello,,,,,,,,,
+tavolo,gambe,legno,mangiare,sedie,cena,pranzo,,,,,,,,
+Ruota,bicicletta,fortuna,gira,automobile,cerchio,,,,,,,,,
+abito,monaco,vestito,elegante,indossare ,cerimonia,da sera,,,,,,,,
+Cin Cin,Salute,Brindisi,Bicchieri ,Calici,Champagne ,,,,,,,,,
+Sole,astro,luce,raggi,giorno,cielo,,,,,,,,,
+Bologna,torri,Asinelli,Emilia Romagna,piazza Maggiore,città,,,,,,,,,
+Colli,bolognesi,montagne,monti,bassi,colline,,,,,,,,,
+Tulipano,Fiore,Prato,Profumo ,Olanda,Colorato,,,,,,,,,
+Trottola,girare,giocattolo,legno,cono,colorato,,,,,,,,,
+Ariete,segno,aprile,animale,costellazione,colpo,,,,,,,,,
+vendere,comprare,acquistare,soldi,denaro,comprare,,,,,,,,,
+dichiarare,ansa,dire,redditi,banca rotta,comunicare ,politico,,,,,,,,
+senso,direzione,significato,opposto,contrario,concetto,,,,,,,,,
+Ballo,gran,danza,sera,ricevimento,coppia,,,,,,,,,
+zio,marito,sorella,fratello,parente,cugini,,,,,,,,,
+zia,moglie,fratello,sorella,parente,cugini,,,,,,,,,
+lanciare,tirare,sferrare,pugno,esca,dardo,lancia,freccia,spada,,,,,,
+Imprevedibile ,Capire ,Pensare,Sapere,Persona,Decidere,,,,,,,,,
+Pocahontas,indiana,cartone,John Smith,albero,Disney,,,,,,,,,
+genere,tipo,sesso,musicale,discriminaziioni,dna,uomo,donna,maschio,femmina,,,,,
+Letto ,Piazza,Lenzuola,Cuscino,Divano,Dormire,,,,,,,,,
+Nucleare,reattore,nuculare,Homer,reazione,energia,,,,,,,,,
+Spiderman ,Uomo ragno,Ragnatela,Arrampicarsi,Marvel,Eroe,,,,,,,,,
+Cavaliere,cavallo,armatura,zodiaco,duello,esercito,,,,,,,,,
+leggero,pesante,piuma,peso,kili,esile,,,,,,,,,
+accadere,avvenimento,incidente,capitare,succedere,evento,,,,,,,,,
+volontà,forza,motivazione,intendere,avere,fare,,,,,,,,,
+differenza,razziale,somma,prodotto,divisione,fare,,,,,,,,,
+sangue,freddo,rosso,globuli,vene,ferita,,,,,,,,,
+Carbonio ,Chimica,Biossido,Organico,Elemento,Fibra ,,,,,,,,,
+Ariel,sirenetta,mare,Ursula,fondo,Flounder,,,,,,,,,
+gente,plebe,volgo,umano,tanta,folla,persone,molti,articolo 31,J Ax,,,,,
+zona,traffico,pericolo,area,inaccessibile,franca,,,,,,,,,
+destro,mattia,mancino,sinistra,mano,gamba,attaccante,bologna,,,,,,,
+Spongebob,Patrick,Spugna,Squiddy,Nikelodeon,Giallo,,,,,,,,,
+Decameron,Boccaccio,Letteratura,Novelle,Scrittore,Giornate,,,,,,,,,
+volgere,dare,mano,porgere,curva,girare,,,,,,,,,
+Pirlo,Andrea ,Milan,Juve,Punizioni,Goal,,,,,,,,,
+generale,collina,vasco rossi,maresciallo,corpo di polizia,grado,specifica,comune,,,,,,,
+Clessidra,tempo,sabbia,vetro,cronometro,granelli,,,,,,,,,
+Gravità ,Fatto,Newton,Mela,Accaduto,Grave,,,,,,,,,
+accorgersi,sgamare,rendersi conto,notare,vedere,guardare,scorgere,,,,,,,,
+Porno,Sito,Masturbarsi ,Nudo ,Sesso,Guardare,,,,,,,,,
+lavoro,tempo,contratto,impegno,fatica,impiego,,,,,,,,,
+Mago,Merlino,magia,cappello,punta,incantesimi,,,,,,,,,
+Morte,vita,fine,vecchiaia,eutanasia,incidente,,,,,,,,,
+Analisi ,Logica,Matematica,Sangue,Statistica,Ingegneria ,,,,,,,,,
+gazzella,savana,veloce,snello,animale,ladra,leone,uccidere,rapida,adidas,,,,felino,
+Scuola ,Insegnamento,Imparare,Maestra,Alunno,Lavagna,,,,,,,,,
+Unicorno,cavallo,quattro,cono,creatura,leggendario,,,,,,,,,
+Castello,casa,medioevo,fossato,torri,levatoio,,,,,,,,,
+Hermione,Granger,Harry Potter,Ron,strega,libro,,,,,,,,,
+Clorofilla,Verde,Piante,Fotosintesi,Foglie,Linfa,,,,,,,,,
+uomo,donna,adamo,maschio,padre,lui,sesso,genere,ragazzo,,,,,,
+Nebbia,Vedere,Nord,Pianura,Fari,Macchina,,,,,,,,,
+Pirandello ,Il fu Mattia Pascal,Scrittore,Letteratura ,Italiano,Maschera,,,,,,,,,
+determinare,scegliere,scopo,obiettivo,selezionare,matrice,decidere,,,,,,,,
+vestito,abito,sera,abbigliamento,elegante,matrimonio,indossare,,,,,,,,
+voglia,gravidanza,dolce,desiderio,stanco,matta,,,,,,,,,
+Rosa,colore,nome,fiore,spine,mazzo,,,,,,,,,
+settimana,Dio,giorni,weekend,lunedì,mese,,,,,,,,,
+spazio,tempo,universo,vitale,stanza,metri,,,,,,,,,
+Berlusconi,Silvio,Forza Italia,Politica,Mediaset,Milan,,,,,,,,,
+Maradona,Calcio,Napoli,Argentina,Mano,Mondiale,,,,,,,,,
+lago,pesca,acqua,bacino,fiume,montagna,pesca,pesci,,,,,,,
+vino,rosso,bianco,calice,bottiglia,Montepulciano,bevanda,,,,,,,,
+Cuscino,Dormire,Letto,Testa,Appoggiare,Morbido,,,,,,,,,
+Dama,Scacchi,Pedina,Bianco,Nero,mossa,,,,,,,,,
+vista,miopia,occhiali,bella,occhi,mozzafiato,panorama,,,,,,,,
+Arte,parte,pittura,scrittura,moderna,museo,,,,,,,,,
+zitto,silenzio,stare,tacere,parlare,muto,,,,,,,,,
+volto,viso,faccia,espressione,occhi,naso,bocca,,,,,,,,
+Amico,Compagno,Migliore,Affetto,Tesoro,Nemico,,,,,,,,,
+Buio,notte,dormire,oscurità,luce,nero,,,,,,,,,
+G.o.T,Daenerys,Jon Snow,Lannister,serie tv,Netflix,,,,,,,,,
+Oscurità ,Buio,Nero,Luce,Paura ,Notte,,,,,,,,,
+Luna,crateri,crescente,calante,cielo,notte,,,,,,,,,
+Delfino,animale,acqua,intelligente,Flipper,nuota,,,,,,,,,
+Accoltellare,Ferire,Uccidere,pugnalare,Lama,Omicidio,sarah scazzi,sangue,,,,,,,
+Sito,Internet,Pc,Luogo,Web,Online ,,,,,,,,,
+Riordinare,Casa,Mai,Camera,Sempre,Ordine,,,,,,,,,
+Panorama,Giornale,Guardare,Vedere,Montagna ,Paesaggio,,,,,,,,,
+Micheal Jordan ,Bulls,Nba,Basket,Abbigliamento ,Pallacanestro ,,,,,,,,,
+lingua,inglese,bocca,viso,faccia,parlare,conoscere,studiare,,,,,,,
+lettera,alfabeto,scrivere,consonanti,vocali,parola ,,,,,,,,,
+Paradiso,purgatorio,inferno,Dante,morte,peccati,,,,,,,,,
+Girasole,campo,fiore,giallo,luce,petali,,,,,,,,,
+Tarzan,Jane,scimmie,liane,giungla,Phil Collins,,,,,,,,,
+albergo,hotel,residence ,Borghese,palazzo,piani ,hall,reception,alloggio,,,,,,
+lotta,guerra,scontro,combattimento,persone,picchiare,ferire,,,,,,,,
+Terra,Pianeta,Zappare,Mare,Vivere,Piedi,,,,,,,,,
+labbro,bocca,viso,bacio ,superiore,piercing,inferiore,anello,silicone,,,,,,
+vincere,perdere,scommessa,partita,premio,podio,,,,,,,,,
+Dante,Divina Commedia,Inferno,Cammin,Paradiso,Poeta,,,,,,,,,
+Mussolini,Fascismo,Dittatura,Fascio,Leggi,Politica,,,,,,,,,
+Arco,frecce,volta,arma,bersaglio,porta,,,,,,,,,
+Ronaldo,Cristiano,Calcio,Real Madrid,Pallone,Portogallo,,,,,,,,,
+Lettera,busta,e-mail,messaggio,carta,posta,,,,,,,,,
+treno,rotaia,vagone,binario,ritardo,prendere,viaggio,,,,,,,,
+difesa,ministero,alfano,militare,barriera,proteggere,attacco,scudo,,,,,,,
+Istruzione,Cultura,Scuola,Ministro,Laurea,Pubblica,,,,,,,,,
+Re Leone,cartone,Disney,Simba,Timon,Pumba,,,,,,,,,
+Albero,foglie,tronco,quercia,rami,radici,,,,,,,,,
+Pesce,Canna,Barca,Acqua,Mare,Rete,,,,,,,,,
+linea,continua,punti,dritto,tratto,retta,segmento,,,,,,,,
+Arricchire,Denaro,Incrementare ,Guadagnare ,Accrescere ,Ricco,,,,,,,,,
+sviluppo,personale,processo,programma,applicazione,ricerca,software,,,,,,,,
+vuoto,pieno,bidone,ideale,cosmico,riempire,memoria,,,,,,,,
+Relax,Riposo,Stress,Pausa ,Stendersi,Rilassarsi,,,,,,,,,
+levare,togliere,alzare,bandiera,mano,rimuovere,,,,,,,,,
+liberare,prigione,animale,sciogliere,scarcerare,rinchiudere,,,,,,,,,
+Sirius,Black,Harry Potter,padrino,velo,Rowling,,,,,,,,,
+scala,gradini,rampa,chiocciola,quaranta,salire,,,,,,,,,
+volare,ali,paracadute,aereo,uccelli,saltare,,,,,,,,,
+Mistero,Segreto,Oscuro,Rivelare,Giallo,Sapere,,,,,,,,,
+Droga,Marjuana ,Cocaina,Lsd,Eroina,Sballo,,,,,,,,,
+Carta,Credito,Igienica ,Scala,Mano,Scrivere,,,,,,,,,
+Asilo,Bambini,Politico,Suore,Nido,Scuola,,,,,,,,,
+libro,pagina,sfogliare,carta,romanzo,scuola,lettere,parola,studiare,testo,pagine,leggere,studiare,carta,copertina
+Io,Tu,Sono,Nome,Persona,Singolare,,,,,,,,,
+luce,bolletta,lampada,enel,interruttore,sole,giorno,notte,buio,,,,,,
+Luce,giorno,illuminare,buio,lampadina,sole,,,,,,,,,
+sera,pomeriggio,mattina,cena,buio,sole,notte,dormire,,,,,,,
+Sogno,notte,dormire,incubo,desiderio,sonno,,,,,,,,,
+Elfo,orecchie,punta,Legolas,uomo,soprannaturale,,,,,,,,,
+Strega,rogo,medioevo,bruciata,donna,sortilegi,,,,,,,,,
+Nadal,Tennis ,Wimbledon ,Campione,Racchetta ,Spagna,,,,,,,,,
+Mare,acqua,montagna,azzurro,bagno,spiaggia,,,,,,,,,
+lato,verso,angolo,parte,fianco,sponda,,,,,,,,,
+Calcio,Goal,Stadio,Tifosi ,Palla,Sport,,,,,,,,,
+Drago,animale,magico,fantasy,ali,squame,,,,,,,,,
+Compagnia,Persone,Insieme,Solo,Amicizia,Stare,,,,,,,,,
+legge,abuso,giudice,avvocato,regole,stato,giurisprudenza,,,,,,,,
+voce,canto,bocca,lingua,verbo,stonata,,,,,,,,,
+Campane,messa,suonare,vetro,chiesa,strumento,,,,,,,,,
+aiutare,favorire,vantaggio,soccorrere,mano,supporto,coadiuvare,,,,,,,,
+affrontare,prova,combattere,duellare,scontrare,termopili,battaglia,sconfiggere,faccia,fronteggiare,,,,,
+gamba,arto,protesi,braccio,ginocchio,tibia,perone,coscia,piede,anca,,,,,
+visita,gita,museo,guidata,città,turistica,,,,,,,,,
+Volante,Polizia,Automobile,Macchina ,Guidare ,Uccello,,,,,,,,,
+destino,oracolo,fine,achille,generale,umanità,mondo,futuro,scritto,,,,,,
+Mulan,cinese,uomo,Disney,Mushu,unni,,,,,,,,,
+Stima,Valore,Apprezzamento,Ammirazione,Rispetto,Valore,,,,,,,,,
+affare,con te,piacere,offerta,comprare,vantaggioso,acquisto,ebay,costo,,,,,,
+accompagnare,scortare,caronte,portare,andare,venire,strada,seguire,,,,,,,
+luogo,nascita,posto,posizione,spazio,zona,regione,stato,complemento,
