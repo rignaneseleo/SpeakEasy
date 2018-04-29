@@ -17,13 +17,16 @@ class CSVDataReader extends DataReader {
     _words = new List<Word>();
 
     _loadAsset().then((wordsCSV) {
-      List<List<String>> words = const CsvToListConverter().convert(wordsCSV);
+      List<List> words = CsvToListConverter().convert(wordsCSV);
 
-      words.forEach((row) => _words.add(_createWord(row)));
+      words.forEach((List row) => _words.add(_createWord(row.retype<String>())));
+
+      int x;
     });
   }
 
   Word _createWord(List<String> row) {
+    print("Read the word '${row[0]}'");
     return new Word(row[0][0].toUpperCase() + row[0].substring(1), row.sublist(1));
   }
 
