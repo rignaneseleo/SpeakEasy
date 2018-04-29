@@ -11,7 +11,7 @@ import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 
 class GamePage extends StatefulWidget {
-  VoidCallback _backToTheHome;
+  final VoidCallback _backToTheHome;
 
   final Settings _settings;
   final List<Word> _words;
@@ -28,21 +28,22 @@ class GamePageState extends State<GamePage> {
   VoidCallback _backToTheHome;
 
   GameController _gameController;
-  Timer turnTimer;
-  int secondsTimer;
-  int nTaboo = 5;
+  Timer _turnTimer;
+  int _secondsTimer;
+  int _nTaboos;
 
   //info to show:
   Map<String, int> matchInfo; //team name, score
 
   GamePageState(Settings settings, List<Word> words, this._backToTheHome) {
     _gameController = new GameController(settings, words);
-    secondsTimer = settings.turnDurationInSeconds;
+    _secondsTimer = settings.turnDurationInSeconds;
+    _nTaboos = settings.nTaboos;
     initTimer();
   }
 
   void initTimer() {
-    turnTimer = new Timer(new Duration(seconds: secondsTimer), timeOut);
+    _turnTimer = new Timer(new Duration(seconds: _secondsTimer), timeOut);
   }
 
   @override
@@ -69,20 +70,20 @@ class GamePageState extends State<GamePage> {
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
       teams.add(new Expanded(
           child: new Column(
-            children: <Widget>[
-              new Text(
-                "Team " + (i + 1).toString(),
-                style: new TextStyle(
-                    fontSize: _gameController.currentTeam == i ? 17.0 : 15.0,
-                    //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
-                    color: _gameController.currentTeam == i ? Colors.red : Colors.black),
-              ),
-              new Text(
-                _gameController.scores[i].toString(),
-                style: new TextStyle(fontSize: 28.0),
-              )
-            ],
-          )));
+        children: <Widget>[
+          new Text(
+            "Team " + (i + 1).toString(),
+            style: new TextStyle(
+                fontSize: _gameController.currentTeam == i ? 17.0 : 15.0,
+                //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
+                color: _gameController.currentTeam == i ? Colors.red : Colors.black),
+          ),
+          new Text(
+            _gameController.scores[i].toString(),
+            style: new TextStyle(fontSize: 28.0),
+          )
+        ],
+      )));
     }
 
     return new Padding(
@@ -101,7 +102,7 @@ class GamePageState extends State<GamePage> {
     List<Widget> taboos = new List<Widget>();
 
     var _taboos = _gameController.currentWord.taboos;
-    for (int i = 0; i < nTaboo; i++) {
+    for (int i = 0; i < _nTaboos; i++) {
       taboos.add(new Text(
         _taboos[i],
         style: new TextStyle(fontSize: 35.0, color: Colors.black54),
@@ -111,20 +112,21 @@ class GamePageState extends State<GamePage> {
 
     return new Expanded(
         child: new Container(
-          padding: new EdgeInsets.all(15.0),
-          child: new Column(
-            children: <Widget>[
-              new Padding(
-                  padding: new EdgeInsets.symmetric(vertical: 20.0),
-                  child: new Text(
-                    _gameController.currentWord.wordToGuess,
-                    style: new TextStyle(fontSize: 56.0),
-                    maxLines: 1,
-                  )),
-              new Column(children: taboos)
-            ],
-          ),
-        ));
+      padding: new EdgeInsets.all(15.0),
+      child: new Column(
+        children: <Widget>[
+          new Padding(
+              padding: new EdgeInsets.symmetric(vertical: 20.0),
+              child: new Text(
+                _gameController.currentWord.wordToGuess,
+                style: new TextStyle(fontSize: 56.0),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+          new Column(children: taboos)
+        ],
+      ),
+    ));
   }
 
   get _buttons {
