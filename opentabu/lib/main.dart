@@ -33,7 +33,19 @@ class OpenTabuState extends State<OpenTabu> {
     return new MaterialApp(
       title: 'OpenTabu',
       home: new Scaffold(
-        appBar: new AppBar(title: new Text('OpenTabu'), centerTitle: true, backgroundColor: (Colors.deepOrange)),
+        appBar: new AppBar(
+            title: new Text('OpenTabu'),
+            actions: <Widget>[
+              _body is HomePage
+                  ? null
+                  : new IconButton(
+                      icon: new Icon(Icons.home),
+                      onPressed: () => setState(() {
+                            _body = new HomePage(newGame);
+                          }))
+            ].where((w) => w != null).toList(),
+            centerTitle: true,
+            backgroundColor: (Colors.deepOrange)),
         body: _body,
       ),
     );
@@ -46,7 +58,6 @@ class OpenTabuState extends State<OpenTabu> {
   }
 
   Future<bool> _willPopCallback() async {
-
     //TODO maybe this is not the best way to do it
     return false; // return false so the route is not popped
   }
