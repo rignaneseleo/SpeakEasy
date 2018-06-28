@@ -4,9 +4,9 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
-import 'package:opentabu/model/game.dart';
-import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/model/word.dart';
+import 'package:Tabu/model/game.dart';
+import 'package:Tabu/model/settings.dart';
+import 'package:Tabu/model/word.dart';
 
 class GameController {
   Game _game;
@@ -15,6 +15,8 @@ class GameController {
   Word _currentWord;
   int _currentTeam = 0; //the team that starts
   int _currentTurn = 0;
+
+  int _secondsPassed = 0;
 
   GameController(Settings settings, List<Word> words) {
     _game = new Game(words, nTeams: settings.nPlayers, nSkips: settings.nSkip);
@@ -31,6 +33,7 @@ class GameController {
     }
 
     _game.resetSkip();
+    _secondsPassed = 0;
 
     _currentWord = _game.newWord;
 
@@ -51,7 +54,9 @@ class GameController {
     if (_game.useSkip(_currentTeam)) _currentWord = _game.newWord;
   }
 
-  get winner => _game.winner+1;
+  void oneSecPassed() => _secondsPassed++;
+
+  get winner => _game.winner + 1;
 
   get currentTurn => _currentTurn + 1;
 
@@ -64,4 +69,6 @@ class GameController {
   get numberOfPlayers => _game.numberOfPlayers;
 
   get currentTeam => _currentTeam;
+
+  get secondsPassed => _secondsPassed;
 }

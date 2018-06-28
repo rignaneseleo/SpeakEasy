@@ -6,9 +6,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:opentabu/controller/gameController.dart';
-import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/model/word.dart';
+import 'package:Tabu/controller/gameController.dart';
+import 'package:Tabu/model/settings.dart';
+import 'package:Tabu/model/word.dart';
 
 class GamePage extends StatefulWidget {
   final VoidCallback _backToTheHome;
@@ -26,31 +26,58 @@ class GamePage extends StatefulWidget {
 
 class GamePageState extends State<GamePage> {
   VoidCallback _backToTheHome;
+  Widget _body;
 
   GameController _gameController;
   Timer _turnTimer;
-  int _secondsTimer;
-  int _nTaboos;
+  Timer _countSecondsTimer;
+  int _timerDuration;
+  int _nTaboosToShow;
 
   //info to show:
   Map<String, int> matchInfo; //team name, score
 
   GamePageState(Settings settings, List<Word> words, this._backToTheHome) {
     _gameController = new GameController(settings, words);
-    _secondsTimer = settings.turnDurationInSeconds;
-    _nTaboos = settings.nTaboos;
+    _timerDuration = settings.turnDurationInSeconds;
+    _nTaboosToShow = settings.nTaboos;
+
     initTimer();
+
+    _countSecondsTimer = new Timer.periodic(new Duration(seconds: 1),
+        (timer) => _turnTimer.isActive ? setState(() => _gameController.oneSecPassed()) : null);
   }
 
   void initTimer() {
-    _turnTimer = new Timer(new Duration(seconds: _secondsTimer), timeOut);
+    _turnTimer = new Timer(new Duration(seconds: _timerDuration), timeOut);
   }
 
   @override
   Widget build(BuildContext context) {
+    _body =  new Container(height: 520.0, child: new Column(children: <Widget>[_turns, _time, _word,new Divider
+      (height: 10.0),
+    _buttons]));
+
     return new Material(
       child: new Column(
-        children: <Widget>[_gameInfo, new Divider(), _turns, _word, new Divider(height: 10.0), _buttons],
+        children: <Widget>[
+          _gameInfo,
+          new Divider(height: 1.0),
+         _body,
+
+        ],
+      ),
+    );
+  }
+
+  get _time {
+    return new Center(
+      child: new Text(
+        (_timerDuration - _gameController.secondsPassed).toString(),
+        style: new TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            color: _timerDuration - _gameController.secondsPassed < 8 ? Colors.red : Colors.black),
       ),
     );
   }
@@ -74,26 +101,25 @@ class GamePageState extends State<GamePage> {
           new Text(
             "Team " + (i + 1).toString(),
             style: new TextStyle(
-                fontSize: _gameController.currentTeam == i ? 17.0 : 15.0,
+                fontSize: _gameController.currentTeam == i ? 17.0 : 13.0,
                 //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
                 color: _gameController.currentTeam == i ? Colors.red : Colors.black),
           ),
           new Text(
             _gameController.scores[i].toString(),
-            style: new TextStyle(fontSize: 28.0),
+            style: new TextStyle(
+              fontSize: _gameController.currentTeam == i ? 28.0 : 22.0,
+            ),
           )
         ],
       )));
     }
 
-    return new Padding(
+    return new Container(
+      height: 70.0,
       padding: new EdgeInsets.all(8.0),
-      child: new Column(
-        children: <Widget>[
-          new Row(
-            children: teams,
-          )
-        ],
+      child: new Row(
+        children: teams,
       ),
     );
   }
@@ -101,12 +127,14 @@ class GamePageState extends State<GamePage> {
   get _word {
     List<Widget> taboos = new List<Widget>();
 
-    var _taboos = _gameController.currentWord.taboos;
-    for (int i = 0; i < _nTaboos; i++) {
+    List<String> _taboos = _gameController.currentWord.taboos;
+
+    for (int i = 0; i < _nTaboosToShow; i++) {
       taboos.add(new Text(
         _taboos[i],
         style: new TextStyle(fontSize: 35.0, color: Colors.black54),
         maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ));
     }
 
@@ -130,7 +158,7 @@ class GamePageState extends State<GamePage> {
   }
 
   get _buttons {
-    return new Padding(
+    return new Container(
       padding: new EdgeInsets.all(15.0),
       child: new Row(
         children: <Widget>[

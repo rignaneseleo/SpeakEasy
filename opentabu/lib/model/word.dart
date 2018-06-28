@@ -9,20 +9,24 @@ class Word {
   List<String> _taboos;
 
   Word(this._wordToGuess, this._taboos) {
+
     _wordToGuess = _capitalize(_wordToGuess.trim());
 
     for (int i = 0; i < _taboos.length; i++) {
-      if (_taboos[i].length == 0) //if empty
+      if (_taboos[i].length == 0) //if the string is empty
         _taboos.removeAt(i--); //remove it
       else
         _taboos[i] = _capitalize(_taboos[i].trim());
     }
+
+    //every time I load the game, the taboos will be in different order
+    _taboos.shuffle();
   }
 
   get wordToGuess => _wordToGuess;
 
   get taboos {
-    _taboos.shuffle();
+
     return _taboos;
   }
 

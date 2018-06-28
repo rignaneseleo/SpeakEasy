@@ -1,4 +1,4 @@
-name: opentabu
+name: Tabu
 description: The open source version of the most famous words game
 
 dependencies:
@@ -6,6 +6,7 @@ dependencies:
     sdk: flutter
 
   csv: "^3.1.2"
+  flutter_launcher_icons: "^0.5.2"
 
 dev_dependencies:
   flutter_test:
@@ -16,3 +17,8 @@ flutter:
 
   assets:
    - csv/words.csv
+
+
+flutter_icons:
+  android: true
+  image_path: "assets/icon/web_hi_res_512.png"

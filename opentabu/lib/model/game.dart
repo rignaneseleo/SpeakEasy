@@ -4,7 +4,7 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
-import 'package:opentabu/model/word.dart';
+import 'package:Tabu/model/word.dart';
 
 class Game {
   final List<Word> _words;

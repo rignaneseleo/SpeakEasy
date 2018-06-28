@@ -6,10 +6,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/model/word.dart';
-import 'package:opentabu/view/gamePage.dart';
-import 'package:opentabu/view/homePage.dart';
+import 'package:Tabu/model/settings.dart';
+import 'package:Tabu/model/word.dart';
+import 'package:Tabu/view/gamePage.dart';
+import 'package:Tabu/view/homePage.dart';
 
 void main() => runApp(new OpenTabu());
 
@@ -31,10 +31,10 @@ class OpenTabuState extends State<OpenTabu> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'OpenTabu',
+      title: 'Tabu',
       home: new Scaffold(
         appBar: new AppBar(
-            title: new Text('OpenTabu'),
+            title: new Text('Tabu'),
             actions: <Widget>[
               _body is HomePage
                   ? null

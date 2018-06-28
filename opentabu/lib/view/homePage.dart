@@ -4,9 +4,9 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'package:flutter/material.dart';
-import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/persistence/csvDataReader.dart';
-import 'package:opentabu/persistence/dataReader.dart';
+import 'package:Tabu/model/settings.dart';
+import 'package:Tabu/persistence/csvDataReader.dart';
+import 'package:Tabu/persistence/dataReader.dart';
 
 class HomePage extends StatefulWidget {
   final dynamic _newGame;
@@ -35,7 +35,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return new Material(
         child: new Container(
-      padding: new EdgeInsets.all(8.0),
+      padding: new EdgeInsets.all(5.0),
       child: new Column(
         children: <Widget>[
           new Text(
@@ -53,7 +53,7 @@ class HomePageState extends State<HomePage> {
             ),
           ),
           new Text(
-            "ALPHA Version",
+            "ALPHA Version 3",
             style: new TextStyle(fontSize: 12.0),
           )
         ],
@@ -67,8 +67,9 @@ class HomePageState extends State<HomePage> {
       child: new Column(
         children: <Widget>[
           _numberOfTeamsSelector,
-          // _numberOfTaboosSelector,
           _numberOfTurnsSelector,
+           new Divider(),
+           _numberOfTaboosSelector,
           _numberOfSkipSelector,
           _secondsPerTurnSelector
         ],
@@ -90,7 +91,12 @@ class HomePageState extends State<HomePage> {
                 _settings.nPlayers = value.toInt();
               });
             }),
-        new Text(_settings.nPlayers.toString())
+        new Container(
+          width: 24.0,
+          child: new Text(
+            _settings.nPlayers.toString(),
+          ),
+        )
       ],
     );
   }
@@ -100,7 +106,7 @@ class HomePageState extends State<HomePage> {
       children: <Widget>[
         new Expanded(child: new Text("Taboos: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
-            value: _settings.nPlayers.toDouble(),
+            value: _settings.nTaboos.toDouble(),
             divisions: 3,
             min: 3.0,
             max: 5.0,
@@ -109,7 +115,13 @@ class HomePageState extends State<HomePage> {
                 _settings.nTaboos = value.toInt();
               });
             }),
-        new Text(_settings.nTaboos.toString())
+        new Container(
+          width: 24.0,
+          child: new Text(
+            _settings.nTaboos.toString(),
+          ),
+        )
+
       ],
     );
   }
@@ -128,7 +140,12 @@ class HomePageState extends State<HomePage> {
                 _settings.nSkip = value.toInt();
               });
             }),
-        new Text(_settings.nSkip.toString())
+        new Container(
+          width: 24.0,
+          child: new Text(
+            _settings.nSkip.toString(),
+          ),
+        )
       ],
     );
   }
@@ -147,7 +164,12 @@ class HomePageState extends State<HomePage> {
                 _settings.nTurns = value.toInt();
               });
             }),
-        new Text(_settings.nTurns.toString())
+        new Container(
+          width: 24.0,
+          child: new Text(
+            _settings.nTurns.toString(),
+          ),
+        )
       ],
     );
   }
@@ -166,7 +188,12 @@ class HomePageState extends State<HomePage> {
                 _settings.turnDurationInSeconds = value.toInt();
               });
             }),
-        new Text(_settings.turnDurationInSeconds.toString())
+        new Container(
+          width: 24.0,
+          child: new Text(
+            _settings.turnDurationInSeconds.toString(),
+          ),
+        )
       ],
     );
   }
