@@ -8,57 +8,57 @@ import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/persistence/csvDataReader.dart';
 import 'package:opentabu/persistence/dataReader.dart';
 
+import 'gamePage.dart';
+
 class HomePage extends StatefulWidget {
-  final dynamic _newGame;
-
-  HomePage(this._newGame);
-
   @override
   State<StatefulWidget> createState() {
-    return new HomePageState(_newGame);
+    return new HomePageState();
   }
 }
 
 class HomePageState extends State<HomePage> {
-  dynamic _newGame;
-  DataReader _dr;
-
   Settings _settings;
 
-  HomePageState(this._newGame) {
-    _dr = new CSVDataReader();
-
+  HomePageState() {
     _settings = new Settings();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
-        child: new Container(
-      padding: new EdgeInsets.all(5.0),
-      child: new Column(
-        children: <Widget>[
-          new Text(
-            "Set your preferences: ",
-            style: new TextStyle(fontSize: 30.0),
+    return new Scaffold(
+        appBar: AppBar(
+          title: Text("Tabu"),
+        ),
+        body: new Container(
+          padding: new EdgeInsets.all(5.0),
+          child: new Column(
+            children: <Widget>[
+              new Text(
+                "Set your preferences: ",
+                style: new TextStyle(fontSize: 30.0),
+              ),
+              _settingsContainer,
+              new MaterialButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GamePage(_settings)),
+                  );
+                },
+                child: new Text(
+                  "START",
+                  style: new TextStyle(fontSize: 30.0),
+                ),
+              ),
+              new Text(
+                "ALPHA Version 3",
+                style: new TextStyle(fontSize: 12.0),
+              )
+            ],
           ),
-          _settingsContainer,
-          new MaterialButton(
-            onPressed: () {
-              _newGame(_settings, _dr.words);
-            },
-            child: new Text(
-              "START",
-              style: new TextStyle(fontSize: 30.0),
-            ),
-          ),
-          new Text(
-            "ALPHA Version 3",
-            style: new TextStyle(fontSize: 12.0),
-          )
-        ],
-      ),
-    ));
+        ));
   }
 
   get _settingsContainer {
@@ -68,8 +68,8 @@ class HomePageState extends State<HomePage> {
         children: <Widget>[
           _numberOfTeamsSelector,
           _numberOfTurnsSelector,
-           new Divider(),
-           _numberOfTaboosSelector,
+          new Divider(),
+          _numberOfTaboosSelector,
           _numberOfSkipSelector,
           _secondsPerTurnSelector
         ],
@@ -80,7 +80,8 @@ class HomePageState extends State<HomePage> {
   get _numberOfTeamsSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Teams: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(
+            child: new Text("Teams: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nPlayers.toDouble(),
             divisions: 3,
@@ -104,7 +105,8 @@ class HomePageState extends State<HomePage> {
   get _numberOfTaboosSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Taboos: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(
+            child: new Text("Taboos: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nTaboos.toDouble(),
             divisions: 3,
@@ -121,7 +123,6 @@ class HomePageState extends State<HomePage> {
             _settings.nTaboos.toString(),
           ),
         )
-
       ],
     );
   }
@@ -129,7 +130,9 @@ class HomePageState extends State<HomePage> {
   get _numberOfSkipSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Skips per turn: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(
+            child: new Text("Skips per turn: ",
+                style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nSkip.toDouble(),
             divisions: 10,
@@ -153,7 +156,8 @@ class HomePageState extends State<HomePage> {
   get _numberOfTurnsSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Turns: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(
+            child: new Text("Turns: ", style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.nTurns.toDouble(),
             divisions: 17,
@@ -177,7 +181,9 @@ class HomePageState extends State<HomePage> {
   get _secondsPerTurnSelector {
     return new Row(
       children: <Widget>[
-        new Expanded(child: new Text("Seconds per turn: ", style: new TextStyle(fontSize: 18.0))),
+        new Expanded(
+            child: new Text("Seconds per turn: ",
+                style: new TextStyle(fontSize: 18.0))),
         new Slider(
             value: _settings.turnDurationInSeconds.toDouble(),
             divisions: 15,

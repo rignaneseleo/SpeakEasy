@@ -10,22 +10,20 @@ import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 
+import '../main.dart';
+
 class GamePage extends StatefulWidget {
-  final VoidCallback _backToTheHome;
-
   final Settings _settings;
-  final List<Word> _words;
 
-  GamePage(this._settings, this._words, this._backToTheHome);
+  GamePage(this._settings);
 
   @override
   State<StatefulWidget> createState() {
-    return new GamePageState(_settings, _words, _backToTheHome);
+    return new GamePageState(_settings);
   }
 }
 
 class GamePageState extends State<GamePage> {
-  VoidCallback _backToTheHome;
   Widget _body;
 
   GameController _gameController;
@@ -37,15 +35,18 @@ class GamePageState extends State<GamePage> {
   //info to show:
   Map<String, int> matchInfo; //team name, score
 
-  GamePageState(Settings settings, List<Word> words, this._backToTheHome) {
+  GamePageState(Settings settings) {
     _gameController = new GameController(settings, words);
     _timerDuration = settings.turnDurationInSeconds;
     _nTaboosToShow = settings.nTaboos;
 
     initTimer();
 
-    _countSecondsTimer = new Timer.periodic(new Duration(seconds: 1),
-        (timer) => _turnTimer.isActive ? setState(() => _gameController.oneSecPassed()) : null);
+    _countSecondsTimer = new Timer.periodic(
+        new Duration(seconds: 1),
+        (timer) => _turnTimer.isActive
+            ? setState(() => _gameController.oneSecPassed())
+            : null);
   }
 
   void initTimer() {
@@ -54,17 +55,22 @@ class GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    _body =  new Container(height: 520.0, child: new Column(children: <Widget>[_turns, _time, _word,new Divider
-      (height: 10.0),
-    _buttons]));
+    _body = new Container(
+        height: 520.0,
+        child: new Column(children: <Widget>[
+          _turns,
+          _time,
+          _word,
+          new Divider(height: 10.0),
+          _buttons
+        ]));
 
     return new Material(
       child: new Column(
         children: <Widget>[
           _gameInfo,
           new Divider(height: 1.0),
-         _body,
-
+          _body,
         ],
       ),
     );
@@ -77,7 +83,9 @@ class GamePageState extends State<GamePage> {
         style: new TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
-            color: _timerDuration - _gameController.secondsPassed < 8 ? Colors.red : Colors.black),
+            color: _timerDuration - _gameController.secondsPassed < 8
+                ? Colors.red
+                : Colors.black),
       ),
     );
   }
@@ -103,7 +111,9 @@ class GamePageState extends State<GamePage> {
             style: new TextStyle(
                 fontSize: _gameController.currentTeam == i ? 17.0 : 13.0,
                 //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
-                color: _gameController.currentTeam == i ? Colors.red : Colors.black),
+                color: _gameController.currentTeam == i
+                    ? Colors.red
+                    : Colors.black),
           ),
           new Text(
             _gameController.scores[i].toString(),
@@ -172,7 +182,9 @@ class GamePageState extends State<GamePage> {
                 _gameController.skipLeftCurrentTeam.toString() + " SKIP",
                 style: new TextStyle(fontSize: 20.0),
               ),
-              onPressed: _gameController.skipLeftCurrentTeam == 0 ? null : () => _buttonHandler(null)),
+              onPressed: _gameController.skipLeftCurrentTeam == 0
+                  ? null
+                  : () => _buttonHandler(null)),
           new Expanded(
               child: new IconButton(
                   icon: new Icon(Icons.done, color: Colors.lightGreen),
@@ -222,7 +234,7 @@ class GamePageState extends State<GamePage> {
 
             //Check if it's the end
             if (end)
-              _backToTheHome();
+              Navigator.of(context).pop();
             else
               initTimer();
             setState(() {});

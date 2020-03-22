@@ -10,33 +10,22 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/dataReader.dart';
 
-class CSVDataReader extends DataReader {
-  List<Word> _words;
+class CSVDataReader {
+  static Future<List<Word>> readData() async {
+    List<Word> _words = new List<Word>();
 
-  CSVDataReader() {
-    _words = new List<Word>();
+    String wordsCSV = await rootBundle.loadString('csv/words.csv');
 
-    _loadAsset().then((wordsCSV) {
-      List<List> words = CsvToListConverter().convert(wordsCSV);
+    List<List> words = CsvToListConverter().convert(wordsCSV);
 
-      words.forEach(
-          (List row) => _words.add(_createWord(List<String>.from(row))));
+    for (List row in words) _words.add(_createWord(List<String>.from(row)));
 
-      int x;
-    });
+    return _words;
   }
 
-  Word _createWord(List<String> row) {
+  static Word _createWord(List<String> row) {
     print("Read the word '${row[0]}'");
     return new Word(
         row[0][0].toUpperCase() + row[0].substring(1), row.sublist(1));
   }
-
-  Future<String> _loadAsset() async {
-    return await rootBundle.loadString('csv/words.csv');
-  }
-
-  // TODO: implement words
-  @override
-  get words => _words;
 }

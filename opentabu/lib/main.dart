@@ -8,65 +8,30 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
+import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/view/gamePage.dart';
 import 'package:opentabu/view/homePage.dart';
+import 'package:opentabu/view/splash_screen.dart';
 
-void main() => runApp(new OpenTabu());
+import 'persistence/csvDataReader.dart';
 
-class OpenTabu extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return new OpenTabuState();
-  }
-}
+List<Word> words;
 
-class OpenTabuState extends State<OpenTabu> {
-  Widget _body;
+Future<void> main() async {
+  runApp(new MaterialApp(
+    title: 'Loading Tabu',
+    theme: myTheme,
+    home: new SplashScreen(),
+  ));
 
-  OpenTabuState() {
-    _body = new HomePage(newGame);
-  }
+  words = await CSVDataReader.readData();
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Tabu',
-      home: new Scaffold(
-        appBar: new AppBar(
-            title: new Text('Tabu'),
-            actions: <Widget>[
-              _body is HomePage
-                  ? null
-                  : new IconButton(
-                      icon: new Icon(Icons.home),
-                      onPressed: () => setState(() {
-                            _body = new HomePage(newGame);
-                          }))
-            ].where((w) => w != null).toList(),
-            centerTitle: true,
-            backgroundColor: (Colors.deepOrange)),
-        body: _body,
-      ),
-    );
-  }
-
-  void newGame(Settings settings, List<Word> words) {
-    setState(() {
-      _body = new WillPopScope(
-          child: new GamePage(settings, words, backToTheHome),
-          onWillPop: _willPopCallback);
-    });
-  }
-
-  Future<bool> _willPopCallback() async {
-    //TODO maybe this is not the best way to do it
-    return false; // return false so the route is not popped
-  }
-
-  void backToTheHome() {
-    setState(() {
-      _body = new HomePage(newGame);
-    });
-  }
+  runApp(MaterialApp(
+    title: 'Tabu',
+    home: new HomePage(),
+    theme: myTheme,
+    routes: {
+      "/home": (_) => new HomePage(),
+    },
+  ));
 }
