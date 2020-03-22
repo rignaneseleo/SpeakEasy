@@ -6,9 +6,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:Tabu/controller/gameController.dart';
-import 'package:Tabu/model/settings.dart';
-import 'package:Tabu/model/word.dart';
+import 'package:opentabu/controller/gameController.dart';
+import 'package:opentabu/model/settings.dart';
+import 'package:opentabu/model/word.dart';
 
 class GamePage extends StatefulWidget {
   final VoidCallback _backToTheHome;

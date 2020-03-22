@@ -6,10 +6,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:Tabu/model/settings.dart';
-import 'package:Tabu/model/word.dart';
-import 'package:Tabu/view/gamePage.dart';
-import 'package:Tabu/view/homePage.dart';
+import 'package:opentabu/model/settings.dart';
+import 'package:opentabu/model/word.dart';
+import 'package:opentabu/view/gamePage.dart';
+import 'package:opentabu/view/homePage.dart';
 
 void main() => runApp(new OpenTabu());
 
@@ -53,7 +53,9 @@ class OpenTabuState extends State<OpenTabu> {
 
   void newGame(Settings settings, List<Word> words) {
     setState(() {
-      _body = new WillPopScope(child: new GamePage(settings, words, backToTheHome), onWillPop: _willPopCallback);
+      _body = new WillPopScope(
+          child: new GamePage(settings, words, backToTheHome),
+          onWillPop: _willPopCallback);
     });
   }
 

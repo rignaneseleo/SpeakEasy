@@ -4,9 +4,9 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
-import 'package:Tabu/model/game.dart';
-import 'package:Tabu/model/settings.dart';
-import 'package:Tabu/model/word.dart';
+import 'package:opentabu/model/game.dart';
+import 'package:opentabu/model/settings.dart';
+import 'package:opentabu/model/word.dart';
 
 class GameController {
   Game _game;

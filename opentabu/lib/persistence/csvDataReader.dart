@@ -7,8 +7,8 @@ import 'dart:async';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:Tabu/model/word.dart';
-import 'package:Tabu/persistence/dataReader.dart';
+import 'package:opentabu/model/word.dart';
+import 'package:opentabu/persistence/dataReader.dart';
 
 class CSVDataReader extends DataReader {
   List<Word> _words;

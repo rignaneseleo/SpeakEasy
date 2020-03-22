@@ -4,9 +4,9 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'package:flutter/material.dart';
-import 'package:Tabu/model/settings.dart';
-import 'package:Tabu/persistence/csvDataReader.dart';
-import 'package:Tabu/persistence/dataReader.dart';
+import 'package:opentabu/model/settings.dart';
+import 'package:opentabu/persistence/csvDataReader.dart';
+import 'package:opentabu/persistence/dataReader.dart';
 
 class HomePage extends StatefulWidget {
   final dynamic _newGame;
