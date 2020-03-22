@@ -19,7 +19,8 @@ class CSVDataReader extends DataReader {
     _loadAsset().then((wordsCSV) {
       List<List> words = CsvToListConverter().convert(wordsCSV);
 
-      words.forEach((List row) => _words.add(_createWord(row.retype<String>())));
+      words.forEach(
+          (List row) => _words.add(_createWord(List<String>.from(row))));
 
       int x;
     });
@@ -27,7 +28,8 @@ class CSVDataReader extends DataReader {
 
   Word _createWord(List<String> row) {
     print("Read the word '${row[0]}'");
-    return new Word(row[0][0].toUpperCase() + row[0].substring(1), row.sublist(1));
+    return new Word(
+        row[0][0].toUpperCase() + row[0].substring(1), row.sublist(1));
   }
 
   Future<String> _loadAsset() async {
