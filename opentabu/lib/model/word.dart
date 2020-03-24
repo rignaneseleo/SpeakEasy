@@ -9,7 +9,6 @@ class Word {
   List<String> _taboos;
 
   Word(this._wordToGuess, this._taboos) {
-
     _wordToGuess = _capitalize(_wordToGuess.trim());
 
     for (int i = 0; i < _taboos.length; i++) {
@@ -25,9 +24,10 @@ class Word {
 
   get wordToGuess => _wordToGuess;
 
-  get taboos {
-
-    return _taboos;
+  List<String> getTaboos(int amount) {
+    //every time I get this word, the taboos will be in different order
+    _taboos.shuffle();
+    return _taboos.getRange(0, amount).toList();
   }
 
   String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);

@@ -8,10 +8,11 @@ import 'dart:async';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:opentabu/model/word.dart';
-import 'package:opentabu/persistence/dataReader.dart';
+import 'package:opentabu/provider/provider.dart';
 
-class CSVDataReader {
-  static Future<List<Word>> readData() async {
+class CsvProvider implements WordProvider {
+  @override
+  Future<List<Word>> readData() async {
     List<Word> _words = new List<Word>();
 
     String wordsCSV = await rootBundle.loadString('csv/words.csv');
@@ -23,9 +24,8 @@ class CSVDataReader {
     return _words;
   }
 
-  static Word _createWord(List<String> row) {
-    print("Read the word '${row[0]}'");
-    return new Word(
-        row[0][0].toUpperCase() + row[0].substring(1), row.sublist(1));
+  Word _createWord(List<String> row) {
+    //print("Read the word '${row[0]}'");
+    return new Word(row[0], row.sublist(1));
   }
 }
