@@ -30,7 +30,6 @@ class GamePage extends StatefulWidget {
 class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
   Timer _countSecondsTimer;
   GameBloc gameBloc;
-  GameController game;
 
   @override
   void afterFirstLayout(BuildContext context) {
@@ -61,11 +60,9 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
         if (state is InitialGameState) {
           return buildStartBody();
         } else if (state is StartedGameState) {
-          game = state.game;
-          return buildGameBody();
+          return buildGameBody(state.game);
         } else if (state is UpdateGameState) {
-          game = state.game;
-          return buildGameBody();
+          return buildGameBody(state.game);
         } else if (state is EndedGameState) {
           //TODO get winner info
           return buildEndBody();
@@ -124,7 +121,7 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
     );
   }
 
-  buildGameBody() {
+  buildGameBody(game) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
