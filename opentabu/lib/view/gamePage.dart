@@ -11,6 +11,7 @@ import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/soundLoader.dart';
+import 'package:vibration/vibration.dart';
 
 import '../main.dart';
 
@@ -102,6 +103,9 @@ class GamePageState extends State<GamePage> {
   void setupTimer(int seconds) {
     _turnTimer = new Timer(new Duration(seconds: seconds), () {
       //TIMEOUT
+      Vibration.hasVibrator().then((vib) {
+        if (vib) Vibration.vibrate();
+      });
       playTimeoutSound();
       context.read(gameProvider).changeTurn();
     });
