@@ -119,7 +119,7 @@ class GameController extends ChangeNotifier {
 
   List<int> get scores => _game.scores;
 
-  int get numberOfPlayers => _game.numberOfPlayers;
+  int get numberOfPlayers => _game?.numberOfPlayers ?? 0;
 
   int get currentTeam => _currentTeam;
 

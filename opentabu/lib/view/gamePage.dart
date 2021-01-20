@@ -43,16 +43,34 @@ class GamePageState extends State<GamePage> {
   }
 
   @override
+  void dispose() {
+    _turnTimer.cancel();
+    _countSecondsTimer.cancel();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     //Init game
-    context.read(gameProvider).init(settings, words);
 
-    _countSecondsTimer = new Timer.periodic(new Duration(seconds: 1), (timer) {
-      if (_turnTimer.isActive) context.read(gameProvider).oneSecPassed();
+    //Needed to fix this: https://github.com/rrousselGit/river_pod/issues/177
+    Future.delayed(Duration.zero, () {
+      context.read(gameProvider).init(settings, words);
+
+      _countSecondsTimer =
+          new Timer.periodic(new Duration(seconds: 1), (timer) {
+        if (_turnTimer.isActive) {
+          GameController _gameController = context.read(gameProvider);
+          _gameController.oneSecPassed();
+
+          int secondsLeft = _timerDuration - _gameController.secondsPassed;
+          if (secondsLeft < 5 && secondsLeft > 0) playTick();
+        }
+      });
+
+      initGame();
     });
-
-    initGame();
   }
 
   void initGame() {
@@ -93,49 +111,67 @@ class GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     Widget _body = Text("Loading");
 
-    return new Scaffold(
-        appBar: AppBar(
-          actions: [
-            Consumer(builder: (context, watch, child) {
+    return WillPopScope(
+      onWillPop: () async {
+        GameController _gameController = context.read(gameProvider);
+
+        switch (_gameController.gameState) {
+          case GameState.init:
+          case GameState.ready:
+          case GameState.playing:
+            pauseGame();
+            break;
+          case GameState.pause:
+          case GameState.ended:
+            return true;
+        }
+
+        return false;
+      },
+      child: new Scaffold(
+          appBar: AppBar(
+            actions: [
+              Consumer(builder: (context, watch, child) {
+                GameController _gameController = watch(gameProvider);
+                if (_gameController.gameState == GameState.playing)
+                  return IconButton(
+                      icon: Icon(Icons.pause), onPressed: () => pauseGame());
+                else
+                  return Container();
+              }),
+            ],
+          ),
+          body: Consumer(
+            builder: (context, watch, child) {
               GameController _gameController = watch(gameProvider);
-              if (_gameController.gameState == GameState.playing)
-                return IconButton(
-                    icon: Icon(Icons.pause), onPressed: () => pauseGame());
-              else
-                return Container();
-            }),
-          ],
-        ),
-        body: Consumer(
-          builder: (context, watch, child) {
-            GameController _gameController = watch(gameProvider);
 
-            switch (_gameController.gameState) {
-              case GameState.ready:
-                _body = readyBody();
-                break;
-              case GameState.playing:
-                _body = playingBody();
-                break;
-              case GameState.ended:
-                _body = endBody(_gameController.winners);
-                break;
-              case GameState.pause:
-                _body = pauseBody();
-                break;
-              case GameState.init:
-                break;
-            }
+              switch (_gameController.gameState) {
+                case GameState.ready:
+                  _body = readyBody();
+                  break;
+                case GameState.playing:
+                  _body = playingBody();
+                  break;
+                case GameState.ended:
+                  _body = endBody(_gameController.winners);
+                  break;
+                case GameState.pause:
+                  _body = pauseBody();
+                  break;
+                case GameState.init:
+                  break;
+              }
 
-            return Column(
-              children: <Widget>[
-                GameInfoWidget(),
-                new Divider(height: 1.0),
-                _body,
-              ],
-            );
-          },
-        ));
+              return Column(
+                children: <Widget>[
+                  GameInfoWidget(),
+                  new Divider(height: 1.0),
+                  _body,
+                ],
+              );
+            },
+          )),
+    );
   }
 
   Widget pauseBody() {
