@@ -5,242 +5,141 @@
 * */
 import 'dart:async';
 
-import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opentabu/bloc/bloc.dart';
-import 'package:opentabu/bloc/game_state.dart';
-import 'package:opentabu/controller/game_controller.dart';
-import 'package:opentabu/controller/teams_controller.dart';
+import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/model/team.dart';
 import 'package:opentabu/model/word.dart';
 
 import '../main.dart';
 
 class GamePage extends StatefulWidget {
-  GamePage();
+  final Settings _settings;
+
+  GamePage(this._settings);
 
   @override
   State<StatefulWidget> createState() {
-    return new GamePageState();
+    return new GamePageState(_settings);
   }
 }
 
-class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
+class GamePageState extends State<GamePage> {
+  Widget _body;
+
+  GameController _gameController;
+  Timer _turnTimer;
   Timer _countSecondsTimer;
-  GameBloc gameBloc;
-  GameController game;
+  int _timerDuration;
+  int _nTaboosToShow;
 
-  @override
-  void afterFirstLayout(BuildContext context) {
-    gameBloc = BlocProvider.of<GameBloc>(context);
-    /* _countSecondsTimer = new Timer.periodic(
-        new Duration(seconds: 1), (timer) => BlocProvider.of<GameBloc>(context)..add(OneSecondPassed()));*/
-  }
+  //info to show:
+  Map<String, int> matchInfo; //team name, score
 
-  @override
-  void dispose() {
-    _countSecondsTimer.cancel();
-    gameBloc.close();
-    super.dispose();
+  GamePageState(Settings settings) {
+    _gameController = new GameController(settings, words);
+    _timerDuration = settings.turnDurationInSeconds;
+    _nTaboosToShow = settings.nTaboos;
+
+    initTimer();
+
+    _countSecondsTimer = new Timer.periodic(
+        new Duration(seconds: 1),
+        (timer) => _turnTimer.isActive
+            ? setState(() => _gameController.oneSecPassed())
+            : null);
   }
 
   void initTimer() {
-    _countSecondsTimer = new Timer.periodic(
-        new Duration(seconds: 1), (timer) => gameBloc..add(OneSecondPassed()));
-    //_turnTimer = new Timer(new Duration(seconds: _timerDuration), timeOut);
+    _turnTimer = new Timer(new Duration(seconds: _timerDuration), timeOut);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: new Material(child: BlocBuilder<GameBloc, GameState>(
-      // ignore: missing_return
-      builder: (context, GameState state) {
-        print(state);
-        if (state is InitialGameState) {
-          return buildStartBody();
-        } else if (state is StartedGameState) {
-          game = state.game;
-          return buildGameBody();
-        } else if (state is UpdateGameState) {
-          game = state.game;
-          return buildGameBody();
-        } else if (state is EndedGameState) {
-          //TODO get winner info
-          return buildEndBody();
-        } else if (state is PausedGameState) {
-          return buildPauseBody();
-        } else if (state is UpdateTimeState) {
-          /* setState(() {
-            time = state.time;
-          });*/
+    _body = new Container(
+        height: 520.0,
+        child: new Column(children: <Widget>[
+          _turns,
+          _time,
+          _word,
+          new Divider(height: 10.0),
+          _buttons
+        ]));
 
-        } else if (state is LoadingState) {
-          return Center(
-            child: Container(
-              width: 100,
-              height: 100,
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-      },
-    )));
-  }
-
-  // ------ BODIES --------
-
-  buildStartBody() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
+    return new Material(
+      child: new Column(
         children: <Widget>[
-          Text("Ready to start?"),
-          FlatButton(
-            child: Text("Start"),
-            onPressed: () {
-              initTimer();
-              gameBloc..add(new StartGame());
-            },
-          ),
+          _gameInfo,
+          new Divider(height: 1.0),
+          _body,
         ],
       ),
     );
   }
 
-  buildPauseBody() {
-    return Column(
-      children: <Widget>[
-        Text("PAUSE"),
-        FlatButton(
-          child: Text("Restore"),
-          onPressed: () {
-            gameBloc.add(new Restore());
-          },
-        ),
-      ],
-    );
-  }
-
-  buildGameBody() {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        buildGameInfo(game),
-        Divider(height: 1.0),
-        Expanded(child: buildMatchInfo(game)),
-      ],
-    );
-  }
-
-  buildEndBody() {
-    return Column(
-      children: <Widget>[
-        Text("END"),
-        Text("Winner: "),
-        FlatButton(
-          child: Text("Go home"),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-  }
-
-  // ------ WIDGETS --------
-  buildMatchInfo(GameController game) {
-    //Prints the info related to the match that change every timeout (timer, etc..)
-
-    Widget timer = new Center(
+  get _time {
+    return new Center(
       child: new Text(
-        game.secondsPassed.toString(),
+        (_timerDuration - _gameController.secondsPassed).toString(),
         style: new TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
-            color: game.secondsPassed < 8 ? Colors.red : Colors.black),
+            color: _timerDuration - _gameController.secondsPassed < 8
+                ? Colors.red
+                : Colors.black),
       ),
-    );
-
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        timer,
-        Expanded(child: buildWordTaboo(game)),
-        new Divider(height: 10.0),
-        getButton(game),
-      ],
     );
   }
 
-  buildGameInfo(GameController game) {
-    //Prints the info related to the game (teams, scores, turns left, skips etc..)
-    List<Widget> teams = new List<Widget>();
-
-    for (Team team in game.teams) {
-      String teamName = team.name;
-      int teamScore = team.score;
-      int teamSkips = team.skipsLeft;
-      bool isCurrentTeam = team == game.currentTeam;
-
-      teams.add(new Expanded(
-          child: Opacity(
-              opacity: isCurrentTeam ? 1 : 0.5,
-              child: new Column(
-                children: <Widget>[
-                  new Text(
-                    teamName,
-                    style: new TextStyle(fontSize: 13.0, color: Colors.black),
-                  ),
-                  new Text(
-                    teamScore.toString(),
-                    style: new TextStyle(
-                      fontSize: 22.0,
-                    ),
-                  ),
-                  new Text(
-                    "Skips " + teamSkips.toString(),
-                    style: new TextStyle(
-                      fontSize: 12.0,
-                    ),
-                  )
-                ],
-              ))));
-    }
-
-    Widget turns = new Center(
+  get _turns {
+    return new Center(
       child: new Text(
-        "Turn " + (game.currentTurn).toString(),
+        "Turn " + (_gameController.currentTurn).toString(),
         style: new TextStyle(fontSize: 18.0, color: Colors.black54),
       ),
     );
+  }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        FlatButton(
-          child: Text("Pause"),
-          onPressed: () => gameBloc..add(Pause()),
-        ),
-        turns,
-        Container(
-          padding: new EdgeInsets.all(8.0),
-          child: new Row(
-            children: teams,
+  get _gameInfo {
+    List<Widget> teams = new List<Widget>();
+
+    for (int i = 0; i < _gameController.numberOfPlayers; i++) {
+      teams.add(new Expanded(
+          child: new Column(
+        children: <Widget>[
+          new Text(
+            "Team " + (i + 1).toString(),
+            style: new TextStyle(
+                fontSize: _gameController.currentTeam == i ? 17.0 : 13.0,
+                //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
+                color: _gameController.currentTeam == i
+                    ? Colors.red
+                    : Colors.black),
           ),
-        )
-      ],
+          new Text(
+            _gameController.scores[i].toString(),
+            style: new TextStyle(
+              fontSize: _gameController.currentTeam == i ? 28.0 : 22.0,
+            ),
+          )
+        ],
+      )));
+    }
+
+    return new Container(
+      height: 70.0,
+      padding: new EdgeInsets.all(8.0),
+      child: new Row(
+        children: teams,
+      ),
     );
   }
 
-  Widget buildWordTaboo(GameController game) {
+  get _word {
     List<Widget> taboos = new List<Widget>();
 
-    List<String> _taboos = game.currentWord.getTaboos(game.settings.nTaboos);
+    List<String> _taboos = _gameController.currentWord.taboos;
 
-    for (int i = 0; i < _taboos.length; i++) {
+    for (int i = 0; i < _nTaboosToShow; i++) {
       taboos.add(new Text(
         _taboos[i],
         style: new TextStyle(fontSize: 35.0, color: Colors.black54),
@@ -257,7 +156,7 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
           new Padding(
               padding: new EdgeInsets.symmetric(vertical: 20.0),
               child: new Text(
-                game.currentWord.wordToGuess,
+                _gameController.currentWord.wordToGuess,
                 style: new TextStyle(fontSize: 56.0),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -268,7 +167,7 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
     ));
   }
 
-  Widget getButton(GameController game) {
+  get _buttons {
     return new Container(
       padding: new EdgeInsets.all(15.0),
       child: new Row(
@@ -280,10 +179,10 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
                   onPressed: () => _buttonHandler(false))),
           new FlatButton(
               child: new Text(
-                game.currentTeam.skipsLeft.toString() + " SKIP",
+                _gameController.skipLeftCurrentTeam.toString() + " SKIP",
                 style: new TextStyle(fontSize: 20.0),
               ),
-              onPressed: game.currentTeam.skipsLeft == 0
+              onPressed: _gameController.skipLeftCurrentTeam == 0
                   ? null
                   : () => _buttonHandler(null)),
           new Expanded(
@@ -299,20 +198,18 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
   void _buttonHandler(bool isRight) {
     setState(() {
       if (isRight == null)
-        gameBloc..add(Answer(AnswerType.skip));
+        _gameController.skipAnswer();
       else
-        gameBloc
-          ..add(Answer(isRight ? AnswerType.correct : AnswerType.incorrect));
+        isRight ? _gameController.rightAnswer() : _gameController.wrongAnswer();
     });
   }
 
-/*
   void timeOut() {
     Text title;
     Text button;
     Text content;
 
-    bool end = _gameController.startNewTurn();
+    bool end = _gameController.changeTurn();
 
     //Check if it's the end
 
@@ -345,5 +242,5 @@ class GamePageState extends State<GamePage> with AfterLayoutMixin<GamePage> {
         ),
       ]),
     );
-  }*/
+  }
 }

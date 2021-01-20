@@ -4,11 +4,9 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opentabu/bloc/bloc.dart';
-import 'package:opentabu/controller/game_controller.dart';
-import 'package:opentabu/main.dart';
 import 'package:opentabu/model/settings.dart';
+import 'package:opentabu/persistence/csvDataReader.dart';
+import 'package:opentabu/persistence/dataReader.dart';
 
 import 'gamePage.dart';
 
@@ -46,11 +44,7 @@ class HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                          create: (BuildContext context) =>
-                              GameBloc(GameController(words, _settings)),
-                          child: GamePage()),
-                    ),
+                        builder: (context) => GamePage(_settings)),
                   );
                 },
                 child: new Text(

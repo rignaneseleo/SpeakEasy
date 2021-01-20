@@ -5,18 +5,14 @@
 * */
 
 class Settings {
-  int _nPlayers; //amount of player in a game
-  int _turnDurationInSeconds; //duration of each turn
-  int _nSkip; //skips for each game
-  int _nTurns; //total turns in the game
-  int _nTaboos; //words to show under the word to guess
+  int _nPlayers;
+  int _turnDurationInSeconds;
+  int _nSkip;
+  int _nTurns;
+  int _nTaboos;
 
   Settings(
-      [this._nPlayers = 2,
-      this._turnDurationInSeconds = 90,
-      this._nSkip = 3,
-      this._nTurns = 10,
-      this._nTaboos = 5]);
+      [this._nPlayers = 2, this._turnDurationInSeconds = 90, this._nSkip = 3, this._nTurns = 10, this._nTaboos = 5]);
 
   int get nSkip => _nSkip;
 

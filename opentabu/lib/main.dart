@@ -6,17 +6,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:opentabu/handler/words_handler.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
-import 'package:opentabu/provider/csv_provider.dart';
-import 'package:opentabu/provider/provider.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/view/gamePage.dart';
 import 'package:opentabu/view/homePage.dart';
 import 'package:opentabu/view/splash_screen.dart';
 
-WordHandler words;
+import 'persistence/csvDataReader.dart';
+
+List<Word> words;
 
 Future<void> main() async {
   runApp(new MaterialApp(
@@ -25,9 +24,7 @@ Future<void> main() async {
     home: new SplashScreen(),
   ));
 
-  WordProvider wordProvider = new CsvProvider();
-  var wordsList = await wordProvider.readData();
-  words = WordHandler(wordsList);
+  words = await CSVDataReader.readData();
 
   runApp(MaterialApp(
     title: 'Tabu',
