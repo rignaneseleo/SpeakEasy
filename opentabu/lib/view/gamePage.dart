@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/all.dart';
 import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
+import 'package:opentabu/persistence/soundLoader.dart';
 
 import '../main.dart';
 
@@ -83,6 +84,7 @@ class GamePageState extends State<GamePage> {
   void setupTimer(int seconds) {
     _turnTimer = new Timer(new Duration(seconds: seconds), () {
       //TIMEOUT
+      playTimeoutSound();
       context.read(gameProvider).changeTurn();
     });
   }
@@ -410,8 +412,6 @@ class SkipButton extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    //TODO add sound
-
     return new FlatButton(
         child: new Text(
           _gameController.skipLeftCurrentTeam.toString() + " SKIP",
@@ -419,7 +419,10 @@ class SkipButton extends ConsumerWidget {
         ),
         onPressed: _gameController.skipLeftCurrentTeam == 0
             ? null
-            : () => _gameController.skipAnswer());
+            : () {
+                playSkipSound();
+                _gameController.skipAnswer();
+              });
   }
 }
 
@@ -428,13 +431,14 @@ class IncorrectAnswerButton extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    //TODO add sound
-
     return new Expanded(
         child: new IconButton(
             icon: new Icon(Icons.close, color: Colors.red),
             iconSize: 70.0,
-            onPressed: () => _gameController.wrongAnswer()));
+            onPressed: () {
+              playWrongAnswerSound();
+              _gameController.wrongAnswer();
+            }));
   }
 }
 
@@ -443,12 +447,13 @@ class CorrectAnswerButton extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    //TODO add sound
-
     return new Expanded(
         child: new IconButton(
             icon: new Icon(Icons.done, color: Colors.lightGreen),
             iconSize: 70.0,
-            onPressed: () => _gameController.rightAnswer()));
+            onPressed: () {
+              playCorrectAnswerSound();
+              _gameController.rightAnswer();
+            }));
   }
 }

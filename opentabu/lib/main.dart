@@ -6,19 +6,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
+import 'package:opentabu/persistence/soundLoader.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/view/gamePage.dart';
 import 'package:opentabu/view/homePage.dart';
 import 'package:opentabu/view/splash_screen.dart';
+import 'package:soundpool/soundpool.dart';
 
 import 'persistence/csvDataReader.dart';
 
 List<Word> words;
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(
     MaterialApp(
       title: 'Loading Tabu',
@@ -28,6 +33,7 @@ Future<void> main() async {
   );
 
   words = await CSVDataReader.readData();
+  await loadSounds();
 
   runApp(
     ProviderScope(

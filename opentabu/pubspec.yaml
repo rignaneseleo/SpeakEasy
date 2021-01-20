@@ -9,10 +9,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  csv: ^4.0.3
-  flutter_launcher_icons: ^0.7.4
+  csv: ^4.1.0
+  flutter_launcher_icons: ^0.8.1
   equatable: 1.1.1
-  flutter_riverpod: ^0.12.1
+  flutter_riverpod: 0.12.2
+  soundpool: 1.1.3
 
 dev_dependencies:
   flutter_test:
@@ -22,4 +23,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - csv/words.csv
+    - assets/csv/words.csv
+    - assets/sounds/
