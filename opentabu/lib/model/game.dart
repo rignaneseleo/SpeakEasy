@@ -4,6 +4,8 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
+import 'dart:math';
+
 import 'package:opentabu/model/word.dart';
 
 class Game {
@@ -67,15 +69,18 @@ class Game {
     }
   }
 
-  get winner {
-    int winner = 0;
+  List<int> get winners {
+    int highestScore = _scores.reduce(max);
+
+    List<int> winners = [];
     for (int i = 1; i < _scores.length; i++) {
-      winner = _scores[i] > _scores[winner] ? i : winner;
+      //Note: team number is index+1
+      if (_scores[i] == highestScore) winners.add(i+1);
     }
-    return winner;
+    return winners;
   }
 
-  get scores => _scores;
+  List<int> get scores => _scores;
 
-  get numberOfPlayers => _scores.length;
+  int get numberOfPlayers => _scores.length;
 }

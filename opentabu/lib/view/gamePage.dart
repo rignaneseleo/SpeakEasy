@@ -6,6 +6,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/all.dart';
 import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
@@ -24,62 +25,293 @@ class GamePage extends StatefulWidget {
 }
 
 class GamePageState extends State<GamePage> {
-  Widget _body;
+  final settings;
 
-  GameController _gameController;
   Timer _turnTimer;
   Timer _countSecondsTimer;
+
   int _timerDuration;
   int _nTaboosToShow;
 
   //info to show:
   Map<String, int> matchInfo; //team name, score
 
-  GamePageState(Settings settings) {
-    _gameController = new GameController(settings, words);
+  GamePageState(this.settings) {
     _timerDuration = settings.turnDurationInSeconds;
     _nTaboosToShow = settings.nTaboos;
-
-    initTimer();
-
-    _countSecondsTimer = new Timer.periodic(
-        new Duration(seconds: 1),
-        (timer) => _turnTimer.isActive
-            ? setState(() => _gameController.oneSecPassed())
-            : null);
   }
 
-  void initTimer() {
-    _turnTimer = new Timer(new Duration(seconds: _timerDuration), timeOut);
+  @override
+  void initState() {
+    super.initState();
+    //Init game
+    context.read(gameProvider).init(settings, words);
+
+    _countSecondsTimer = new Timer.periodic(new Duration(seconds: 1), (timer) {
+      if (_turnTimer.isActive) context.read(gameProvider).oneSecPassed();
+    });
+
+    initGame();
+  }
+
+  void initGame() {
+    //Start the turn
+    context.read(gameProvider).startTurn();
+
+    //Launch the timer
+    setupTimer(_timerDuration);
+  }
+
+  void pauseGame() {
+    //Cancel timer
+    _turnTimer.cancel();
+
+    //Pause game
+    context.read(gameProvider).pauseGame();
+  }
+
+  void resumeGame() {
+    GameController _gameController = context.read(gameProvider);
+
+    //Launch the timer
+    setupTimer(_timerDuration - _gameController.secondsPassed);
+
+    //Resume the turn
+    context.read(gameProvider).resumeGame();
+  }
+
+  void setupTimer(int seconds) {
+    _turnTimer = new Timer(new Duration(seconds: seconds), () {
+      //TIMEOUT
+      context.read(gameProvider).changeTurn();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _body = new Container(
+    Widget _body = Text("Loading");
+
+    return new Scaffold(
+        appBar: AppBar(
+          actions: [
+            Consumer(builder: (context, watch, child) {
+              GameController _gameController = watch(gameProvider);
+              if (_gameController.gameState == GameState.playing)
+                return IconButton(
+                    icon: Icon(Icons.pause), onPressed: () => pauseGame());
+              else
+                return Container();
+            }),
+          ],
+        ),
+        body: Consumer(
+          builder: (context, watch, child) {
+            GameController _gameController = watch(gameProvider);
+
+            switch (_gameController.gameState) {
+              case GameState.ready:
+                _body = readyBody();
+                break;
+              case GameState.playing:
+                _body = playingBody();
+                break;
+              case GameState.ended:
+                _body = endBody(_gameController.winners);
+                break;
+              case GameState.pause:
+                _body = pauseBody();
+                break;
+              case GameState.init:
+                break;
+            }
+
+            return Column(
+              children: <Widget>[
+                GameInfoWidget(),
+                new Divider(height: 1.0),
+                _body,
+              ],
+            );
+          },
+        ));
+  }
+
+  Widget pauseBody() {
+    return new Container(
         height: 520.0,
         child: new Column(children: <Widget>[
-          _turns,
-          _time,
-          _word,
+          TurnWidget(),
+          TimeWidget(_timerDuration),
+          Expanded(
+              child: Text(
+            "PAUSE",
+            style: TextStyle(fontSize: 50),
+          )),
           new Divider(height: 10.0),
-          _buttons
+          new Container(
+            padding: new EdgeInsets.all(15.0),
+            child: TextButton(
+              child: Text(
+                "RESUME",
+                style: TextStyle(fontSize: 50),
+              ),
+              onPressed: () => resumeGame(),
+            ),
+          )
         ]));
+  }
 
-    return new Material(
-      child: new Column(
-        children: <Widget>[
-          _gameInfo,
-          new Divider(height: 1.0),
-          _body,
+  Widget playingBody() {
+    return new Container(
+        height: 520.0,
+        child: new Column(children: <Widget>[
+          TurnWidget(),
+          TimeWidget(_timerDuration),
+          WordWidget(_nTaboosToShow),
+          new Divider(height: 10.0),
+          new Container(
+            padding: new EdgeInsets.all(15.0),
+            child: new Row(
+              children: <Widget>[
+                IncorrectAnswerButton(),
+                SkipButton(),
+                CorrectAnswerButton(),
+              ],
+            ),
+          )
+        ]));
+  }
+
+  Widget readyBody() {
+    return Container(
+        height: 520.0,
+        child: new Column(
+          children: <Widget>[
+            TurnWidget(),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "TIME IS OVER",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  new Text("Pass the phone to the next player."),
+                ],
+              ),
+            ),
+            new TextButton(
+              child: Text(
+                'START NEXT TURN',
+                style: TextStyle(fontSize: 27),
+              ),
+              onPressed: () {
+                initGame();
+              },
+            ),
+          ],
+        ));
+  }
+
+  Widget endBody(List<int> winners) {
+    String text;
+    if (winners.length > 1) {
+      text = "The winners are:\n";
+      for (int team in winners) text += "Team $team\n";
+    } else
+      text = "${winners.first} is the winner!";
+
+    return new Container(
+      height: 520.0,
+      child: new Center(
+          child: Column(
+        children: [
+          Expanded(
+              child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          )),
+          TextButton(
+            child: Text("Back home"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ],
-      ),
+      )),
     );
   }
 
-  get _time {
+/*void timeOut() {
+    Text title;
+    Text button;
+    Text content;
+
+    ;
+
+    //Check if it's the end
+    if (end) {
+      title = new Text("Team " + _gameController.winner.toString() + " win!");
+      button = new Text('Main menu');
+    } else {
+
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      child: new AlertDialog(title: title, content: content, actions: <Widget>[
+        new FlatButton(
+          child: button,
+          onPressed: () {
+            //Close the dialog
+            Navigator.of(context).pop();
+
+            //Check if it's the end
+            if (end)
+              Navigator.of(context).pop();
+            else
+              initTimer();
+            setState(() {});
+          },
+        ),
+      ]),
+    );
+  }*/
+}
+
+class TurnWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
+    return Center(
+      child: new Text(
+        "Turn " + (_gameController.currentTurn).toString(),
+        style: new TextStyle(fontSize: 18.0, color: Colors.black54),
+      ),
+    );
+  }
+}
+
+class TimeWidget extends ConsumerWidget {
+  final _timerDuration;
+
+  TimeWidget(this._timerDuration);
+
+  @override
+  Widget build(BuildContext context, watch) {
+    //every second this is called
+    GameController _gameController = watch(gameProvider);
+
+    int secondsLeft = _timerDuration - _gameController.secondsPassed;
+
     return new Center(
       child: new Text(
-        (_timerDuration - _gameController.secondsPassed).toString(),
+        secondsLeft.toString(),
         style: new TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -89,17 +321,55 @@ class GamePageState extends State<GamePage> {
       ),
     );
   }
+}
 
-  get _turns {
-    return new Center(
-      child: new Text(
-        "Turn " + (_gameController.currentTurn).toString(),
-        style: new TextStyle(fontSize: 18.0, color: Colors.black54),
+class WordWidget extends ConsumerWidget {
+  final _nTaboosToShow;
+
+  WordWidget(this._nTaboosToShow);
+
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
+
+    List<Widget> taboos = new List<Widget>();
+
+    List<String> _taboos = _gameController.currentWord.taboos;
+
+    for (int i = 0; i < _nTaboosToShow; i++) {
+      taboos.add(new Text(
+        _taboos[i],
+        style: new TextStyle(fontSize: 35.0, color: Colors.black54),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ));
+    }
+
+    return new Expanded(
+        child: new Container(
+      padding: new EdgeInsets.all(15.0),
+      child: new Column(
+        children: <Widget>[
+          new Padding(
+              padding: new EdgeInsets.symmetric(vertical: 20.0),
+              child: new Text(
+                _gameController.currentWord.wordToGuess,
+                style: new TextStyle(fontSize: 56.0),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+          new Column(children: taboos)
+        ],
       ),
-    );
+    ));
   }
+}
 
-  get _gameInfo {
+class GameInfoWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
+
     List<Widget> teams = new List<Widget>();
 
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
@@ -133,114 +403,52 @@ class GamePageState extends State<GamePage> {
       ),
     );
   }
+}
 
-  get _word {
-    List<Widget> taboos = new List<Widget>();
+class SkipButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
 
-    List<String> _taboos = _gameController.currentWord.taboos;
+    //TODO add sound
 
-    for (int i = 0; i < _nTaboosToShow; i++) {
-      taboos.add(new Text(
-        _taboos[i],
-        style: new TextStyle(fontSize: 35.0, color: Colors.black54),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ));
-    }
+    return new FlatButton(
+        child: new Text(
+          _gameController.skipLeftCurrentTeam.toString() + " SKIP",
+          style: new TextStyle(fontSize: 20.0),
+        ),
+        onPressed: _gameController.skipLeftCurrentTeam == 0
+            ? null
+            : () => _gameController.skipAnswer());
+  }
+}
+
+class IncorrectAnswerButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
+
+    //TODO add sound
 
     return new Expanded(
-        child: new Container(
-      padding: new EdgeInsets.all(15.0),
-      child: new Column(
-        children: <Widget>[
-          new Padding(
-              padding: new EdgeInsets.symmetric(vertical: 20.0),
-              child: new Text(
-                _gameController.currentWord.wordToGuess,
-                style: new TextStyle(fontSize: 56.0),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )),
-          new Column(children: taboos)
-        ],
-      ),
-    ));
+        child: new IconButton(
+            icon: new Icon(Icons.close, color: Colors.red),
+            iconSize: 70.0,
+            onPressed: () => _gameController.wrongAnswer()));
   }
+}
 
-  get _buttons {
-    return new Container(
-      padding: new EdgeInsets.all(15.0),
-      child: new Row(
-        children: <Widget>[
-          new Expanded(
-              child: new IconButton(
-                  icon: new Icon(Icons.close, color: Colors.red),
-                  iconSize: 70.0,
-                  onPressed: () => _buttonHandler(false))),
-          new FlatButton(
-              child: new Text(
-                _gameController.skipLeftCurrentTeam.toString() + " SKIP",
-                style: new TextStyle(fontSize: 20.0),
-              ),
-              onPressed: _gameController.skipLeftCurrentTeam == 0
-                  ? null
-                  : () => _buttonHandler(null)),
-          new Expanded(
-              child: new IconButton(
-                  icon: new Icon(Icons.done, color: Colors.lightGreen),
-                  iconSize: 70.0,
-                  onPressed: () => _buttonHandler(true)))
-        ],
-      ),
-    );
-  }
+class CorrectAnswerButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
 
-  void _buttonHandler(bool isRight) {
-    setState(() {
-      if (isRight == null)
-        _gameController.skipAnswer();
-      else
-        isRight ? _gameController.rightAnswer() : _gameController.wrongAnswer();
-    });
-  }
+    //TODO add sound
 
-  void timeOut() {
-    Text title;
-    Text button;
-    Text content;
-
-    bool end = _gameController.changeTurn();
-
-    //Check if it's the end
-
-    if (end) {
-      title = new Text("Team " + _gameController.winner.toString() + " win!");
-      button = new Text('Main menu');
-    } else {
-      title = new Text("TIME IS OVER");
-      content = new Text("Give the phone to the next player.");
-      button = new Text('Start!');
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      child: new AlertDialog(title: title, content: content, actions: <Widget>[
-        new FlatButton(
-          child: button,
-          onPressed: () {
-            //Close the dialog
-            Navigator.of(context).pop();
-
-            //Check if it's the end
-            if (end)
-              Navigator.of(context).pop();
-            else
-              initTimer();
-            setState(() {});
-          },
-        ),
-      ]),
-    );
+    return new Expanded(
+        child: new IconButton(
+            icon: new Icon(Icons.done, color: Colors.lightGreen),
+            iconSize: 70.0,
+            onPressed: () => _gameController.rightAnswer()));
   }
 }

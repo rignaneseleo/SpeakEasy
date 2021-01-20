@@ -53,7 +53,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
               new Text(
-                "ALPHA Version 3",
+                "BETA Version",
                 style: new TextStyle(fontSize: 12.0),
               )
             ],

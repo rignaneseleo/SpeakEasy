@@ -6,6 +6,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/all.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/theme/theme.dart';
@@ -18,20 +19,26 @@ import 'persistence/csvDataReader.dart';
 List<Word> words;
 
 Future<void> main() async {
-  runApp(new MaterialApp(
-    title: 'Loading Tabu',
-    theme: myTheme,
-    home: new SplashScreen(),
-  ));
+  runApp(
+    MaterialApp(
+      title: 'Loading Tabu',
+      theme: myTheme,
+      home: new SplashScreen(),
+    ),
+  );
 
   words = await CSVDataReader.readData();
 
-  runApp(MaterialApp(
-    title: 'Tabu',
-    home: new HomePage(),
-    theme: myTheme,
-    routes: {
-      "/home": (_) => new HomePage(),
-    },
-  ));
+  runApp(
+    ProviderScope(
+      child: MaterialApp(
+        title: 'Tabu',
+        home: new HomePage(),
+        theme: myTheme,
+        routes: {
+          "/home": (_) => new HomePage(),
+        },
+      ),
+    ),
+  );
 }

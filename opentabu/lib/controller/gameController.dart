@@ -4,12 +4,27 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/all.dart';
 import 'package:opentabu/model/game.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 
-class GameController {
+final gameProvider =
+    ChangeNotifierProvider.autoDispose((ref) => GameController());
+
+enum GameState {
+  init, //Initial state, not ready
+  ready, //Ready to start state
+  playing, //While a team is playing
+  pause, //In pause
+  ended, //When there is a winner
+}
+
+class GameController extends ChangeNotifier {
   Game _game;
+  GameState gameState = GameState.init;
+
   int _numbersOfTurns;
 
   Word _currentWord;
@@ -18,14 +33,17 @@ class GameController {
 
   int _secondsPassed = 0;
 
-  GameController(Settings settings, List<Word> words) {
+  void init(Settings settings, List<Word> words) {
     _game = new Game(words, nTeams: settings.nPlayers, nSkips: settings.nSkip);
     _currentWord = _game.newWord;
     _numbersOfTurns = settings.nTurns;
+
+    gameState = GameState.ready;
+    notifyListeners();
   }
 
   //returns true if the game is over
-  bool changeTurn() {
+  void changeTurn() {
     _currentTeam++;
     if (_currentTeam == _game.numberOfPlayers) {
       _currentTeam = 0;
@@ -37,38 +55,73 @@ class GameController {
 
     _currentWord = _game.newWord;
 
-    return _currentTurn >= _numbersOfTurns;
+    gameState = GameState.ready;
+
+    //Check if it's the end
+    if (_currentTurn >= _numbersOfTurns) gameState = GameState.ended;
+
+    notifyListeners();
+  }
+
+  void startTurn() {
+    if (gameState == GameState.ready) {
+      gameState = GameState.playing;
+      notifyListeners();
+    } else
+      throw Exception("Start turn with a state $gameState");
+  }
+
+  void pauseGame() {
+    if (gameState == GameState.playing) {
+      gameState = GameState.pause;
+      notifyListeners();
+    } else
+      throw Exception("Pause game from a state $gameState");
+  }
+
+  void resumeGame() {
+    if (gameState == GameState.pause) {
+      gameState = GameState.playing;
+      notifyListeners();
+    } else
+      throw Exception("Resume game from a state $gameState");
   }
 
   void rightAnswer() {
     _game.rightAnswer(_currentTeam);
     _currentWord = _game.newWord;
+    notifyListeners();
   }
 
   void wrongAnswer() {
     _game.wrongAnswer(_currentTeam);
     _currentWord = _game.newWord;
+    notifyListeners();
   }
 
   void skipAnswer() {
     if (_game.useSkip(_currentTeam)) _currentWord = _game.newWord;
+    notifyListeners();
   }
 
-  void oneSecPassed() => _secondsPassed++;
+  void oneSecPassed() {
+    _secondsPassed++;
+    notifyListeners();
+  }
 
-  get winner => _game.winner + 1;
+  List<int> get winners => _game.winners;
 
-  get currentTurn => _currentTurn + 1;
+  int get currentTurn => _currentTurn + 1;
 
-  get skipLeftCurrentTeam => _game.getSkipLeft(_currentTeam);
+  int get skipLeftCurrentTeam => _game.getSkipLeft(_currentTeam);
 
-  get currentWord => _currentWord;
+  Word get currentWord => _currentWord;
 
-  get scores => _game.scores;
+  List<int> get scores => _game.scores;
 
-  get numberOfPlayers => _game.numberOfPlayers;
+  int get numberOfPlayers => _game.numberOfPlayers;
 
-  get currentTeam => _currentTeam;
+  int get currentTeam => _currentTeam;
 
-  get secondsPassed => _secondsPassed;
+  int get secondsPassed => _secondsPassed;
 }
