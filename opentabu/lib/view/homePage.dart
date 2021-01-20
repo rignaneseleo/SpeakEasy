@@ -4,11 +4,13 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/persistence/csvDataReader.dart';
 import 'package:opentabu/persistence/dataReader.dart';
 
 import 'gamePage.dart';
+import 'infoPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -29,6 +31,13 @@ class HomePageState extends State<HomePage> {
     return new Scaffold(
         appBar: AppBar(
           title: Text("Tabu"),
+          actions: [
+            IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
+                  Get.to(InfoPage());
+                })
+          ],
         ),
         body: new Container(
           padding: new EdgeInsets.all(5.0),

@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/soundLoader.dart';
@@ -37,7 +38,7 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'Tabu',
         home: new HomePage(),
         theme: myTheme,
