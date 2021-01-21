@@ -3,6 +3,8 @@
 * GNU Affero General Public License v3.0: https://choosealicense.com/licenses/agpl-3.0/
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:opentabu/model/settings.dart';
@@ -42,7 +44,7 @@ class HomePageState extends State<HomePage> {
         ),
         body: MyContainer(
           header: Text(
-            "Set your preferences: ",
+            "Game preferences",
             style: new TextStyle(fontSize: 30.0),
           ),
           body: _settingsContainer,
@@ -52,10 +54,6 @@ class HomePageState extends State<HomePage> {
                 text: "START",
                 onPressed: () => Get.to(GamePage(_settings)),
               ),
-              new Text(
-                "BETA Version",
-                style: new TextStyle(fontSize: 12.0),
-              )
             ],
           ),
         ));
@@ -64,101 +62,21 @@ class HomePageState extends State<HomePage> {
   get _settingsContainer {
     return new Container(
       padding: new EdgeInsets.all(15.0),
-      child: new Column(
+      child: new ListView(
         children: <Widget>[
-          _numberOfTeamsSelector,
-          _numberOfTurnsSelector,
-          new Divider(),
-          _numberOfTaboosSelector,
-          _numberOfSkipSelector,
-          _secondsPerTurnSelector
-        ],
-      ),
-    );
-  }
-
-  get _numberOfTeamsSelector {
-    return new Row(
-      children: <Widget>[
-        new Expanded(
-            child: new Text("Teams: ", style: new TextStyle(fontSize: 18.0))),
-        new Slider(
-            value: _settings.nPlayers.toDouble(),
-            divisions: 3,
-            min: 2.0,
-            max: 5.0,
-            onChanged: (value) {
-              setState(() {
-                _settings.nPlayers = value.toInt();
-              });
-            }),
-        new Container(
-          width: 24.0,
-          child: new Text(
-            _settings.nPlayers.toString(),
-          ),
-        )
-      ],
-    );
-  }
-
-  get _numberOfTaboosSelector {
-    return new Row(
-      children: <Widget>[
-        new Expanded(
-            child: new Text("Taboos: ", style: new TextStyle(fontSize: 18.0))),
-        new Slider(
-            value: _settings.nTaboos.toDouble(),
-            divisions: 3,
-            min: 3.0,
-            max: 5.0,
-            onChanged: (value) {
-              setState(() {
-                _settings.nTaboos = value.toInt();
-              });
-            }),
-        new Container(
-          width: 24.0,
-          child: new Text(
-            _settings.nTaboos.toString(),
-          ),
-        )
-      ],
-    );
-  }
-
-  get _numberOfSkipSelector {
-    return new Row(
-      children: <Widget>[
-        new Expanded(
-            child: new Text("Skips per turn: ",
-                style: new TextStyle(fontSize: 18.0))),
-        new Slider(
-            value: _settings.nSkip.toDouble(),
-            divisions: 10,
-            min: 0.0,
-            max: 10.0,
-            onChanged: (value) {
-              setState(() {
-                _settings.nSkip = value.toInt();
-              });
-            }),
-        new Container(
-          width: 24.0,
-          child: new Text(
-            _settings.nSkip.toString(),
-          ),
-        )
-      ],
-    );
-  }
-
-  get _numberOfTurnsSelector {
-    return new Row(
-      children: <Widget>[
-        new Expanded(
-            child: new Text("Turns: ", style: new TextStyle(fontSize: 18.0))),
-        new Slider(
+          buildItem(
+              title: "👥 Teams",
+              value: _settings.nPlayers.toDouble(),
+              divisions: 3,
+              min: 2.0,
+              max: 5.0,
+              onChanged: (value) {
+                setState(() {
+                  _settings.nPlayers = value.toInt();
+                });
+              }),
+          buildItem(
+            title: "🗣 Turns",
             value: _settings.nTurns.toDouble(),
             divisions: 17,
             min: 3.0,
@@ -167,40 +85,125 @@ class HomePageState extends State<HomePage> {
               setState(() {
                 _settings.nTurns = value.toInt();
               });
-            }),
-        new Container(
-          width: 24.0,
-          child: new Text(
-            _settings.nTurns.toString(),
+            },
           ),
-        )
-      ],
-    );
-  }
-
-  get _secondsPerTurnSelector {
-    return new Row(
-      children: <Widget>[
-        new Expanded(
-            child: new Text("Seconds per turn: ",
-                style: new TextStyle(fontSize: 18.0))),
-        new Slider(
+          new Divider(height: 20,thickness: 2),
+          buildItem(
+              title: "🙊 Taboos",
+              value: _settings.nTaboos.toDouble(),
+              divisions: 3,
+              min: 3.0,
+              max: 5.0,
+              onChanged: (value) {
+                setState(() {
+                  _settings.nTaboos = value.toInt();
+                });
+              }),
+          buildItem(
+            title: "🔛 Skips per turn",
+            value: _settings.nSkip.toDouble(),
+            divisions: 10,
+            min: 0.0,
+            max: 10.0,
+            onChanged: (value) {
+              setState(() {
+                _settings.nSkip = value.toInt();
+              });
+            },
+          ),
+          buildItem(
+            title: "⏱ Seconds per turn",
             value: _settings.turnDurationInSeconds.toDouble(),
+            min: kReleaseMode ? 30 : 5,
+            max: 180,
             divisions: 15,
-            min: 30.0,
-            max: 180.0,
             onChanged: (value) {
               setState(() {
                 _settings.turnDurationInSeconds = value.toInt();
               });
-            }),
-        new Container(
-          width: 24.0,
-          child: new Text(
-            _settings.turnDurationInSeconds.toString(),
+            },
           ),
-        )
-      ],
+        ],
+      ),
     );
+  }
+
+  Widget buildItem(
+      {String title,
+      ValueChanged<double> onChanged,
+      double value,
+      double min,
+      double max,
+      int divisions}) {
+    return Container(
+      margin: EdgeInsets.only(left: 5,right: 8),
+      height: 100,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              title,
+              style: new TextStyle(fontSize: 22.0),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.loose,
+                  child: AutoSizeText(
+                    value.toInt().toString(),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 35),
+                    maxFontSize: 50,
+                  ),
+                ),
+                Flexible(
+                  flex: 6,
+                  fit: FlexFit.tight,
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      trackShape: CustomTrackShape(),
+                    ),
+                    child: Slider(
+                      value: value,
+                      divisions: divisions,
+                      min: min,
+                      max: max,
+                      onChanged: (value) => onChanged(value),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  Rect getPreferredRect({
+    @required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    @required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
   }
 }
