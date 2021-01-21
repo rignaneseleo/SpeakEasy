@@ -17,10 +17,12 @@ import 'package:opentabu/view/gamePage.dart';
 import 'package:opentabu/view/homePage.dart';
 import 'package:opentabu/view/splash_screen.dart';
 import 'package:soundpool/soundpool.dart';
+import 'package:vibration/vibration.dart';
 
 import 'persistence/csvDataReader.dart';
 
 List<Word> words;
+bool hasVibration = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +37,7 @@ Future<void> main() async {
 
   words = await CSVDataReader.readData();
   await loadSounds();
+  hasVibration = await Vibration.hasVibrator();
 
   runApp(
     ProviderScope(

@@ -14,6 +14,7 @@ import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/soundLoader.dart';
 import 'package:opentabu/view/widget/myContainer.dart';
 import 'package:vibration/vibration.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../main.dart';
 
@@ -49,6 +50,7 @@ class GamePageState extends State<GamePage> {
   void dispose() {
     _turnTimer.cancel();
     _countSecondsTimer.cancel();
+    Wakelock.disable();
     super.dispose();
   }
 
@@ -68,7 +70,10 @@ class GamePageState extends State<GamePage> {
           _gameController.oneSecPassed();
 
           int secondsLeft = _timerDuration - _gameController.secondsPassed;
-          if (secondsLeft < 5 && secondsLeft > 0) playTick();
+          if (secondsLeft <= 5 && secondsLeft > 0) {
+            if (hasVibration) Vibration.vibrate(duration: 100);
+            playTick();
+          }
         }
       });
 
@@ -105,9 +110,8 @@ class GamePageState extends State<GamePage> {
   void setupTimer(int seconds) {
     _turnTimer = new Timer(new Duration(seconds: seconds), () {
       //TIMEOUT
-      Vibration.hasVibrator().then((vib) {
-        if (vib) Vibration.vibrate();
-      });
+      if (hasVibration) Vibration.vibrate(duration: 1000);
+
       playTimeoutSound();
       context.read(gameProvider).changeTurn();
     });
@@ -154,15 +158,19 @@ class GamePageState extends State<GamePage> {
               switch (_gameController.gameState) {
                 case GameState.ready:
                   _body = readyBody();
+                  Wakelock.enable();
                   break;
                 case GameState.playing:
                   _body = playingBody();
+                  Wakelock.enable();
                   break;
                 case GameState.ended:
                   _body = endBody(_gameController.winners);
+                  Wakelock.disable();
                   break;
                 case GameState.pause:
                   _body = pauseBody();
+                  Wakelock.disable();
                   break;
                 case GameState.init:
                   break;
@@ -249,14 +257,14 @@ class GamePageState extends State<GamePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "TIME IS OVER",
+            "TIME IS OVER :(",
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           new Text("Pass the phone to the next player."),
         ],
       ),
       footer: MyBottomButton(
-        text: "START NEXT TURN",
+        text: "NEXT TURN",
         onPressed: () => initGame(),
       ),
     );
@@ -380,26 +388,33 @@ class GameInfoWidget extends ConsumerWidget {
     List<Widget> teams = new List<Widget>();
 
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
+      bool isCurrentTeam = _gameController.currentTeam == i;
+
       teams.add(new Expanded(
+        child: Opacity(
           child: new Column(
-        children: <Widget>[
-          new Text(
-            "Team " + (i + 1).toString(),
-            style: new TextStyle(
-                fontSize: _gameController.currentTeam == i ? 17.0 : 13.0,
-                //fontWeight: _gameController.currentTeam == i ? FontWeight.bold : FontWeight.normal,
-                color: _gameController.currentTeam == i
-                    ? Colors.red
-                    : Colors.black),
+            children: <Widget>[
+              new Text(
+                "Team " + (i + 1).toString(),
+                style: new TextStyle(
+                    fontSize: 17.0,
+                    fontWeight:
+                        isCurrentTeam ? FontWeight.bold : FontWeight.normal,
+                    color: isCurrentTeam ? Theme.of(context).primaryColor : Colors.black),
+              ),
+              new Text(
+                _gameController.scores[i].toString(),
+                style: new TextStyle(
+                  fontSize: 22.0,
+                  fontWeight:
+                      isCurrentTeam ? FontWeight.bold : FontWeight.normal,
+                ),
+              )
+            ],
           ),
-          new Text(
-            _gameController.scores[i].toString(),
-            style: new TextStyle(
-              fontSize: _gameController.currentTeam == i ? 28.0 : 22.0,
-            ),
-          )
-        ],
-      )));
+          opacity: isCurrentTeam ? 1 : 0.2,
+        ),
+      ));
     }
 
     return new Container(

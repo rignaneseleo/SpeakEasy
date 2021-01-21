@@ -19,6 +19,7 @@ dependencies:
   blinking_text: ^0.0.4+1
   vibration: ^1.7.3
   auto_size_text: ^2.1.0
+  wakelock: ^0.2.1+1
 
 dev_dependencies:
   flutter_test:
