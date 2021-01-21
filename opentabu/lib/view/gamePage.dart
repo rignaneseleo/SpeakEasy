@@ -122,10 +122,10 @@ class GamePageState extends State<GamePage> {
 
         switch (_gameController.gameState) {
           case GameState.init:
-          case GameState.ready:
           case GameState.playing:
             pauseGame();
             break;
+          case GameState.ready:
           case GameState.pause:
           case GameState.ended:
             return true;
