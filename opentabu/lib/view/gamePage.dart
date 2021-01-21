@@ -12,6 +12,7 @@ import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/soundLoader.dart';
+import 'package:opentabu/view/widget/blinkingText.dart';
 import 'package:opentabu/view/widget/myContainer.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
@@ -48,8 +49,8 @@ class GamePageState extends State<GamePage> {
 
   @override
   void dispose() {
-    _turnTimer.cancel();
-    _countSecondsTimer.cancel();
+    _turnTimer?.cancel();
+    _countSecondsTimer?.cancel();
     Wakelock.disable();
     super.dispose();
   }
@@ -197,9 +198,11 @@ class GamePageState extends State<GamePage> {
         ],
       ),
       body: Center(
-        child: Text(
-          "PAUSE",
-          style: TextStyle(fontSize: 50),
+        child: BlinkingText(
+          Text(
+            "PAUSE",
+            style: TextStyle(fontSize: 50, fontStyle: FontStyle.italic),
+          ),
         ),
       ),
       footer: MyBottomButton(
@@ -400,7 +403,9 @@ class GameInfoWidget extends ConsumerWidget {
                     fontSize: 17.0,
                     fontWeight:
                         isCurrentTeam ? FontWeight.bold : FontWeight.normal,
-                    color: isCurrentTeam ? Theme.of(context).primaryColor : Colors.black),
+                    color: isCurrentTeam
+                        ? Theme.of(context).primaryColor
+                        : Colors.black),
               ),
               new Text(
                 _gameController.scores[i].toString(),
