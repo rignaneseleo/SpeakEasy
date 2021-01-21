@@ -18,6 +18,7 @@ dependencies:
   get: ^3.24.0
   blinking_text: ^0.0.4+1
   vibration: ^1.7.3
+  auto_size_text: ^2.1.0
 
 dev_dependencies:
   flutter_test:

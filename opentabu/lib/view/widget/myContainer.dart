@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -37,9 +38,10 @@ class MyBottomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: Text(
+      child: AutoSizeText(
         text,
         textAlign: TextAlign.center,
+        maxFontSize: 50,maxLines: 1,
         style: TextStyle(fontSize: 50),
       ),
       onPressed: onPressed,

@@ -5,6 +5,7 @@
 * */
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:opentabu/controller/gameController.dart';
@@ -187,9 +188,11 @@ class GamePageState extends State<GamePage> {
           TimeWidget(_timerDuration),
         ],
       ),
-      body: Text(
-        "PAUSE",
-        style: TextStyle(fontSize: 50),
+      body: Center(
+        child: Text(
+          "PAUSE",
+          style: TextStyle(fontSize: 50),
+        ),
       ),
       footer: MyBottomButton(
         text: "RESUME",
@@ -337,11 +340,14 @@ class WordWidget extends ConsumerWidget {
     List<String> _taboos = _gameController.currentWord.taboos;
 
     for (int i = 0; i < _nTaboosToShow; i++) {
-      taboos.add(new Text(
-        _taboos[i],
-        style: new TextStyle(fontSize: 35.0, color: Colors.black54),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      taboos.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 3.0),
+        child: AutoSizeText(
+          _taboos[i],
+          maxFontSize: 35,
+          style: new TextStyle(fontSize: 35.0, color: Colors.black54),
+          maxLines: 1,
+        ),
       ));
     }
 
@@ -350,10 +356,12 @@ class WordWidget extends ConsumerWidget {
       child: new Column(
         children: <Widget>[
           new Padding(
-              padding: new EdgeInsets.symmetric(vertical: 20.0),
-              child: new Text(
+              padding: new EdgeInsets.symmetric(vertical: 30.0),
+              child: new AutoSizeText(
                 _gameController.currentWord.wordToGuess,
-                style: new TextStyle(fontSize: 56.0),
+                style:
+                    new TextStyle(fontSize: 56.0, fontWeight: FontWeight.w500),
+                maxFontSize: 56,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               )),
