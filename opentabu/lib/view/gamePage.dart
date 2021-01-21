@@ -11,6 +11,7 @@ import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/soundLoader.dart';
+import 'package:opentabu/view/widget/myContainer.dart';
 import 'package:vibration/vibration.dart';
 
 import '../main.dart';
@@ -170,7 +171,7 @@ class GamePageState extends State<GamePage> {
                 children: <Widget>[
                   GameInfoWidget(),
                   new Divider(height: 1.0),
-                  _body,
+                  Expanded(child: _body),
                 ],
               );
             },
@@ -179,80 +180,83 @@ class GamePageState extends State<GamePage> {
   }
 
   Widget pauseBody() {
-    return new Container(
-        height: 520.0,
-        child: new Column(children: <Widget>[
+    return MyContainer(
+      header: Column(
+        children: [
           TurnWidget(),
           TimeWidget(_timerDuration),
-          Expanded(
-              child: Text(
-            "PAUSE",
-            style: TextStyle(fontSize: 50),
-          )),
-          new Divider(height: 10.0),
-          new Container(
-            padding: new EdgeInsets.all(15.0),
-            child: TextButton(
-              child: Text(
-                "RESUME",
-                style: TextStyle(fontSize: 50),
-              ),
-              onPressed: () => resumeGame(),
-            ),
-          )
-        ]));
+        ],
+      ),
+      body: Text(
+        "PAUSE",
+        style: TextStyle(fontSize: 50),
+      ),
+      footer: MyBottomButton(
+        text: "RESUME",
+        onPressed: () => resumeGame(),
+      ),
+    );
   }
 
   Widget playingBody() {
-    return new Container(
-        height: 520.0,
-        child: new Column(children: <Widget>[
+    return MyContainer(
+      header: Column(
+        children: [
           TurnWidget(),
           TimeWidget(_timerDuration),
-          WordWidget(_nTaboosToShow),
-          new Divider(height: 10.0),
-          new Container(
-            padding: new EdgeInsets.all(15.0),
-            child: new Row(
-              children: <Widget>[
-                IncorrectAnswerButton(),
-                SkipButton(),
-                CorrectAnswerButton(),
-              ],
-            ),
-          )
-        ]));
+        ],
+      ),
+      body: WordWidget(_nTaboosToShow),
+      footer: Container(
+        padding: new EdgeInsets.all(15.0),
+        child: new Row(
+          children: <Widget>[
+            IncorrectAnswerButton(),
+            SkipButton(),
+            CorrectAnswerButton(),
+          ],
+        ),
+      ),
+    );
+
+    return Column(
+      children: <Widget>[
+        TurnWidget(),
+        TimeWidget(_timerDuration),
+        Expanded(child: WordWidget(_nTaboosToShow)),
+        new Divider(height: 10.0),
+        new Container(
+          padding: new EdgeInsets.all(15.0),
+          child: new Row(
+            children: <Widget>[
+              IncorrectAnswerButton(),
+              SkipButton(),
+              CorrectAnswerButton(),
+            ],
+          ),
+        )
+      ],
+    );
   }
 
   Widget readyBody() {
-    return Container(
-        height: 520.0,
-        child: new Column(
-          children: <Widget>[
-            TurnWidget(),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "TIME IS OVER",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  new Text("Pass the phone to the next player."),
-                ],
-              ),
-            ),
-            new TextButton(
-              child: Text(
-                'START NEXT TURN',
-                style: TextStyle(fontSize: 27),
-              ),
-              onPressed: () {
-                initGame();
-              },
-            ),
-          ],
-        ));
+    return MyContainer(
+      header: TurnWidget(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "TIME IS OVER",
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+          new Text("Pass the phone to the next player."),
+        ],
+      ),
+      footer: MyBottomButton(
+        text: "START NEXT TURN",
+        onPressed: () => initGame(),
+      ),
+    );
   }
 
   Widget endBody(List<int> winners) {
@@ -263,67 +267,21 @@ class GamePageState extends State<GamePage> {
     } else
       text = "${winners.first} is the winner!";
 
-    return new Container(
-      height: 520.0,
-      child: new Center(
-          child: Column(
-        children: [
-          Expanded(
-              child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          )),
-          TextButton(
-            child: Text("Back home"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      )),
+    return MyContainer(
+      body: Text(
+        text,
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      footer: MyBottomButton(
+        text: "BACK HOME",
+        onPressed: () => Navigator.of(context).pop(),
+      ),
     );
   }
-
-/*void timeOut() {
-    Text title;
-    Text button;
-    Text content;
-
-    ;
-
-    //Check if it's the end
-    if (end) {
-      title = new Text("Team " + _gameController.winner.toString() + " win!");
-      button = new Text('Main menu');
-    } else {
-
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      child: new AlertDialog(title: title, content: content, actions: <Widget>[
-        new FlatButton(
-          child: button,
-          onPressed: () {
-            //Close the dialog
-            Navigator.of(context).pop();
-
-            //Check if it's the end
-            if (end)
-              Navigator.of(context).pop();
-            else
-              initTimer();
-            setState(() {});
-          },
-        ),
-      ]),
-    );
-  }*/
 }
 
 class TurnWidget extends ConsumerWidget {
@@ -387,8 +345,7 @@ class WordWidget extends ConsumerWidget {
       ));
     }
 
-    return new Expanded(
-        child: new Container(
+    return Container(
       padding: new EdgeInsets.all(15.0),
       child: new Column(
         children: <Widget>[
@@ -403,7 +360,7 @@ class WordWidget extends ConsumerWidget {
           new Column(children: taboos)
         ],
       ),
-    ));
+    );
   }
 }
 

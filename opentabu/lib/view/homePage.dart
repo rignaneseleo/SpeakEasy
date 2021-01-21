@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/persistence/csvDataReader.dart';
 import 'package:opentabu/persistence/dataReader.dart';
+import 'package:opentabu/view/widget/myContainer.dart';
 
 import 'gamePage.dart';
 import 'infoPage.dart';
@@ -39,27 +40,17 @@ class HomePageState extends State<HomePage> {
                 })
           ],
         ),
-        body: new Container(
-          padding: new EdgeInsets.all(5.0),
-          child: new Column(
+        body: MyContainer(
+          header: Text(
+            "Set your preferences: ",
+            style: new TextStyle(fontSize: 30.0),
+          ),
+          body: _settingsContainer,
+          footer: Column(
             children: <Widget>[
-              new Text(
-                "Set your preferences: ",
-                style: new TextStyle(fontSize: 30.0),
-              ),
-              _settingsContainer,
-              new MaterialButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => GamePage(_settings)),
-                  );
-                },
-                child: new Text(
-                  "START",
-                  style: new TextStyle(fontSize: 30.0),
-                ),
+              MyBottomButton(
+                text: "START",
+                onPressed: () => Get.to(GamePage(_settings)),
               ),
               new Text(
                 "BETA Version",
