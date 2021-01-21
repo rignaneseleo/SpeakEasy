@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:get/get.dart';
 import 'package:opentabu/controller/gameController.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
@@ -254,6 +255,10 @@ class GamePageState extends State<GamePage> {
   }
 
   Widget readyBody() {
+    GameController _gameController = context.read(gameProvider);
+    List<String> teams = _gameController.teams;
+    int selectedIndex = _gameController.previousTeam;
+
     return MyContainer(
       header: TurnWidget(),
       body: Column(
@@ -264,6 +269,26 @@ class GamePageState extends State<GamePage> {
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           new Text("Pass the phone to the next player."),
+          TextButton(
+            child: Text("MISSED A POINT? FIX SCORE"),
+            onPressed: () => Get.dialog(AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("ADJUST TEAM ${selectedIndex + 1} SCORE:"),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IncorrectAnswerButton(customTeam: selectedIndex),
+                        CorrectAnswerButton(customTeam: selectedIndex),
+                      ],
+                    ),
+                  ],
+                ))),
+          ),
         ],
       ),
       footer: MyBottomButton(
@@ -452,6 +477,11 @@ class SkipButton extends ConsumerWidget {
 }
 
 class IncorrectAnswerButton extends ConsumerWidget {
+  //This is used to fix the scores
+  final int customTeam;
+
+  IncorrectAnswerButton({this.customTeam});
+
   @override
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
@@ -462,12 +492,17 @@ class IncorrectAnswerButton extends ConsumerWidget {
             iconSize: 70.0,
             onPressed: () {
               playWrongAnswerSound();
-              _gameController.wrongAnswer();
+              _gameController.wrongAnswer(team: customTeam);
             }));
   }
 }
 
 class CorrectAnswerButton extends ConsumerWidget {
+  //This is used to fix the scores
+  final int customTeam;
+
+  CorrectAnswerButton({this.customTeam});
+
   @override
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
@@ -478,7 +513,7 @@ class CorrectAnswerButton extends ConsumerWidget {
             iconSize: 70.0,
             onPressed: () {
               playCorrectAnswerSound();
-              _gameController.rightAnswer();
+              _gameController.rightAnswer(team: customTeam);
             }));
   }
 }

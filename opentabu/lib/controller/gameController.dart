@@ -87,15 +87,26 @@ class GameController extends ChangeNotifier {
       throw Exception("Resume game from a state $gameState");
   }
 
-  void rightAnswer() {
-    _game.rightAnswer(_currentTeam);
-    _currentWord = _game.newWord;
+  void rightAnswer({int team}) {
+    if (team != null) {
+      //This is used to fix the scores
+      _game.rightAnswer(team);
+    } else {
+      _game.rightAnswer(_currentTeam);
+      _currentWord = _game.newWord;
+    }
+
     notifyListeners();
   }
 
-  void wrongAnswer() {
-    _game.wrongAnswer(_currentTeam);
-    _currentWord = _game.newWord;
+  void wrongAnswer({int team}) {
+    if (team != null) {
+      //This is used to fix the scores
+      _game.wrongAnswer(team);
+    } else {
+      _game.wrongAnswer(_currentTeam);
+      _currentWord = _game.newWord;
+    }
     notifyListeners();
   }
 
@@ -121,7 +132,13 @@ class GameController extends ChangeNotifier {
 
   int get numberOfPlayers => _game?.numberOfPlayers ?? 0;
 
+  List<String> get teams => List<String>.generate(
+      _game?.numberOfPlayers ?? 0, (i) => "Team ${i + 1}");
+
   int get currentTeam => _currentTeam;
+
+  int get previousTeam =>
+      _currentTeam - 1 >= 0 ? _currentTeam - 1 : numberOfPlayers - 1;
 
   int get secondsPassed => _secondsPassed;
 }
