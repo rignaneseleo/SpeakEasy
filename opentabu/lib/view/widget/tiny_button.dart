@@ -3,12 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
 
-class MyTinyButton extends StatelessWidget {
+class TinyButton extends StatelessWidget {
   final Color textColor;
   final VoidCallback onPressed;
   final String text;
 
-  const MyTinyButton({Key key, this.textColor, this.onPressed, this.text})
+  const TinyButton({Key key, this.textColor, this.onPressed, this.text})
       : super(key: key);
 
   @override

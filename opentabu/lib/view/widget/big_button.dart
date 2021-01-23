@@ -3,13 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
 
-class MyBigButton extends StatelessWidget {
+class BigButton extends StatelessWidget {
   final Color bgColor;
   final Color textColor;
   final VoidCallback onPressed;
   final String text;
 
-  const MyBigButton(
+  const BigButton(
       {Key key, this.bgColor, this.textColor, this.onPressed, this.text})
       : super(key: key);
 

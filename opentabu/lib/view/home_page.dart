@@ -16,9 +16,9 @@ import 'package:opentabu/view/widget/incremental_button.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:opentabu/view/widget/my_title.dart';
 import 'package:opentabu/view/widget/my_container.dart';
-import 'package:opentabu/view/widget/my_bigbutton.dart';
-import 'package:opentabu/view/widget/my_selector_button.dart';
-import 'package:opentabu/view/widget/my_tiny_button.dart';
+import 'package:opentabu/view/widget/big_button.dart';
+import 'package:opentabu/view/widget/selector_button.dart';
+import 'package:opentabu/view/widget/tiny_button.dart';
 
 import 'game_page.dart';
 import 'info_page.dart';
@@ -45,7 +45,7 @@ class HomePageState extends State<HomePage> {
         child: MyScaffold(
           widgets: <Widget>[
             MyTitle(),
-            MySelectorButton(
+            SelectorButton(
               indexSelected: 0,
               items: [
                 "2 Teams",
@@ -59,7 +59,7 @@ class HomePageState extends State<HomePage> {
               },
             ),
             Center(
-              child: MyTinyButton(
+              child: TinyButton(
                 text:
                     "${_displayAdvancedPreferences ? "↓" : "↑"} ADVANCED PREFERENCES",
                 textColor: txtGrey,
@@ -68,7 +68,7 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             if (_displayAdvancedPreferences)
-              MySelectorButton(
+              SelectorButton(
                 indexSelected: _settings.nTaboos - 3,
                 items: [
                   "3 Taboos",
@@ -113,7 +113,7 @@ class HomePageState extends State<HomePage> {
                   _settings.nSkip = i;
                 },
               ),
-            MyBigButton(
+            BigButton(
               text: "start",
               bgColor: lightPurple,
               textColor: txtWhite,

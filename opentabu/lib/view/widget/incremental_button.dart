@@ -4,7 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:opentabu/theme/theme.dart';
 
-import 'my_selector_button.dart';
+import 'selector_button.dart';
 
 class IncrementalButton extends StatefulWidget {
   final String text;

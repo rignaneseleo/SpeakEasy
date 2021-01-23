@@ -4,23 +4,23 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:opentabu/theme/theme.dart';
 
-class MySelectorButton extends StatefulWidget {
+class SelectorButton extends StatefulWidget {
   final List<String> items;
   final int indexSelected;
   final ValueChanged<int> onValueChanged;
 
-  const MySelectorButton(
+  const SelectorButton(
       {Key key, this.items, this.indexSelected, this.onValueChanged})
       : super(key: key);
 
   @override
-  _MySelectorButtonState createState() => _MySelectorButtonState(indexSelected);
+  _SelectorButtonState createState() => _SelectorButtonState(indexSelected);
 }
 
-class _MySelectorButtonState extends State<MySelectorButton> {
+class _SelectorButtonState extends State<SelectorButton> {
   int _selected;
 
-  _MySelectorButtonState(this._selected);
+  _SelectorButtonState(this._selected);
 
   @override
   Widget build(BuildContext context) {
