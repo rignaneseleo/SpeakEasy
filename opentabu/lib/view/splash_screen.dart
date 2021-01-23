@@ -12,7 +12,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      widgets: <Widget>[MyTitle()],
+      widgets: <Widget>[
+        MyTitle(),
+        LinearProgressIndicator(),
+      ],
     );
   }
 }
