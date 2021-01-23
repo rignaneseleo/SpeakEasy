@@ -345,8 +345,8 @@ class GamePageState extends State<GamePage> {
         ),*/
         BigButton(
           text: "BACK HOME",
-          bgColor: myYellow,
-          textColor: txtBlack,
+          bgColor: lightPurple,
+          textColor: txtWhite,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],
@@ -431,25 +431,35 @@ class WordWidget extends ConsumerWidget {
       ));
     }
 
-    return Container(
-      padding: new EdgeInsets.all(15.0),
-      child: new Column(
-        children: <Widget>[
-          new Padding(
-              padding: new EdgeInsets.symmetric(vertical: 30.0),
-              child: new UpperCaseAutoSizeText(
-                _gameController.currentWord.wordToGuess,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline2
-                    .copyWith(color: txtGrey),
-                maxFontSize: 56,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )),
-          new Column(children: taboos)
-        ],
+    return GestureDetector(
+      child: Container(
+        padding: new EdgeInsets.all(15.0),
+        child: new Column(
+          children: <Widget>[
+            new Padding(
+                padding: new EdgeInsets.symmetric(vertical: 30.0),
+                child: new UpperCaseAutoSizeText(
+                  _gameController.currentWord.wordToGuess,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline2
+                      .copyWith(color: txtGrey),
+                  maxFontSize: 56,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+            new Column(children: taboos)
+          ],
+        ),
       ),
+      onHorizontalDragStart: (details) {
+        // Note: Sensitivity is integer used when you don't want to mess up vertical drag
+        if (_gameController.skipLeftCurrentTeam >
+            0)  {
+          playSkipSound();
+          _gameController.skipAnswer();
+        }
+      },
     );
   }
 }
