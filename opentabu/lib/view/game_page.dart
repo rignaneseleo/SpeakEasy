@@ -15,8 +15,11 @@ import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/sound_loader.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
+import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/blinking_text.dart';
-import 'package:opentabu/view/widget/my_container.dart';
+import 'package:opentabu/view/widget/my_scaffold.dart';
+import 'package:opentabu/view/widget/selector_button.dart';
+import 'package:opentabu/view/widget/tiny_button.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -126,132 +129,126 @@ class GamePageState extends State<GamePage> {
     Widget _body = Text("Loading");
 
     return WillPopScope(
-      onWillPop: () async {
-        GameController _gameController = context.read(gameProvider);
+        onWillPop: () async {
+          GameController _gameController = context.read(gameProvider);
 
-        switch (_gameController.gameState) {
-          case GameState.init:
-          case GameState.playing:
-            pauseGame();
-            break;
-          case GameState.ready:
-          case GameState.pause:
-          case GameState.ended:
-            return true;
-        }
+          switch (_gameController.gameState) {
+            case GameState.init:
+            case GameState.playing:
+              pauseGame();
+              break;
+            case GameState.ready:
+            case GameState.pause:
+            case GameState.ended:
+              return true;
+          }
 
-        return false;
-      },
-      child: new Scaffold(
-          appBar: AppBar(
-            actions: [
-              Consumer(builder: (context, watch, child) {
-                GameController _gameController = watch(gameProvider);
-                if (_gameController.gameState == GameState.playing)
-                  return IconButton(
-                      icon: Icon(Icons.pause), onPressed: () => pauseGame());
-                else
-                  return Container();
-              }),
-            ],
-          ),
-          body: Consumer(
-            builder: (context, watch, child) {
-              GameController _gameController = watch(gameProvider);
+          return false;
+        },
+        child: Scaffold(
+          body: Material(
+            child: Container(
+              width: double.infinity,
+              /* padding: EdgeInsets.symmetric(
+                horizontal: 28,
+                vertical: 28,
+              ),*/
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Stack(
+                    overflow: Overflow.visible,
+                    alignment: Alignment.center,
+                    children: [
+                      GameInfoWidget(),
+                      Positioned(
+                        bottom: -40,
+                        child: TimeWidget(_timerDuration),
+                      ),
+                    ],
+                  ),
+                  Consumer(
+                    builder: (context, watch, child) {
+                      GameController _gameController = watch(gameProvider);
 
-              switch (_gameController.gameState) {
-                case GameState.ready:
-                  _body = readyBody();
-                  Wakelock.enable();
-                  break;
-                case GameState.playing:
-                  _body = playingBody();
-                  Wakelock.enable();
-                  break;
-                case GameState.ended:
-                  _body = endBody(_gameController.winners);
-                  Wakelock.disable();
-                  break;
-                case GameState.pause:
-                  _body = pauseBody();
-                  Wakelock.disable();
-                  break;
-                case GameState.init:
-                  break;
-              }
+                      switch (_gameController.gameState) {
+                        case GameState.ready:
+                          _body = readyBody();
+                          Wakelock.enable();
+                          break;
+                        case GameState.playing:
+                          _body = playingBody();
+                          Wakelock.enable();
+                          break;
+                        case GameState.ended:
+                          _body = endBody(_gameController.winners);
+                          Wakelock.disable();
+                          break;
+                        case GameState.pause:
+                          _body = pauseBody();
+                          Wakelock.disable();
+                          break;
+                        case GameState.init:
+                          break;
+                      }
 
-              return Column(
-                children: <Widget>[
-                  GameInfoWidget(),
-                  new Divider(height: 1.0),
-                  Expanded(child: _body),
+                      return Expanded(
+                          child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 28,
+                          vertical: 28,
+                        ),
+                        child: _body,
+                      ));
+                    },
+                  )
                 ],
-              );
-            },
-          )),
-    );
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget pauseBody() {
-    return MyContainer(
-      header: Column(
-        children: [
-          TurnWidget(),
-          TimeWidget(_timerDuration),
-        ],
-      ),
-      body: Center(
-        child: BlinkingText(
-          Text(
-            "PAUSE",
-            style: TextStyle(fontSize: 50, fontStyle: FontStyle.italic),
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: BlinkingText(
+              UpperCaseText(
+                "PAUSE",
+                style: Theme.of(context)
+                    .textTheme
+                    .headline2
+                    .copyWith(color: darkPurple),
+              ),
+            ),
           ),
         ),
-      ),
-      footer: MyBottomButton(
-        text: "RESUME",
-        onPressed: () => resumeGame(),
-      ),
+        BigButton(
+          text: "RESUME",
+          bgColor: myYellow,
+          textColor: txtBlack,
+          onPressed: () => resumeGame(),
+        ),
+      ],
     );
   }
 
   Widget playingBody() {
-    return MyContainer(
-      header: Column(
-        children: [
-          TurnWidget(),
-          TimeWidget(_timerDuration),
-        ],
-      ),
-      body: WordWidget(_nTaboosToShow),
-      footer: Container(
-        padding: new EdgeInsets.all(15.0),
-        child: new Row(
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(child: WordWidget(_nTaboosToShow)),
+        SkipButton(),
+        new Row(
           children: <Widget>[
             IncorrectAnswerButton(),
-            SkipButton(),
             CorrectAnswerButton(),
           ],
         ),
-      ),
-    );
-
-    return Column(
-      children: <Widget>[
-        TurnWidget(),
-        TimeWidget(_timerDuration),
-        Expanded(child: WordWidget(_nTaboosToShow)),
-        new Divider(height: 10.0),
-        new Container(
-          padding: new EdgeInsets.all(15.0),
-          child: new Row(
-            children: <Widget>[
-              IncorrectAnswerButton(),
-              SkipButton(),
-              CorrectAnswerButton(),
-            ],
-          ),
-        )
       ],
     );
   }
@@ -261,42 +258,59 @@ class GamePageState extends State<GamePage> {
     List<String> teams = _gameController.teams;
     int selectedIndex = _gameController.previousTeam;
 
-    return MyContainer(
-      header: TurnWidget(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "TIME IS OVER :(",
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-          new Text("Pass the phone to the next player."),
-          TextButton(
-            child: Text("MISSED A POINT? FIX SCORE"),
-            onPressed: () => Get.dialog(AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("ADJUST TEAM ${selectedIndex + 1} SCORE:"),
-                    Row(
+    return Column(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              UpperCaseAutoSizeText(
+                "YOUR TIME IS OVER :(",
+                style: Theme.of(context)
+                    .textTheme
+                    .headline2
+                    .copyWith(color: darkPurple),
+                maxLines: 1,
+                maxFontSize: Theme.of(context).textTheme.headline2.fontSize,
+              ),
+              Text("Pass the phone to the next player."),
+              TextButton(
+                child: Text(
+                  "MISSED A POINT? FIX SCORE",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(color: lightPurple),
+                ),
+                onPressed: () => Get.dialog(AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                    content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IncorrectAnswerButton(customTeam: selectedIndex),
-                        CorrectAnswerButton(customTeam: selectedIndex),
+                        Text("ADJUST TEAM ${selectedIndex + 1} SCORE:"),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IncorrectAnswerButton(customTeam: selectedIndex),
+                            CorrectAnswerButton(customTeam: selectedIndex),
+                          ],
+                        ),
                       ],
-                    ),
-                  ],
-                ))),
+                    ))),
+              ),
+            ],
           ),
-        ],
-      ),
-      footer: MyBottomButton(
-        text: "NEXT TURN",
-        onPressed: () => initGame(),
-      ),
+        ),
+        BigButton(
+          text: "NEXT TURN",
+          bgColor: myYellow,
+          textColor: txtBlack,
+          onPressed: () => initGame(),
+        ),
+      ],
     );
   }
 
@@ -308,19 +322,34 @@ class GamePageState extends State<GamePage> {
     } else
       text = "${winners.first} is the winner!";
 
-    return MyContainer(
-      body: Text(
-        text,
-        style: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: UpperCaseAutoSizeText(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline2
+                  .copyWith(color: darkPurple),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+          ),
         ),
-        textAlign: TextAlign.center,
-      ),
-      footer: MyBottomButton(
-        text: "BACK HOME",
-        onPressed: () => Navigator.of(context).pop(),
-      ),
+        /* BigButton(
+          text: "PLAY AGAIN",
+          bgColor: myGreen,
+          textColor: txtBlack,
+          //onPressed: () => resumeGame(),
+        ),*/
+        BigButton(
+          text: "BACK HOME",
+          bgColor: myYellow,
+          textColor: txtBlack,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
     );
   }
 }
@@ -329,10 +358,13 @@ class TurnWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
+
     return Center(
       child: new Text(
-        "Turn " + (_gameController.currentTurn).toString(),
-        style: new TextStyle(fontSize: 18.0, color: Colors.black54),
+        _gameController.gameState == GameState.ended
+            ? "End"
+            : "Turn " + (_gameController.currentTurn).toString(),
+        style: Theme.of(context).textTheme.headline5.copyWith(color: txtWhite),
       ),
     );
   }
@@ -351,14 +383,23 @@ class TimeWidget extends ConsumerWidget {
     int secondsLeft = _timerDuration - _gameController.secondsPassed;
 
     return new Center(
-      child: new Text(
-        secondsLeft.toString(),
-        style: new TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            color: _timerDuration - _gameController.secondsPassed < 8
-                ? Colors.red
-                : Colors.black),
+      child: Container(
+        height: 65,
+        width: 65,
+        decoration: new BoxDecoration(
+          color: lightPurple,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: new Text(
+            secondsLeft.toString(),
+            style: Theme.of(context).textTheme.headline4.copyWith(
+                  color: _timerDuration - _gameController.secondsPassed < 8
+                      ? myRed
+                      : txtWhite,
+                ),
+          ),
+        ),
       ),
     );
   }
@@ -379,7 +420,7 @@ class WordWidget extends ConsumerWidget {
 
     for (int i = 0; i < _nTaboosToShow; i++) {
       taboos.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: UpperCaseAutoSizeText(
           _taboos[i],
           maxFontSize: 35.0,
@@ -398,8 +439,10 @@ class WordWidget extends ConsumerWidget {
               padding: new EdgeInsets.symmetric(vertical: 30.0),
               child: new UpperCaseAutoSizeText(
                 _gameController.currentWord.wordToGuess,
-                style:
-                Theme.of(context).textTheme.headline2.copyWith(color: txtGrey),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline2
+                    .copyWith(color: txtGrey),
                 maxFontSize: 56,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -412,6 +455,10 @@ class WordWidget extends ConsumerWidget {
 }
 
 class GameInfoWidget extends ConsumerWidget {
+  final int clockOpacity;
+
+  GameInfoWidget({this.clockOpacity = 1});
+
   @override
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
@@ -421,40 +468,86 @@ class GameInfoWidget extends ConsumerWidget {
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
       bool isCurrentTeam = _gameController.currentTeam == i;
 
-      teams.add(new Expanded(
-        child: Opacity(
-          child: new Column(
-            children: <Widget>[
-              new Text(
-                "Team " + (i + 1).toString(),
-                style: new TextStyle(
-                    fontSize: 17.0,
-                    fontWeight:
-                        isCurrentTeam ? FontWeight.bold : FontWeight.normal,
-                    color: isCurrentTeam
-                        ? Theme.of(context).primaryColor
-                        : Colors.black),
-              ),
-              new Text(
-                _gameController.scores[i].toString(),
-                style: new TextStyle(
-                  fontSize: 22.0,
-                  fontWeight:
-                      isCurrentTeam ? FontWeight.bold : FontWeight.normal,
-                ),
-              )
-            ],
-          ),
-          opacity: isCurrentTeam ? 1 : 0.2,
-        ),
+      teams.add(Expanded(
+        child: TeamItem(
+            name: "Team ${i + 1}",
+            score: _gameController.scores[i],
+            disabled: !isCurrentTeam),
       ));
     }
 
     return new Container(
-      height: 70.0,
-      padding: new EdgeInsets.all(8.0),
-      child: new Row(
-        children: teams,
+      decoration: new BoxDecoration(
+        color: darkPurple,
+        borderRadius: new BorderRadius.vertical(
+          bottom: const Radius.circular(20.0),
+        ),
+      ),
+      padding: EdgeInsets.only(left: 28, right: 28, bottom: 28, top: 8),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TurnWidget(),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: new BoxDecoration(
+                color: lightPurple,
+                borderRadius: new BorderRadius.all(
+                  const Radius.circular(10.0),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: teams,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TeamItem extends StatelessWidget {
+  final bool disabled;
+  final String name;
+  final int score;
+
+  const TeamItem({Key key, this.disabled, this.name, this.score})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: disabled ? 0.4 : 1,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 8),
+        decoration: new BoxDecoration(
+          color: darkPurple,
+          borderRadius: new BorderRadius.all(
+            const Radius.circular(10.0),
+          ),
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              UpperCaseAutoSizeText(
+                name,
+                maxFontSize: Theme.of(context).textTheme.headline5.fontSize,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              UpperCaseAutoSizeText(
+                score.toString(),
+                maxFontSize: Theme.of(context).textTheme.headline4.fontSize,
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -465,11 +558,9 @@ class SkipButton extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    return new FlatButton(
-        child: new Text(
-          _gameController.skipLeftCurrentTeam.toString() + " SKIP",
-          style: new TextStyle(fontSize: 20.0),
-        ),
+    return new TinyButton(
+        text: _gameController.skipLeftCurrentTeam.toString() + " SKIP",
+        textColor: lightPurple,
         onPressed: _gameController.skipLeftCurrentTeam == 0
             ? null
             : () {
@@ -490,13 +581,16 @@ class IncorrectAnswerButton extends ConsumerWidget {
     GameController _gameController = watch(gameProvider);
 
     return new Expanded(
-        child: new IconButton(
-            icon: new Icon(Icons.close, color: Colors.red),
-            iconSize: 70.0,
-            onPressed: () {
-              playWrongAnswerSound();
-              _gameController.wrongAnswer(team: customTeam);
-            }));
+        child: Container(
+      margin: EdgeInsets.all(3),
+      child: BigIconButton(
+          bgColor: myRed,
+          icon: Image.asset('assets/icons/cross.png'),
+          onPressed: () {
+            playWrongAnswerSound();
+            _gameController.wrongAnswer(team: customTeam);
+          }),
+    ));
   }
 }
 
@@ -511,12 +605,16 @@ class CorrectAnswerButton extends ConsumerWidget {
     GameController _gameController = watch(gameProvider);
 
     return new Expanded(
-        child: new IconButton(
-            icon: new Icon(Icons.done, color: Colors.lightGreen),
-            iconSize: 70.0,
+      child: Container(
+        margin: EdgeInsets.all(3),
+        child: BigIconButton(
+            bgColor: myGreen,
+            icon: Image.asset('assets/icons/check.png'),
             onPressed: () {
               playCorrectAnswerSound();
               _gameController.rightAnswer(team: customTeam);
-            }));
+            }),
+      ),
+    );
   }
 }

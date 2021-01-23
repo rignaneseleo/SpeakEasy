@@ -45,7 +45,7 @@ class UpperCaseAutoSizeText extends AutoSizeText {
     double stepGranularity = 1,
     presetFontSizes,
     group,
-    textAlign,
+    TextAlign textAlign,
     textDirection,
     locale,
     softWrap,

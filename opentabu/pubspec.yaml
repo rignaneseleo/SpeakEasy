@@ -32,6 +32,7 @@ flutter:
   assets:
     - assets/csv/words.csv
     - assets/sounds/
+    - assets/icons/
   fonts:
     - family: SFPro
       fonts:

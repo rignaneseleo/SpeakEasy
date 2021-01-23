@@ -15,7 +15,6 @@ import 'package:opentabu/utils/uppercase_text.dart';
 import 'package:opentabu/view/widget/incremental_button.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:opentabu/view/widget/my_title.dart';
-import 'package:opentabu/view/widget/my_container.dart';
 import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/selector_button.dart';
 import 'package:opentabu/view/widget/tiny_button.dart';

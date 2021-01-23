@@ -17,13 +17,38 @@ class BigButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 20),
-      child: MaterialButton(
+      child: MaterialButton(elevation: 0,
           minWidth: double.infinity,
           height: 90,
           child: UpperCaseText(
             text,
-            style: Theme.of(context).textTheme.headline2,
+            style: Theme.of(context).textTheme.headline2.copyWith(color: textColor),
           ),
+          color: bgColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          onPressed: onPressed),
+    );
+  }
+}
+
+class BigIconButton extends StatelessWidget {
+  final Color bgColor;
+  final VoidCallback onPressed;
+  final Image icon;
+
+  const BigIconButton(
+      {Key key, this.bgColor, this.onPressed, this.icon})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 20),
+      child: MaterialButton(
+          minWidth: double.infinity,
+          height: 90,
+          child: icon,
           color: bgColor,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

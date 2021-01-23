@@ -37,7 +37,7 @@ ThemeData mainTheme = ThemeData(
     ),
     headline6: TextStyle(
       color: txtWhite,
-      fontSize: 15,
+      fontSize: 13,
     ),
   ),
   primaryColor: darkPurple,
