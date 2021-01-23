@@ -9,12 +9,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:get/get.dart';
-import 'package:opentabu/controller/gameController.dart';
+import 'package:opentabu/controller/game_controller.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
-import 'package:opentabu/persistence/soundLoader.dart';
-import 'package:opentabu/view/widget/blinkingText.dart';
-import 'package:opentabu/view/widget/myContainer.dart';
+import 'package:opentabu/persistence/sound_loader.dart';
+import 'package:opentabu/theme/theme.dart';
+import 'package:opentabu/utils/uppercase_text.dart';
+import 'package:opentabu/view/widget/blinking_text.dart';
+import 'package:opentabu/view/widget/my_container.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -363,7 +365,7 @@ class TimeWidget extends ConsumerWidget {
 }
 
 class WordWidget extends ConsumerWidget {
-  final _nTaboosToShow;
+  final int _nTaboosToShow;
 
   WordWidget(this._nTaboosToShow);
 
@@ -378,10 +380,11 @@ class WordWidget extends ConsumerWidget {
     for (int i = 0; i < _nTaboosToShow; i++) {
       taboos.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 3.0),
-        child: AutoSizeText(
+        child: UpperCaseAutoSizeText(
           _taboos[i],
-          maxFontSize: 35,
-          style: new TextStyle(fontSize: 35.0, color: Colors.black54),
+          maxFontSize: 35.0,
+          style:
+              Theme.of(context).textTheme.headline2.copyWith(color: txtBlack),
           maxLines: 1,
         ),
       ));
@@ -393,10 +396,10 @@ class WordWidget extends ConsumerWidget {
         children: <Widget>[
           new Padding(
               padding: new EdgeInsets.symmetric(vertical: 30.0),
-              child: new AutoSizeText(
+              child: new UpperCaseAutoSizeText(
                 _gameController.currentWord.wordToGuess,
                 style:
-                    new TextStyle(fontSize: 56.0, fontWeight: FontWeight.w500),
+                Theme.of(context).textTheme.headline2.copyWith(color: txtGrey),
                 maxFontSize: 56,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
