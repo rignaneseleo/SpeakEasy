@@ -11,15 +11,15 @@ import 'package:flutter_riverpod/all.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
-import 'package:opentabu/persistence/soundLoader.dart';
+import 'package:opentabu/persistence/sound_loader.dart';
 import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/view/gamePage.dart';
-import 'package:opentabu/view/homePage.dart';
+import 'package:opentabu/view/game_page.dart';
+import 'package:opentabu/view/home_page.dart';
 import 'package:opentabu/view/splash_screen.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:vibration/vibration.dart';
 
-import 'persistence/csvDataReader.dart';
+import 'persistence/csv_data_reader.dart';
 
 List<Word> words;
 bool hasVibration = false;
@@ -29,8 +29,7 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
-      title: 'Loading Tabu',
-      theme: myTheme,
+      theme: mainTheme,
       home: new SplashScreen(),
     ),
   );
@@ -42,9 +41,9 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       child: GetMaterialApp(
-        title: 'Tabu',
+        title: 'OpenTabu',
         home: new HomePage(),
-        theme: myTheme,
+        theme: mainTheme,
         routes: {
           "/home": (_) => new HomePage(),
         },

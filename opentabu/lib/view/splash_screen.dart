@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:opentabu/view/widget/my_scaffold.dart';
+import 'package:opentabu/view/widget/my_title.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -9,31 +11,11 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Material(
-        color: Theme.of(context).primaryColorDark,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "OpenTabu",
-                  style: TextStyle(
-                      fontSize: 45,
-                      color: Theme.of(context).textTheme.headline1.color),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: CircularProgressIndicator(),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return MyScaffold(
+      widgets: <Widget>[
+        MyTitle(),
+        LinearProgressIndicator(),
+      ],
     );
   }
 }

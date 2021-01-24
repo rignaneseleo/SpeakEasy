@@ -1,5 +1,5 @@
 name: opentabu
-description: Open version of tabu
+description: Open source version of tabu
 version: 1.0.0+1
 
 environment:
@@ -20,10 +20,17 @@ dependencies:
   vibration: ^1.7.3
   auto_size_text: ^2.1.0
   wakelock: ^0.2.1+1
+  google_fonts: ^1.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  #android: "launcher_icon"
+  ios: true
+  android: true
+  image_path: "assets/icons/logo.png"
 
 flutter:
   uses-material-design: true
@@ -31,3 +38,8 @@ flutter:
   assets:
     - assets/csv/words.csv
     - assets/sounds/
+    - assets/icons/
+  fonts:
+    - family: SFPro
+      fonts:
+        - asset: assets/fonts/SF-Pro-Display-Black.otf

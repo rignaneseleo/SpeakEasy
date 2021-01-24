@@ -4,7 +4,7 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'package:opentabu/model/word.dart';
-import 'package:opentabu/persistence/dataReader.dart';
+import 'package:opentabu/persistence/data_reader.dart';
 
 class FakeDataReader extends DataReader {
   get words {
