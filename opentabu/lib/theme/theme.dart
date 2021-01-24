@@ -14,6 +14,12 @@ const Color myGreen = const Color(0xFF27ae60);
 const Color myYellow = const Color(0xFFF1EAA9);
 
 ThemeData mainTheme = ThemeData(
+  pageTransitionsTheme: PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      }
+  ),
   primarySwatch: materialPurple,
   textTheme: TextTheme(
     headline1: TextStyle(
