@@ -27,6 +27,14 @@ bool hasVibration = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Turn off landscape mode
+  await SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+  );
+
   runApp(
     MaterialApp(
       theme: mainTheme,
