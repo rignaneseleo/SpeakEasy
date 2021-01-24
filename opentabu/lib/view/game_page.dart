@@ -97,11 +97,15 @@ class GamePageState extends State<GamePage> {
   }
 
   void pauseGame() {
+    GameController _gameController = context.read(gameProvider);
+    if (!(_gameController.gameState == GameState.playing) &&
+        !(_gameController.gameState == GameState.init)) return;
+
     //Cancel timer
     _turnTimer.cancel();
 
     //Pause game
-    context.read(gameProvider).pauseGame();
+    _gameController.pauseGame();
   }
 
   void resumeGame() {
@@ -140,7 +144,8 @@ class GamePageState extends State<GamePage> {
             case GameState.ready:
             case GameState.pause:
             case GameState.ended:
-              return true;
+              showDialogToExit();
+              break;
           }
 
           return false;
@@ -149,10 +154,6 @@ class GamePageState extends State<GamePage> {
           body: Material(
             child: Container(
               width: double.infinity,
-              /* padding: EdgeInsets.symmetric(
-                horizontal: 28,
-                vertical: 28,
-              ),*/
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,8 +166,45 @@ class GamePageState extends State<GamePage> {
                       GameInfoWidget(),
                       Positioned(
                         bottom: -40,
-                        child: TimeWidget(_timerDuration),
+                        child: TimeWidget(_timerDuration, () => pauseGame()),
                       ),
+                      Consumer(builder: (context, watch, child) {
+                        GameController _gameController = watch(gameProvider);
+                        if (_gameController.gameState == GameState.playing ||
+                            _gameController.gameState == GameState.init) {
+                          return Positioned(
+                            right: 10,
+                            top: 10,
+                            child: SafeArea(
+                              child: GestureDetector(
+                                child: Icon(
+                                  Icons.pause,
+                                  color: txtWhite,
+                                ),
+                                onTap: () => pauseGame(),
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (_gameController.gameState == GameState.pause) {
+                          return Positioned(
+                            right: 10,
+                            top: 10,
+                            child: SafeArea(
+                              child: GestureDetector(
+                                child: Icon(
+                                  Icons.exit_to_app_rounded,
+                                  color: txtWhite,
+                                ),
+                                onTap: () => showDialogToExit(),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Container();
+                      }),
                     ],
                   ),
                   Consumer(
@@ -209,6 +247,50 @@ class GamePageState extends State<GamePage> {
             ),
           ),
         ));
+  }
+
+  void showDialogToExit() {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          'Do you want to exit?',
+          style:
+              Theme.of(context).textTheme.headline4.copyWith(color: darkPurple),
+        ),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('You are going back to the home.'),
+              Text('This match will end.'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Nope',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline5
+                    .copyWith(color: lightPurple)),
+            onPressed: () {
+              Get.back();
+            },
+          ),
+          TextButton(
+            child: Text('Yep',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline5
+                    .copyWith(color: lightPurple)),
+            onPressed: () {
+              Get.back(canPop: true);
+              Get.back(canPop: true);
+            },
+          ),
+        ],
+      ),
+      useSafeArea: true,
+    );
   }
 
   Widget pauseBody() {
@@ -375,8 +457,9 @@ class TurnWidget extends ConsumerWidget {
 
 class TimeWidget extends ConsumerWidget {
   final _timerDuration;
+  final onTap;
 
-  TimeWidget(this._timerDuration);
+  TimeWidget(this._timerDuration, this.onTap);
 
   @override
   Widget build(BuildContext context, watch) {
@@ -386,23 +469,26 @@ class TimeWidget extends ConsumerWidget {
     int secondsLeft = _timerDuration - _gameController.secondsPassed;
 
     return new Center(
-      child: Container(
-        height: 65,
-        width: 65,
-        decoration: new BoxDecoration(
-          color: lightPurple,
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: new Text(
-            secondsLeft.toString(),
-            style: Theme.of(context).textTheme.headline4.copyWith(
-                  color: _timerDuration - _gameController.secondsPassed < 8
-                      ? myRed
-                      : txtWhite,
-                ),
+      child: GestureDetector(
+        child: Container(
+          height: 65,
+          width: 65,
+          decoration: new BoxDecoration(
+            color: lightPurple,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: new Text(
+              secondsLeft.toString(),
+              style: Theme.of(context).textTheme.headline4.copyWith(
+                    color: _timerDuration - _gameController.secondsPassed < 8
+                        ? myRed
+                        : txtWhite,
+                  ),
+            ),
           ),
         ),
+        onTap: onTap,
       ),
     );
   }
@@ -570,8 +656,10 @@ class SkipTextWidget extends ConsumerWidget {
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: UpperCaseText(
           _gameController.skipLeftCurrentTeam.toString() + " SKIP",
-          style:
-              Theme.of(context).textTheme.headline6.copyWith(color: darkPurple)),
+          style: Theme.of(context)
+              .textTheme
+              .headline6
+              .copyWith(color: darkPurple)),
     );
   }
 }
