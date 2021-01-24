@@ -27,7 +27,7 @@ class _SelectorButtonState extends State<SelectorButton> {
     return Container(
       margin: EdgeInsets.only(top: 20),
       decoration: new BoxDecoration(
-        color: lightPurple,
+        color: midPurple,
         borderRadius: new BorderRadius.all(
           const Radius.circular(10.0),
         ),
@@ -86,7 +86,7 @@ class SelectionItem extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: 1),
           height: 22,
           decoration: new BoxDecoration(
-            color: highlighted ? darkPurple : lightPurple,
+            color: highlighted ? darkPurple : Colors.transparent,
             borderRadius: new BorderRadius.all(
               const Radius.circular(6.0),
             ),

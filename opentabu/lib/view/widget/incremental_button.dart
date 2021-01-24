@@ -40,7 +40,7 @@ class _IncrementalButtonState extends State<IncrementalButton> {
     return Container(
       margin: EdgeInsets.only(top: 20),
       decoration: new BoxDecoration(
-        color: lightPurple,
+        color: midPurple,
         borderRadius: new BorderRadius.all(
           const Radius.circular(10.0),
         ),
