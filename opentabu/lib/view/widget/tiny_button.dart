@@ -15,17 +15,18 @@ class TinyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
-      margin:EdgeInsets.only(top: 15),
+      margin: EdgeInsets.only(top: 15),
       child: Center(
         child: GestureDetector(
-            child: UpperCaseText(
-              text,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .copyWith(color: textColor),
-            ),
-            onTap: onPressed),
+          child: UpperCaseText(
+            text,
+            style: Theme.of(context)
+                .textTheme
+                .headline6
+                .copyWith(color: textColor),
+          ),
+          onTap: onPressed,
+        ),
       ),
     );
   }

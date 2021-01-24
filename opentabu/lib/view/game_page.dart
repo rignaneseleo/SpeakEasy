@@ -242,10 +242,13 @@ class GamePageState extends State<GamePage> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(child: WordWidget(_nTaboosToShow)),
-        SkipButton(),
+        SkipTextWidget(),
         new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             IncorrectAnswerButton(),
+            SkipButton(),
             CorrectAnswerButton(),
           ],
         ),
@@ -431,36 +434,31 @@ class WordWidget extends ConsumerWidget {
       ));
     }
 
-    return GestureDetector(
-      child: Container(
-        padding: new EdgeInsets.all(15.0),
-        child: new Column(
-          children: <Widget>[
-            new Padding(
-                padding: new EdgeInsets.symmetric(vertical: 30.0),
-                child: new UpperCaseAutoSizeText(
-                  _gameController.currentWord.wordToGuess,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline2
-                      .copyWith(color: txtGrey),
-                  maxFontSize: 56,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )),
-            new Column(children: taboos)
-          ],
-        ),
+    return Container(
+      padding: new EdgeInsets.all(15.0),
+      child: new Column(
+        children: <Widget>[
+          new Padding(
+              padding: new EdgeInsets.symmetric(vertical: 30.0),
+              child: new UpperCaseAutoSizeText(
+                _gameController.currentWord.wordToGuess,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline2
+                    .copyWith(color: txtGrey),
+                maxFontSize: 56,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+          new Column(children: taboos),
+        ],
       ),
-      onHorizontalDragStart: (details) {
-        // Note: Sensitivity is integer used when you don't want to mess up vertical drag
-        if (_gameController.skipLeftCurrentTeam >
-            0)  {
-          playSkipSound();
-          _gameController.skipAnswer();
-        }
-      },
     );
+
+    if (_gameController.skipLeftCurrentTeam > 0) {
+      playSkipSound();
+      _gameController.skipAnswer();
+    }
   }
 }
 
@@ -563,20 +561,18 @@ class TeamItem extends StatelessWidget {
   }
 }
 
-class SkipButton extends ConsumerWidget {
+class SkipTextWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    return new TinyButton(
-        text: _gameController.skipLeftCurrentTeam.toString() + " SKIP",
-        textColor: lightPurple,
-        onPressed: _gameController.skipLeftCurrentTeam == 0
-            ? null
-            : () {
-                playSkipSound();
-                _gameController.skipAnswer();
-              });
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      child: UpperCaseText(
+          _gameController.skipLeftCurrentTeam.toString() + " SKIP",
+          style:
+              Theme.of(context).textTheme.headline6.copyWith(color: darkPurple)),
+    );
   }
 }
 
@@ -600,6 +596,36 @@ class IncorrectAnswerButton extends ConsumerWidget {
             playWrongAnswerSound();
             _gameController.wrongAnswer(team: customTeam);
           }),
+    ));
+  }
+}
+
+class SkipButton extends ConsumerWidget {
+  //This is used to fix the scores
+  final int customTeam;
+
+  SkipButton({this.customTeam});
+
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
+
+    return new Expanded(
+        child: Opacity(
+      opacity: _gameController.skipLeftCurrentTeam == 0 ? 0.3 : 1,
+      child: Container(
+        margin: EdgeInsets.all(3),
+        child: BigIconButton(
+          bgColor: myYellow,
+          icon: Image.asset('assets/icons/skip.png'),
+          onPressed: () {
+            if (_gameController.skipLeftCurrentTeam == 0) return;
+
+            playSkipSound();
+            _gameController.skipAnswer();
+          },
+        ),
+      ),
     ));
   }
 }
