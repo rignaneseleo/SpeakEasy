@@ -42,6 +42,13 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: MyScaffold(
+        topIcon: GestureDetector(
+          child: Icon(
+            Icons.settings,
+            color: txtWhite,
+          ),
+          onTap: () =>Get.to(InfoPage()),
+        ),
         widgets: <Widget>[
           MyTitle(),
           SelectorButton(

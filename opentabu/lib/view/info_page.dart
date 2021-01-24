@@ -1,4 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:opentabu/theme/theme.dart';
+import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InfoPage extends StatelessWidget {
@@ -7,38 +10,28 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: new Text(
-            "Info",
-            style: TextStyle(fontSize: 22),
+    return MyScaffold(widgets: [
+      //new Text("VERSIONE ${Weco.AppVersion}"),
+      /*Container(
+        height: 200,
+        child: TextButton(
+          onPressed: () => _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
+          child: new Text(
+            "Report BUG",
+            style: Theme.of(context).textTheme.headline4.copyWith(color: myRed),
           ),
         ),
-        body: new Center(
-            child: new Column(
-
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                //new Text("VERSIONE ${Weco.AppVersion}"),
-                GestureDetector(
-                  child: new Text("Made by Leonardo Rignanese with ☕️"),
-                  onTap: () async =>
-                  await _launchURL("https://www.linkedin.com/in/rignaneseleo/"),
-                ),
-                new Container(
-                  height: 100.0,
-                ),
-                new FlatButton(
-                    onPressed: () => _launchURL(
-                        "mailto:$emailLeo?subject=Bug%20tabu%20"),
-                    child: new Text(
-                      "Report BUG",
-                      style: TextStyle(color: Colors.red.shade900),
-                    )),
-
-              ],
-            )));
+      ),*/
+      GestureDetector(
+        child: new AutoSizeText(
+          "Made by\nLeonardo Rignanese",
+          style: Theme.of(context).textTheme.headline1,
+          maxLines: 3,
+        ),
+        onTap: () async =>
+            await _launchURL("https://www.linkedin.com/in/rignaneseleo/"),
+      ),
+    ]);
   }
 
   _launchURL(url) async {
