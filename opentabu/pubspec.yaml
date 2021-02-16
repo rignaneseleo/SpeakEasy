@@ -21,6 +21,8 @@ dependencies:
   auto_size_text: ^2.1.0
   wakelock: ^0.2.1+1
   google_fonts: ^1.1.1
+  simple_animations: ^2.5.0
+  page_transition: 1.1.7+6
 
 dev_dependencies:
   flutter_test:

@@ -18,6 +18,7 @@ import 'package:opentabu/view/widget/my_title.dart';
 import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/selector_button.dart';
 import 'package:opentabu/view/widget/tiny_button.dart';
+import 'package:simple_animations/simple_animations.dart';
 
 import 'game_page.dart';
 import 'info_page.dart';
@@ -29,13 +30,21 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with AnimationMixin {
   Settings _settings;
 
+  Animation<double> sizeMenuItems;
   bool _displayAdvancedPreferences = false;
 
   HomePageState() {
     _settings = new Settings();
+  }
+
+  @override
+  void initState() {
+    sizeMenuItems = Tween(begin: 0.0, end: 50.0).animate(controller);
+
+    super.initState();
   }
 
   @override
@@ -47,7 +56,7 @@ class HomePageState extends State<HomePage> {
             Icons.settings,
             color: txtWhite,
           ),
-          onTap: () =>Get.to(InfoPage()),
+          onTap: () => Get.to(InfoPage()),
         ),
         widgets: <Widget>[
           MyTitle(),
@@ -69,12 +78,19 @@ class HomePageState extends State<HomePage> {
               text:
                   "${_displayAdvancedPreferences ? "↓" : "↑"} ADVANCED PREFERENCES",
               textColor: txtGrey,
-              onPressed: () => setState(() =>
-                  _displayAdvancedPreferences = !_displayAdvancedPreferences),
+              onPressed: () {
+                if (_displayAdvancedPreferences) {
+                  controller.playReverse(duration: Duration(milliseconds: 100));
+                } else {
+                  controller.play(duration: Duration(milliseconds: 100));
+                }
+                _displayAdvancedPreferences = !_displayAdvancedPreferences;
+              },
             ),
           ),
-          if (_displayAdvancedPreferences)
-            SelectorButton(
+          SizedBox(
+            height: sizeMenuItems.value,
+            child: SelectorButton(
               indexSelected: _settings.nTaboos - 3,
               items: [
                 "3 Taboos",
@@ -86,8 +102,10 @@ class HomePageState extends State<HomePage> {
                 _settings.nTaboos = i + 3;
               },
             ),
-          if (_displayAdvancedPreferences)
-            IncrementalButton(
+          ),
+          SizedBox(
+            height: sizeMenuItems.value,
+            child: IncrementalButton(
               increment: 1,
               initialValue: _settings.nTurns,
               text: "Turns",
@@ -97,8 +115,10 @@ class HomePageState extends State<HomePage> {
                 _settings.nTurns = i;
               },
             ),
-          if (_displayAdvancedPreferences)
-            IncrementalButton(
+          ),
+          SizedBox(
+            height: sizeMenuItems.value,
+            child: IncrementalButton(
               increment: 10,
               text: "Seconds",
               min: kReleaseMode ? 30 : 5,
@@ -108,8 +128,10 @@ class HomePageState extends State<HomePage> {
                 _settings.turnDurationInSeconds = i;
               },
             ),
-          if (_displayAdvancedPreferences)
-            IncrementalButton(
+          ),
+          SizedBox(
+            height: sizeMenuItems.value,
+            child: IncrementalButton(
               increment: 1,
               initialValue: _settings.nSkip,
               text: "Skips",
@@ -119,6 +141,7 @@ class HomePageState extends State<HomePage> {
                 _settings.nSkip = i;
               },
             ),
+          ),
           BigButton(
             text: "start",
             bgColor: lightPurple,
@@ -130,13 +153,9 @@ class HomePageState extends State<HomePage> {
       onVerticalDragUpdate: (details) {
         // Note: Sensitivity is integer used when you don't want to mess up vertical drag
         if (details.delta.dy > 10) {
-          setState(() {
-            _displayAdvancedPreferences = false;
-          });
+          controller.playReverse(duration: Duration(milliseconds: 100));
         } else if (details.delta.dy < -10) {
-          setState(() {
-            _displayAdvancedPreferences = true;
-          });
+          controller.play(duration: Duration(milliseconds: 100));
         }
       },
     );
