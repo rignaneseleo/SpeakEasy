@@ -503,42 +503,44 @@ class WordWidget extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    List<Widget> taboos = new List<Widget>();
+    List<Widget> taboos = [];
 
     List<String> _taboos = _gameController.currentWord.taboos;
 
     for (int i = 0; i < _nTaboosToShow; i++) {
-      taboos.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: UpperCaseAutoSizeText(
-          _taboos[i],
-          maxFontSize: 35.0,
-          style:
-              Theme.of(context).textTheme.headline2.copyWith(color: txtBlack),
-          maxLines: 1,
-        ),
+      taboos.add(UpperCaseAutoSizeText(
+        _taboos[i],
+        maxFontSize: 35.0,
+        style: Theme.of(context).textTheme.headline2.copyWith(color: txtBlack),
+        maxLines: 1,
       ));
     }
 
-    return Container(
-      padding: new EdgeInsets.all(15.0),
-      child: new Column(
-        children: <Widget>[
-          new Padding(
-              padding: new EdgeInsets.symmetric(vertical: 30.0),
-              child: new UpperCaseAutoSizeText(
-                _gameController.currentWord.wordToGuess,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline2
-                    .copyWith(color: txtGrey),
-                maxFontSize: 56,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )),
-          new Column(children: taboos),
-        ],
-      ),
+    return new Column(
+      mainAxisSize: MainAxisSize.max,
+
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical:25.0),
+          child: new UpperCaseAutoSizeText(
+            _gameController.currentWord.wordToGuess,
+            style: Theme.of(context).textTheme.headline2.copyWith(color: txtGrey),
+            maxFontSize: 56,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+         Expanded(
+           child: Padding(
+             padding: const EdgeInsets.symmetric(vertical:10.0),
+             child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: taboos,
+        ),
+           ),
+         ),
+      ],
     );
 
     if (_gameController.skipLeftCurrentTeam > 0) {
