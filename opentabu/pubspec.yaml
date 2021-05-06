@@ -23,6 +23,7 @@ dependencies:
   google_fonts: ^1.1.1
   simple_animations: ^2.5.0
   page_transition: 1.1.7+6
+  fluttertoast: ^8.0.6
 
 dev_dependencies:
   flutter_test:
