@@ -53,7 +53,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
       child: MyScaffold(
         topIcon: GestureDetector(
           child: Icon(
-            Icons.settings,
+            Icons.info,
             color: txtWhite,
           ),
           onTap: () => Get.to(InfoPage()),
