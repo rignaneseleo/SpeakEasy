@@ -56,7 +56,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             Icons.info,
             color: txtWhite,
           ),
-          onTap: () => Get.to(InfoPage()),
+          onTap: () => Get.to(InfoPage(), transition: Transition.upToDown),
         ),
         widgets: <Widget>[
           MyTitle(),
@@ -146,7 +146,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             text: "start",
             bgColor: lightPurple,
             textColor: txtWhite,
-            onPressed: () => Get.to(GamePage(_settings)),
+            onPressed: () => Get.to(GamePage(_settings), transition: Transition.downToUp),
           ),
         ],
       ),
