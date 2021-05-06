@@ -187,7 +187,8 @@ class GamePageState extends State<GamePage> {
                           );
                         }
 
-                        if (_gameController.gameState == GameState.pause) {
+                        if (_gameController.gameState == GameState.pause ||
+                            _gameController.gameState == GameState.ready) {
                           return Positioned(
                             right: 10,
                             top: 10,
@@ -518,28 +519,28 @@ class WordWidget extends ConsumerWidget {
 
     return new Column(
       mainAxisSize: MainAxisSize.max,
-
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(vertical:25.0),
+          padding: const EdgeInsets.symmetric(vertical: 25.0),
           child: new UpperCaseAutoSizeText(
             _gameController.currentWord.wordToGuess,
-            style: Theme.of(context).textTheme.headline2.copyWith(color: txtGrey),
+            style:
+                Theme.of(context).textTheme.headline2.copyWith(color: txtGrey),
             maxFontSize: 56,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
-         Expanded(
-           child: Padding(
-             padding: const EdgeInsets.symmetric(vertical:10.0),
-             child: Column(
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: taboos,
+            ),
+          ),
         ),
-           ),
-         ),
       ],
     );
 
