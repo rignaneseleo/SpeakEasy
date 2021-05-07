@@ -12,3 +12,5 @@ pubspec.lock
 doc/api/
 opentabu/.flutter-plugins-dependencies
 opentabu/android/key.properties
+opentabu/ios/Flutter/.last_build_id
+opentabu/ios/Podfile.lock
