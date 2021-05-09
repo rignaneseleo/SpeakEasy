@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:opentabu/theme/theme.dart';
@@ -21,8 +22,10 @@ class BigButton extends StatelessWidget {
           elevation: 0,
           minWidth: double.infinity,
           height: 90,
-          child: UpperCaseText(
-            text,
+          child: AutoSizeText(
+            text.toUpperCase(),
+            maxLines: 1,
+            textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
                 .headline2
