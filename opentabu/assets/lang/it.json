@@ -26,5 +26,8 @@
   "adjust_score": "Sistema il punteggio del team {}:",
   "next_turn": "Turno successivo",
   "winners_are": "I vincitori sono:\n",
-  "#is_the_winner": "Il team {} ha vinto!"
+  "#is_the_winner": "Il team {} ha vinto!",
+  "Support":  "Supporta il progetto",
+  "Analytics": "Statistiche",
+  "report_bug": "Segnala un problema"
 }

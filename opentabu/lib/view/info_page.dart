@@ -35,7 +35,7 @@ class InfoPage extends StatelessWidget {
             TextButton(
               onPressed: () => showToast("Soon available, but thanks! :)"),
               child: new Text(
-                "Donate",
+                "Support".tr(),
                 style: Theme.of(context)
                     .textTheme
                     .headline4
@@ -45,7 +45,7 @@ class InfoPage extends StatelessWidget {
             TextButton(
               onPressed: () => showToast("Stay tuned ;)"),
               child: new Text(
-                "Analytics",
+                "Analytics".tr(),
                 style: Theme.of(context).textTheme.headline4,
               ),
             ),
@@ -53,7 +53,7 @@ class InfoPage extends StatelessWidget {
               onPressed: () =>
                   _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
               child: new Text(
-                "Report BUG",
+                "report_bug".tr(),
                 style: Theme.of(context)
                     .textTheme
                     .headline4
