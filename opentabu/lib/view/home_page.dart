@@ -3,15 +3,13 @@
 * GNU Affero General Public License v3.0: https://choosealicense.com/licenses/agpl-3.0/
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/persistence/csv_data_reader.dart';
-import 'package:opentabu/persistence/data_reader.dart';
 import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/utils/uppercase_text.dart';
 import 'package:opentabu/view/widget/incremental_button.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:opentabu/view/widget/my_title.dart';
@@ -63,10 +61,10 @@ class HomePageState extends State<HomePage> with AnimationMixin {
           SelectorButton(
             indexSelected: 0,
             items: [
-              "2 Teams",
-              "3 Teams",
-              "4 Teams",
-              "5 Teams",
+              '#Teams'.tr(args: ['2']),
+              '#Teams'.tr(args: ['3']),
+              '#Teams'.tr(args: ['4']),
+              '#Teams'.tr(args: ['5']),
             ],
             onValueChanged: (i) {
               print("Team number set to ${i + 2}");
@@ -75,8 +73,8 @@ class HomePageState extends State<HomePage> with AnimationMixin {
           ),
           Center(
             child: TinyButton(
-              text:
-                  "${_displayAdvancedPreferences ? "↓" : "↑"} ADVANCED PREFERENCES",
+              text: "advanced_preferences"
+                  .tr(args: [_displayAdvancedPreferences ? "↓" : "↑"]),
               textColor: txtGrey,
               onPressed: () {
                 if (_displayAdvancedPreferences) {
@@ -93,9 +91,9 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             child: SelectorButton(
               indexSelected: _settings.nTaboos - 3,
               items: [
-                "3 Taboos",
-                "4 Taboos",
-                "5 Taboos",
+                '#Taboos'.tr(args: ['3']),
+                '#Taboos'.tr(args: ['4']),
+                '#Taboos'.tr(args: ['5']),
               ],
               onValueChanged: (i) {
                 print("Taboo number set to ${i + 3}");
@@ -108,7 +106,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             child: IncrementalButton(
               increment: 1,
               initialValue: _settings.nTurns,
-              text: "Turns",
+              text: "Turns".tr(),
               min: 3,
               max: 20,
               onValueChanged: (i) {
@@ -120,7 +118,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             height: sizeMenuItems.value,
             child: IncrementalButton(
               increment: 10,
-              text: "Seconds",
+              text: "Seconds".tr(),
               min: kReleaseMode ? 30 : 5,
               max: 180,
               initialValue: _settings.turnDurationInSeconds,
@@ -134,7 +132,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             child: IncrementalButton(
               increment: 1,
               initialValue: _settings.nSkip,
-              text: "Skips",
+              text: "Skips".tr(),
               min: 0,
               max: 10,
               onValueChanged: (i) {
@@ -143,10 +141,11 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             ),
           ),
           BigButton(
-            text: "start",
+            text: "Start".tr(),
             bgColor: lightPurple,
             textColor: txtWhite,
-            onPressed: () => Get.to(GamePage(_settings), transition: Transition.downToUp),
+            onPressed: () =>
+                Get.to(GamePage(_settings), transition: Transition.downToUp),
           ),
         ],
       ),

@@ -1,6 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
+import 'package:easy_localization/easy_localization.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/toast.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';

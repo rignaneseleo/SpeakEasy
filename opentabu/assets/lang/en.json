@@ -1,0 +1,41 @@
+{
+  "msg": "{} are written in the {} language",
+  "msg_named": "Easy localization are written in the {lang} language",
+  "msg_mixed": "{} are written in the {lang} language",
+  "gender": {
+    "male": "Hi man ;) {}",
+    "female": "Hello girl :) {}",
+    "other": "Hello {}"
+  },
+  "example": {
+    "hello": "Hello",
+    "world": "World!",
+    "helloWorld": "@:example.hello @:example.world"
+  },
+  "#Teams": "{} Teams",
+  "Team": "Team",
+  "#Taboos": "{} Taboos",
+  "Turns": "Turns",
+  "Turn": "Turn",
+  "Seconds": "Seconds",
+  "Skips": "Skips",
+  "Start": "Start",
+  "Loading": "Loading",
+  "want_exit?": "Do you want to exit?",
+  "are_going_back_home": "You are going back to the home.",
+  "match_will_end": "This match will end.",
+  "Nope": "Nope",
+  "Yep": "Yep",
+  "Pause": "Pause",
+  "Resume": "Resume",
+  "End": "End",
+  "back_home": "Back home",
+  "turn_is_over": "YOUR TIME IS OVER :(",
+  "pass_the_phone": "Pass the phone to the next player.",
+  "missed_point_fix_score": "MISSED A POINT? FIX SCORE",
+  "adjust_score": "ADJUST TEAM {} SCORE:",
+  "next_turn": "NEXT TURN",
+  "winners_are": "The winners are:\n",
+  "#is_the_winner": "Team {} is the winner!",
+  "advanced_preferences": "{} ADVANCED PREFERENCES"
+}

@@ -8,7 +8,9 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
-import 'package:get/get.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:opentabu/controller/game_controller.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
@@ -130,7 +132,7 @@ class GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _body = Text("Loading");
+    Widget _body = Text("Loading".tr());
 
     return WillPopScope(
         onWillPop: () async {
@@ -254,21 +256,21 @@ class GamePageState extends State<GamePage> {
     Get.dialog(
       AlertDialog(
         title: Text(
-          'Do you want to exit?',
+          'want_exit?'.tr(),
           style:
               Theme.of(context).textTheme.headline4.copyWith(color: darkPurple),
         ),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text('You are going back to the home.'),
-              Text('This match will end.'),
+              Text('are_going_back_home'.tr()),
+              Text('match_will_end'.tr()),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Nope',
+            child: Text('Nope'.tr(),
                 style: Theme.of(context)
                     .textTheme
                     .headline5
@@ -278,7 +280,7 @@ class GamePageState extends State<GamePage> {
             },
           ),
           TextButton(
-            child: Text('Yep',
+            child: Text('Yep'.tr(),
                 style: Theme.of(context)
                     .textTheme
                     .headline5
@@ -301,7 +303,7 @@ class GamePageState extends State<GamePage> {
           child: Center(
             child: BlinkingText(
               UpperCaseText(
-                "PAUSE",
+                "Pause".tr().toUpperCase(),
                 style: Theme.of(context)
                     .textTheme
                     .headline2
@@ -311,7 +313,7 @@ class GamePageState extends State<GamePage> {
           ),
         ),
         BigButton(
-          text: "RESUME",
+          text: "Resume".tr().toUpperCase(),
           bgColor: myYellow,
           textColor: txtBlack,
           onPressed: () => resumeGame(),
@@ -352,7 +354,7 @@ class GamePageState extends State<GamePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               UpperCaseAutoSizeText(
-                "YOUR TIME IS OVER :(",
+                "turn_is_over".tr().toUpperCase(),
                 style: Theme.of(context)
                     .textTheme
                     .headline2
@@ -360,10 +362,10 @@ class GamePageState extends State<GamePage> {
                 maxLines: 1,
                 maxFontSize: Theme.of(context).textTheme.headline2.fontSize,
               ),
-              Text("Pass the phone to the next player."),
+              Text("pass_the_phone".tr()),
               TextButton(
                 child: Text(
-                  "MISSED A POINT? FIX SCORE",
+                  "missed_point_fix_score".tr().toUpperCase(),
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -375,7 +377,8 @@ class GamePageState extends State<GamePage> {
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text("ADJUST TEAM ${selectedIndex + 1} SCORE:"),
+                        Text("adjust_score"
+                            .tr(args: [(selectedIndex + 1).toString()])),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -391,7 +394,7 @@ class GamePageState extends State<GamePage> {
           ),
         ),
         BigButton(
-          text: "NEXT TURN",
+          text: "next_turn".tr(),
           bgColor: myYellow,
           textColor: txtBlack,
           onPressed: () => initGame(),
@@ -403,10 +406,10 @@ class GamePageState extends State<GamePage> {
   Widget endBody(List<int> winners) {
     String text;
     if (winners.length > 1) {
-      text = "The winners are:\n";
-      for (int team in winners) text += "Team $team\n";
+      text = "winners_are".tr();
+      for (int team in winners) text += "Team".tr() + " $team\n";
     } else
-      text = "${winners.first} is the winner!";
+      text = "#is_the_winner".tr(args: [winners.first.toString()]);
 
     return Column(
       children: [
@@ -430,7 +433,7 @@ class GamePageState extends State<GamePage> {
           //onPressed: () => resumeGame(),
         ),*/
         BigButton(
-          text: "BACK HOME",
+          text: "back_home".tr().toUpperCase(),
           bgColor: lightPurple,
           textColor: txtWhite,
           onPressed: () => Navigator.of(context).pop(),
@@ -448,8 +451,8 @@ class TurnWidget extends ConsumerWidget {
     return Center(
       child: new Text(
         _gameController.gameState == GameState.ended
-            ? "End"
-            : "Turn " + (_gameController.currentTurn).toString(),
+            ? "End".tr()
+            : "Turn".tr() + " " + (_gameController.currentTurn).toString(),
         style: Theme.of(context).textTheme.headline5.copyWith(color: txtWhite),
       ),
     );
@@ -567,7 +570,7 @@ class GameInfoWidget extends ConsumerWidget {
 
       teams.add(Expanded(
         child: TeamItem(
-            name: "Team ${i + 1}",
+            name: "Team".tr() + " ${i + 1}",
             score: _gameController.scores[i],
             disabled: !isCurrentTeam),
       ));
@@ -658,7 +661,9 @@ class SkipTextWidget extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: UpperCaseText(
-          _gameController.skipLeftCurrentTeam.toString() + " SKIP",
+          _gameController.skipLeftCurrentTeam.toString() +
+              " " +
+              "Skips".tr().toUpperCase(),
           style: Theme.of(context)
               .textTheme
               .headline6

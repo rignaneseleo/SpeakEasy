@@ -5,6 +5,7 @@
 * */
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/all.dart';
@@ -26,6 +27,7 @@ bool hasVibration = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   // Turn off landscape mode
   await SystemChrome.setPreferredOrientations(
@@ -48,14 +50,31 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      child: GetMaterialApp(
-        title: 'OpenTabu',
-        home: new HomePage(),
-        theme: mainTheme,
-        routes: {
-          "/home": (_) => new HomePage(),
-        },
-      ),
+      child: EasyLocalization(
+          supportedLocales: [Locale('en'), Locale('it')],
+          path: 'assets/lang',
+          fallbackLocale: Locale('en', 'US'),
+          child: OpenTabuApp()),
     ),
   );
+}
+
+class OpenTabuApp extends StatelessWidget {
+  const OpenTabuApp({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      title: 'OpenTabu',
+      home: new HomePage(),
+      theme: mainTheme,
+      routes: {
+        "/home": (_) => new HomePage(),
+      },
+      //Easy_localization:
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+    );
+  }
 }
