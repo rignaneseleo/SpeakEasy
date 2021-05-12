@@ -44,18 +44,15 @@ class InfoPage extends StatelessWidget {
               TextButton(
                 onPressed: () => showToast("Soon available, but thanks! :)"),
                 child: new Text(
-                  "Support".tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4
-                      .copyWith(color: myYellow),
+                  "🌟  " + "Support".tr(),
+                  style: Theme.of(context).textTheme.headline4,
                 ),
               ),
               TextButton(
                 onPressed: () =>
                     Get.to(AnalyticsPage(), transition: Transition.upToDown),
                 child: new Text(
-                  "Analytics".tr(),
+                  "📊  " + "Analytics".tr(),
                   style: Theme.of(context).textTheme.headline4,
                 ),
               ),
@@ -63,11 +60,8 @@ class InfoPage extends StatelessWidget {
                 onPressed: () =>
                     _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
                 child: new Text(
-                  "report_bug".tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4
-                      .copyWith(color: txtGrey),
+                  "🤯  " + "report_bug".tr(),
+                  style: Theme.of(context).textTheme.headline4,
                 ),
               ),
             ],
