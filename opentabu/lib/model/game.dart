@@ -73,10 +73,12 @@ class Game {
     int highestScore = _scores.reduce(max);
 
     List<int> winners = [];
-    for (int i = 1; i < _scores.length; i++) {
+    for (int i = 0; i < _scores.length; i++) {
       //Note: team number is index+1
-      if (_scores[i] == highestScore) winners.add(i+1);
+      if (_scores[i] == highestScore) winners.add(i + 1);
     }
+
+    assert(winners.isNotEmpty);
     return winners;
   }
 
