@@ -38,7 +38,13 @@
   "winners_are": "The winners are:\n",
   "#is_the_winner": "Team {} is the winner!",
   "advanced_preferences": "{} ADVANCED PREFERENCES",
-  "Support":  "Support the project",
+  "Support": "Support the project",
   "Analytics": "Analytics",
-  "report_bug": "Report BUG"
+  "report_bug": "Report BUG",
+  "App": "App",
+  "Match": "Match",
+  "#Tabu": "# Tabu",
+  "#Played": "# Played",
+  "Correct": "Correct",
+  "Wrong": "Wrong"
 }

@@ -3,7 +3,7 @@
   "Taboos": "{} Taboo",
   "Turns": "Turni",
   "Seconds": "Secondi",
-  "Skips": "Skip",
+  "Skips": "Cambi",
   "Start": "Inizia",
   "advanced_preferences": "{} IMPOSTAZIONI AVANZATE",
   "#Teams": "{} Team",
@@ -29,5 +29,11 @@
   "#is_the_winner": "Il team {} ha vinto!",
   "Support":  "Supporta il progetto",
   "Analytics": "Statistiche",
-  "report_bug": "Segnala un problema"
+  "report_bug": "Segnala un problema",
+  "App": "App",
+  "Match": "Partite",
+  "#Tabu": "# Tabu",
+  "#Played": "# Giocate",
+  "Correct": "Parole indovinate",
+  "Wrong": "Errori"
 }
