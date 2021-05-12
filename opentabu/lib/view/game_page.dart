@@ -380,14 +380,21 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             children: [
               UpperCaseAutoSizeText(
                 "turn_is_over".tr().toUpperCase(),
+                textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
                     .headline2
                     .copyWith(color: darkPurple),
-                maxLines: 1,
+                maxLines: 2,
                 maxFontSize: Theme.of(context).textTheme.headline2.fontSize,
               ),
-              Text("pass_the_phone".tr()),
+              Text(
+                "pass_the_phone".tr(),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline6
+                    .copyWith(color: darkPurple),
+              ),
               TextButton(
                 child: Text(
                   "missed_point_fix_score".tr().toUpperCase(),
@@ -749,7 +756,10 @@ class SkipButton extends ConsumerWidget {
                     SvgPicture.asset('assets/icons/skip.svg'),
                     Text(
                       _gameController.skipLeftCurrentTeam.toString(),
-                      style: Theme.of(context).textTheme.headline5.copyWith(color: txtBlack),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline5
+                          .copyWith(color: txtBlack),
                     ),
                   ],
                 ),
