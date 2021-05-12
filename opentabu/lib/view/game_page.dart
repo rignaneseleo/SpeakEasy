@@ -9,6 +9,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_review/in_app_review.dart';
@@ -336,7 +337,7 @@ class GamePageState extends State<GamePage> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(child: WordWidget(_nTaboosToShow)),
-        SkipTextWidget(),
+        //SkipTextWidget(),
         new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -695,7 +696,7 @@ class IncorrectAnswerButton extends ConsumerWidget {
       margin: EdgeInsets.all(3),
       child: BigIconButton(
           bgColor: myRed,
-          icon: Image.asset('assets/icons/cross.png'),
+          icon: SvgPicture.asset('assets/icons/cross.svg'),
           onPressed: () {
             playWrongAnswerSound();
             _gameController.wrongAnswer(team: customTeam);
@@ -716,23 +717,43 @@ class SkipButton extends ConsumerWidget {
     GameController _gameController = watch(gameProvider);
 
     return new Expanded(
-        child: Opacity(
-      opacity: _gameController.skipLeftCurrentTeam == 0 ? 0.3 : 1,
-      child: Container(
-        margin: EdgeInsets.all(3),
-        child: BigIconButton(
-          bgColor: myYellow,
-          icon: Image.asset('assets/icons/skip.png'),
-          onPressed: () {
-            if (_gameController.skipLeftCurrentTeam == 0) return;
+      child: Opacity(
+        opacity: _gameController.skipLeftCurrentTeam == 0 ? 0.3 : 1,
+        child: Container(
+          margin: EdgeInsets.all(3),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Container(
+              margin: EdgeInsets.only(top: 20),
+              child: MaterialButton(
+                height: 80,
+                minWidth: double.infinity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    SvgPicture.asset('assets/icons/skip.svg'),
+                    Text(
+                      _gameController.skipLeftCurrentTeam.toString(),
+                      style: Theme.of(context).textTheme.headline5.copyWith(color: txtBlack),
+                    ),
+                  ],
+                ),
+                color: myYellow,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                onPressed: () {
+                  if (_gameController.skipLeftCurrentTeam == 0) return;
 
-            playSkipSound();
-            _gameController.skipAnswer();
-            AnalyticsController.addNewSkip();
-          },
+                  playSkipSound();
+                  _gameController.skipAnswer();
+                  AnalyticsController.addNewSkip();
+                },
+              ),
+            ),
+          ),
         ),
       ),
-    ));
+    );
   }
 }
 
@@ -751,7 +772,7 @@ class CorrectAnswerButton extends ConsumerWidget {
         margin: EdgeInsets.all(3),
         child: BigIconButton(
             bgColor: myGreen,
-            icon: Image.asset('assets/icons/check.png'),
+            icon: SvgPicture.asset('assets/icons/check.svg'),
             onPressed: () {
               playCorrectAnswerSound();
               _gameController.rightAnswer(team: customTeam);

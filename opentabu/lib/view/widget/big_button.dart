@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
 
@@ -42,7 +43,7 @@ class BigButton extends StatelessWidget {
 class BigIconButton extends StatelessWidget {
   final Color bgColor;
   final VoidCallback onPressed;
-  final Image icon;
+  final SvgPicture icon;
   final double size;
 
   const BigIconButton(
