@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:opentabu/controller/analytics_controller.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/view/widget/incremental_button.dart';
@@ -144,8 +145,11 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             text: "Start".tr(),
             bgColor: lightPurple,
             textColor: txtWhite,
-            onPressed: () =>
-                Get.to(GamePage(_settings), transition: Transition.downToUp),
+            onPressed: () {
+              AnalyticsController.addNewMatch();
+              return Get.to(GamePage(_settings),
+                  transition: Transition.downToUp);
+            },
           ),
         ],
       ),

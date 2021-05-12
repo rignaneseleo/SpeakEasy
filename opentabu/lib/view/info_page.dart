@@ -6,6 +6,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/toast.dart';
+import 'package:opentabu/view/analytics_page.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,64 +16,83 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(widgets: [
-      //new Text("VERSIONE ${Weco.AppVersion}"),
-      Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical:20.0),
-              child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_rounded,
-                    color: Theme.of(context).canvasColor,
-                  ),
-                  onPressed: () => Get.back()),
-            ),
-            Container(height: 60),
-            TextButton(
-              onPressed: () => showToast("Soon available, but thanks! :)"),
-              child: new Text(
-                "Support".tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .headline4
-                    .copyWith(color: myYellow),
+    return GestureDetector(
+      onVerticalDragUpdate: (details) {
+        int sensitivity = 8;
+        if (details.delta.dy < -sensitivity) {
+          // Up Swipe
+          Get.back();
+        }
+      },
+      child: MyScaffold(widgets: [
+        //new Text("VERSIONE ${Weco.AppVersion}"),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      color: Theme.of(context).canvasColor,
+                    ),
+                    onPressed: () => Get.back()),
               ),
-            ),
-            TextButton(
-              onPressed: () => showToast("Stay tuned ;)"),
-              child: new Text(
-                "Analytics".tr(),
-                style: Theme.of(context).textTheme.headline4,
+              Container(height: 60),
+              TextButton(
+                onPressed: () => showToast("Soon available, but thanks! :)"),
+                child: new Text(
+                  "Support".tr(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4
+                      .copyWith(color: myYellow),
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () =>
-                  _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
-              child: new Text(
-                "report_bug".tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .headline4
-                    .copyWith(color: txtGrey),
+              TextButton(
+                onPressed: () =>
+                    Get.to(AnalyticsPage(), transition: Transition.upToDown),
+                child: new Text(
+                  "Analytics".tr(),
+                  style: Theme.of(context).textTheme.headline4,
+                ),
               ),
-            ),
-          ],
+              TextButton(
+                onPressed: () =>
+                    _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
+                child: new Text(
+                  "report_bug".tr(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4
+                      .copyWith(color: txtGrey),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      GestureDetector(
-        child: new AutoSizeText(
-          "Made by\nLeonardo Rignanese",
-          style: Theme.of(context).textTheme.headline1,
-          maxLines: 3,
+        new AutoSizeText(
+          "Made by",
+          maxFontSize: Theme.of(context).textTheme.headline2.fontSize,
+          style: Theme.of(context)
+              .textTheme
+              .headline1
+              .copyWith(color: materialPurple),
+          maxLines: 1,
         ),
-        onTap: () async =>
-            await _launchURL("https://www.linkedin.com/in/rignaneseleo/"),
-      ),
-    ]);
+        GestureDetector(
+          child: new AutoSizeText(
+            "Leonardo Rignanese",
+            style: Theme.of(context).textTheme.headline1,
+            maxLines: 2,
+          ),
+          onTap: () async =>
+              await _launchURL("https://www.linkedin.com/in/rignaneseleo/"),
+        ),
+      ]),
+    );
   }
 
   _launchURL(url) async {

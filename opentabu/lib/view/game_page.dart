@@ -12,6 +12,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:opentabu/controller/analytics_controller.dart';
 import 'package:opentabu/controller/game_controller.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
@@ -291,7 +292,10 @@ class GamePageState extends State<GamePage> {
               Get.back(canPop: true);
 
               if (await InAppReview.instance.isAvailable()) {
-                InAppReview.instance.requestReview();
+                if (await AnalyticsController.getStartedMatches() == 3 ||
+                    await AnalyticsController.getStartedMatches() == 8 ||
+                    await AnalyticsController.getStartedMatches() == 15)
+                  InAppReview.instance.requestReview();
               }
             },
           ),
@@ -666,13 +670,12 @@ class SkipTextWidget extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: UpperCaseText(
-          _gameController.skipLeftCurrentTeam.toString() +
-              " " +
-              "Skips".tr().toUpperCase(),
-          style: Theme.of(context)
-              .textTheme
-              .headline6
-              .copyWith(color: darkPurple)),
+        _gameController.skipLeftCurrentTeam.toString() +
+            " " +
+            "Skips".tr().toUpperCase(),
+        style:
+            Theme.of(context).textTheme.headline6.copyWith(color: darkPurple),
+      ),
     );
   }
 }
@@ -696,6 +699,7 @@ class IncorrectAnswerButton extends ConsumerWidget {
           onPressed: () {
             playWrongAnswerSound();
             _gameController.wrongAnswer(team: customTeam);
+            AnalyticsController.addWrongAnswer();
           }),
     ));
   }
@@ -724,6 +728,7 @@ class SkipButton extends ConsumerWidget {
 
             playSkipSound();
             _gameController.skipAnswer();
+            AnalyticsController.addNewSkip();
           },
         ),
       ),
@@ -750,6 +755,7 @@ class CorrectAnswerButton extends ConsumerWidget {
             onPressed: () {
               playCorrectAnswerSound();
               _gameController.rightAnswer(team: customTeam);
+              AnalyticsController.addCorrectAnswer();
             }),
       ),
     );
