@@ -50,19 +50,6 @@ class AnalyticsPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Text(
-                    "App".tr().toUpperCase(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline3
-                        .copyWith(color: myYellow),
-                  ),
-                  buildLine(
-                    context,
-                    name: "#Tabu".tr(),
-                    value: words.length,
-                  ),
-                  Container(height: 30),
-                  Text(
                     "Match".tr().toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
@@ -98,7 +85,7 @@ class AnalyticsPage extends StatelessWidget {
     );
   }
 
-  Widget buildLine(context, {String name, int value}) {
+  Widget buildLine(context, {String name, value}) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [

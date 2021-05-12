@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:opentabu/main.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/toast.dart';
 import 'package:opentabu/view/analytics_page.dart';
@@ -25,7 +26,6 @@ class InfoPage extends StatelessWidget {
         }
       },
       child: MyScaffold(widgets: [
-        //new Text("VERSIONE ${Weco.AppVersion}"),
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -39,6 +39,17 @@ class InfoPage extends StatelessWidget {
                       color: Theme.of(context).canvasColor,
                     ),
                     onPressed: () => Get.back()),
+              ),
+              Container(height: 60),
+              buildLine(
+                context,
+                name: "Version".tr(),
+                value: packageInfo.version.toString(),
+              ),
+              buildLine(
+                context,
+                name: "#Tabu".tr(),
+                value: words.length,
               ),
               Container(height: 60),
               TextButton(
@@ -86,6 +97,26 @@ class InfoPage extends StatelessWidget {
               await _launchURL("https://www.linkedin.com/in/rignaneseleo/"),
         ),
       ]),
+    );
+  }
+
+  Widget buildLine(context, {String name, value}) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          child: new Text(
+            name.tr(),
+            style:
+                Theme.of(context).textTheme.headline4.copyWith(color: txtWhite),
+          ),
+        ),
+        Text(value.toString(),
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                .copyWith(color: txtWhite)),
+      ],
     );
   }
 

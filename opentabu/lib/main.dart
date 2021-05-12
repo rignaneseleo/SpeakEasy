@@ -17,6 +17,7 @@ import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/view/game_page.dart';
 import 'package:opentabu/view/home_page.dart';
 import 'package:opentabu/view/splash_screen.dart';
+import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:vibration/vibration.dart';
@@ -26,6 +27,7 @@ import 'persistence/csv_data_reader.dart';
 List<Word> words;
 bool hasVibration = false;
 SharedPreferences prefs;
+PackageInfo packageInfo;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +53,7 @@ Future<void> main() async {
   await loadSounds();
   hasVibration = await Vibration.hasVibrator();
   prefs = await SharedPreferences.getInstance();
+  packageInfo = await PackageInfo.fromPlatform();
 
   runApp(
     ProviderScope(

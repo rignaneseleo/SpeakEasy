@@ -27,7 +27,7 @@
   "next_turn": "Turno successivo",
   "winners_are": "I vincitori sono:\n",
   "#is_the_winner": "Il team {} ha vinto!",
-  "Support":  "Supporta il progetto",
+  "Support": "Supporta il progetto",
   "Analytics": "Statistiche",
   "report_bug": "Segnala un problema",
   "App": "App",
@@ -35,5 +35,6 @@
   "#Tabu": "# Tabu",
   "#Played": "# Giocate",
   "Correct": "Parole indovinate",
-  "Wrong": "Errori"
+  "Wrong": "Errori",
+  "Version": "Versione"
 }
