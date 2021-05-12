@@ -1,6 +1,6 @@
 name: opentabu
 description: Open source version of tabu
-version: 1.1.0+4
+version: 1.2.0+5
 
 environment:
   sdk: ">=2.5.2 <3.0.0"
