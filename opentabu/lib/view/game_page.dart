@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/all.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:opentabu/controller/game_controller.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
@@ -285,9 +286,13 @@ class GamePageState extends State<GamePage> {
                     .textTheme
                     .headline5
                     .copyWith(color: lightPurple)),
-            onPressed: () {
+            onPressed: () async {
               Get.back(canPop: true);
               Get.back(canPop: true);
+
+              if (await InAppReview.instance.isAvailable()) {
+                InAppReview.instance.requestReview();
+              }
             },
           ),
         ],
