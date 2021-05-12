@@ -41,6 +41,7 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: mainTheme,
       home: new SplashScreen(),
     ),
@@ -68,6 +69,7 @@ class OpenTabuApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'OpenTabu',
       home: new HomePage(),
       theme: mainTheme,
