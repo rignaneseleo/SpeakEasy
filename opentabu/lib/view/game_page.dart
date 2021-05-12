@@ -41,7 +41,7 @@ class GamePage extends StatefulWidget {
   }
 }
 
-class GamePageState extends State<GamePage> {
+class GamePageState extends State<GamePage> with WidgetsBindingObserver {
   final settings;
 
   Timer _turnTimer;
@@ -60,6 +60,7 @@ class GamePageState extends State<GamePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _turnTimer?.cancel();
     _countSecondsTimer?.cancel();
     Wakelock.disable();
@@ -68,6 +69,7 @@ class GamePageState extends State<GamePage> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     //Init game
 
@@ -91,6 +93,19 @@ class GamePageState extends State<GamePage> {
 
       initGame();
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        pauseGame();
+        break;
+    }
   }
 
   void initGame() {
