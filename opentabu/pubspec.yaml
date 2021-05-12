@@ -29,6 +29,7 @@ dependencies:
   shared_preferences: 2.0.5
   flutter_svg: 0.22.0
   package_info: 2.0.0
+  in_app_purchase: 0.5.2
 
 
 dev_dependencies:

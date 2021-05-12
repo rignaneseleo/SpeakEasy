@@ -36,5 +36,7 @@
   "#Played": "# Giocate",
   "Correct": "Parole indovinate",
   "Wrong": "Errori",
-  "Version": "Versione"
+  "Version": "Versione",
+  "error_trylater": "Errore. Prova più tardi",
+  "thankyou": "Grazie mille"
 }

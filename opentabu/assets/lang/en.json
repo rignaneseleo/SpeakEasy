@@ -47,5 +47,7 @@
   "#Played": "# Played",
   "Correct": "Correct",
   "Wrong": "Wrong",
-  "Version": "Version"
+  "Version": "Version",
+  "error_trylater": "Error. Try later",
+  "thankyou": "Thank you"
 }

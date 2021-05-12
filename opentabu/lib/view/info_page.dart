@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:opentabu/main.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/toast.dart';
@@ -53,7 +54,7 @@ class InfoPage extends StatelessWidget {
               ),
               Container(height: 60),
               TextButton(
-                onPressed: () => showToast("Soon available, but thanks! :)"),
+                onPressed: () => buildPaymentWidget(),
                 child: new Text(
                   "🌟  " + "Support".tr(),
                   style: Theme.of(context).textTheme.headline4,
@@ -126,5 +127,42 @@ class InfoPage extends StatelessWidget {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  Future buildPaymentWidget() async {
+    bool available = await InAppPurchaseConnection.instance.isAvailable();
+    if (!available) {
+      showToast("error_trylater".tr());
+      return;
+    }
+
+    //Get stuff available
+    const Set<String> _kIds = <String>{'donation0'};
+    final ProductDetailsResponse response =
+        await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
+    if (response.notFoundIDs.isNotEmpty) {
+      showToast("error_trylater".tr());
+      return;
+    }
+
+    //Register for updates
+    final Stream purchaseUpdated =
+        InAppPurchaseConnection.instance.purchaseUpdatedStream;
+    purchaseUpdated.listen((purchaseDetailsList) {}, onDone: () {
+      showToast("thankyou".tr() + " 🍻");
+    }, onError: (error) {
+      print("Payment error: " + error.toString());
+      showToast("error_trylater".tr());
+    });
+
+    //Perform the payment
+    List<ProductDetails> products = response.productDetails;
+    final ProductDetails productDetails = products.elementAt(0);
+    final PurchaseParam purchaseParam =
+        PurchaseParam(productDetails: productDetails);
+    InAppPurchaseConnection.instance
+        .buyConsumable(purchaseParam: purchaseParam);
+
+    // From here the purchase flow will be handled by the underlying store.
   }
 }
