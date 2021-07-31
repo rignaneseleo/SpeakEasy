@@ -15,6 +15,7 @@ class MyScaffold extends StatelessWidget {
         child: Stack(
           children: [
             Container(
+              height: MediaQuery.of(context).size.height,
               width: double.infinity,
               padding: EdgeInsets.symmetric(
                 horizontal: 28,

@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:opentabu/main.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
 
@@ -56,7 +57,7 @@ class BigIconButton extends StatelessWidget {
       margin: EdgeInsets.only(top: 20),
       child: MaterialButton(
           minWidth: double.infinity,
-          height: size,
+          height: (smallScreen ? size - 18 : size),
           child: icon,
           color: bgColor,
           shape:

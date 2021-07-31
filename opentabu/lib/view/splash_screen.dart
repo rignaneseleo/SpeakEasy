@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:opentabu/main.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:opentabu/view/widget/my_title.dart';
 
@@ -9,8 +10,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
+   @override
   Widget build(BuildContext context) {
+    smallScreen = MediaQuery.of(context).size.height < 1000;
     return MyScaffold(
       widgets: <Widget>[
         MyTitle(),

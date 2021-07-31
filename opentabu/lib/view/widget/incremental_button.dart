@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:opentabu/main.dart';
 import 'package:opentabu/theme/theme.dart';
 
 import 'selector_button.dart';
@@ -38,7 +39,7 @@ class _IncrementalButtonState extends State<IncrementalButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: EdgeInsets.only(top: smallScreen ? 10.0 : 20),
       decoration: new BoxDecoration(
         color: midPurple,
         borderRadius: new BorderRadius.all(

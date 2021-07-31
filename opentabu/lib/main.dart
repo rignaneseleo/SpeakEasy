@@ -30,10 +30,13 @@ bool hasVibration = false;
 SharedPreferences prefs;
 PackageInfo packageInfo;
 
+bool smallScreen = false;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   InAppPurchaseConnection.enablePendingPurchases();
+
 
   // Turn off landscape mode
   await SystemChrome.setPreferredOrientations(

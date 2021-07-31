@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:opentabu/main.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_review/in_app_review.dart';
@@ -78,7 +79,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       context.read(gameProvider).init(settings, words);
 
       _countSecondsTimer =
-      new Timer.periodic(new Duration(seconds: 1), (timer) {
+          new Timer.periodic(new Duration(seconds: 1), (timer) {
         if (_turnTimer.isActive) {
           GameController _gameController = context.read(gameProvider);
           _gameController.oneSecPassed();
@@ -183,9 +184,10 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     overflow: Overflow.visible,
                     alignment: Alignment.center,
                     children: [
-                      GameInfoWidget(),
+                      if (!smallScreen) GameInfoWidget(),
+                      if (smallScreen) GameInfoWidgetShrinked(),
                       Positioned(
-                        bottom: -40,
+                        bottom: smallScreen ? -28 : -40,
                         child: TimeWidget(_timerDuration, () => pauseGame()),
                       ),
                       Positioned(
@@ -506,8 +508,8 @@ class TimeWidget extends ConsumerWidget {
     return new Center(
       child: GestureDetector(
         child: Container(
-          height: 65,
-          width: 65,
+          height: smallScreen ? 50 : 65,
+          width: smallScreen ? 50 : 65,
           decoration: new BoxDecoration(
             color: lightPurple,
             shape: BoxShape.circle,
@@ -555,7 +557,7 @@ class WordWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 25.0),
+          padding: EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
           child: new UpperCaseAutoSizeText(
             _gameController.currentWord.wordToGuess,
             style:
@@ -642,6 +644,86 @@ class GameInfoWidget extends ConsumerWidget {
   }
 }
 
+class GameInfoWidgetShrinked extends ConsumerWidget {
+  final int clockOpacity;
+
+  GameInfoWidgetShrinked({this.clockOpacity = 1});
+
+  @override
+  Widget build(BuildContext context, watch) {
+    GameController _gameController = watch(gameProvider);
+
+    List<Widget> teams = [];
+
+    for (int i = 0; i < _gameController.numberOfPlayers; i++) {
+      bool isCurrentTeam = _gameController.currentTeam == i;
+
+      teams.add(Expanded(
+        child: TeamItem(
+            name: "T".tr() + " ${i + 1}",
+            score: _gameController.scores[i],
+            disabled: !isCurrentTeam),
+      ));
+    }
+
+    Widget playingTeamScore = AutoSizeText(
+      "Team".tr() +
+          " ${_gameController.currentTeam + 1}: " +
+          _gameController.scores[_gameController.currentTeam].toString(),
+      style: Theme.of(context)
+          .textTheme
+          .headline5
+          .copyWith(fontWeight: FontWeight.bold),
+      maxLines: 1,
+    );
+
+    switch (_gameController.gameState) {
+      case GameState.init:
+      case GameState.playing:
+        return new Container(
+          decoration: new BoxDecoration(
+            color: darkPurple,
+            borderRadius: new BorderRadius.vertical(
+              bottom: const Radius.circular(20.0),
+            ),
+          ),
+          padding: EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
+          child: SafeArea(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                playingTeamScore,
+                TurnWidget(),
+              ],
+            ),
+          ),
+        );
+      case GameState.ready:
+      case GameState.pause:
+      case GameState.ended:
+        return new Container(
+          decoration: new BoxDecoration(
+            color: darkPurple,
+            borderRadius: new BorderRadius.vertical(
+              bottom: const Radius.circular(20.0),
+            ),
+          ),
+          padding: EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
+          child: SafeArea(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: teams,
+            ),
+          ),
+        );
+    }
+  }
+}
+
 class TeamItem extends StatelessWidget {
   final bool disabled;
   final String name;
@@ -655,8 +737,9 @@ class TeamItem extends StatelessWidget {
     return Opacity(
       opacity: disabled ? 0.4 : 1,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-        padding: EdgeInsets.symmetric(vertical: 8),
+        margin: EdgeInsets.symmetric(
+            horizontal: smallScreen ? 2 : 5, vertical: smallScreen ? 0 : 8),
+        padding: EdgeInsets.symmetric(vertical: smallScreen ? 0 : 8),
         decoration: new BoxDecoration(
           color: darkPurple,
           borderRadius: new BorderRadius.all(
@@ -741,7 +824,7 @@ class SkipButton extends ConsumerWidget {
       child: Opacity(
         opacity: _gameController.skipLeftCurrentTeam == 0 ? 0.3 : 1,
         child: Container(
-          margin: EdgeInsets.all(3),
+          margin: EdgeInsets.all(smallScreen ? 0 : 3),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18.0),
             child: Container(
