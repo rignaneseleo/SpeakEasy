@@ -1,2 +1,4 @@
 # OpenTabu
-[FLUTTER] This is the game of Taboo
+
+PLAY STORE:
+https://play.google.com/store/apps/details?id=it.rignanese.leo.opentabu
