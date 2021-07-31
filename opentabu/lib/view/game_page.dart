@@ -78,7 +78,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       context.read(gameProvider).init(settings, words);
 
       _countSecondsTimer =
-          new Timer.periodic(new Duration(seconds: 1), (timer) {
+      new Timer.periodic(new Duration(seconds: 1), (timer) {
         if (_turnTimer.isActive) {
           GameController _gameController = context.read(gameProvider);
           _gameController.oneSecPassed();
@@ -188,6 +188,22 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                         bottom: -40,
                         child: TimeWidget(_timerDuration, () => pauseGame()),
                       ),
+                      Positioned(
+                        left: 10,
+                        top: 10,
+                        child: SafeArea(
+                          child: GestureDetector(
+                            child: Icon(
+                              Icons.exit_to_app_rounded,
+                              color: txtWhite,
+                            ),
+                            onTap: () {
+                              pauseGame();
+                              showDialogToExit();
+                            },
+                          ),
+                        ),
+                      ),
                       Consumer(builder: (context, watch, child) {
                         GameController _gameController = watch(gameProvider);
                         if (_gameController.gameState == GameState.playing ||
@@ -202,23 +218,6 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                                   color: txtWhite,
                                 ),
                                 onTap: () => pauseGame(),
-                              ),
-                            ),
-                          );
-                        }
-
-                        if (_gameController.gameState == GameState.pause ||
-                            _gameController.gameState == GameState.ready) {
-                          return Positioned(
-                            right: 10,
-                            top: 10,
-                            child: SafeArea(
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.exit_to_app_rounded,
-                                  color: txtWhite,
-                                ),
-                                onTap: () => showDialogToExit(),
                               ),
                             ),
                           );
