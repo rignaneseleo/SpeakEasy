@@ -57,7 +57,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             Icons.info,
             color: txtWhite,
           ),
-          onTap: () => Get.to(InfoPage(), transition: Transition.upToDown),
+          onTap: () => Get.to(()=>InfoPage(), transition: Transition.upToDown),
         ),
         widgets: <Widget>[
           Expanded(
@@ -163,7 +163,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             textColor: txtWhite,
             onPressed: () {
               AnalyticsController.addNewMatch();
-              return Get.to(GamePage(_settings),
+              return Get.to(()=>GamePage(_settings),
                   transition: Transition.downToUp);
             },
           ),

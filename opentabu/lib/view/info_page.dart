@@ -62,7 +62,7 @@ class InfoPage extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () =>
-                    Get.to(AnalyticsPage(), transition: Transition.upToDown),
+                    Get.to(()=>AnalyticsPage(), transition: Transition.upToDown),
                 child: new Text(
                   "📊  " + "Analytics".tr(),
                   style: Theme.of(context).textTheme.headline4,
