@@ -10,9 +10,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-   @override
+  @override
   Widget build(BuildContext context) {
-    smallScreen = MediaQuery.of(context).size.height < 1000;
+    print("Screen height: " + MediaQuery.of(context).size.height.toString());
+    smallScreen = MediaQuery.of(context).size.height < 600;
+
     return MyScaffold(
       widgets: <Widget>[
         MyTitle(),
