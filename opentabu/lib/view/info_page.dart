@@ -27,21 +27,22 @@ class InfoPage extends StatelessWidget {
         }
       },
       child: MyScaffold(widgets: [
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: Theme.of(context).canvasColor,
+                ),
+                onPressed: () => Get.back()),
+          ),
+        ),
         Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            physics: BouncingScrollPhysics(),
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Theme.of(context).canvasColor,
-                    ),
-                    onPressed: () => Get.back()),
-              ),
-              Container(height: 60),
+              Container(height: smallScreen ? 0 : 40),
               buildLine(
                 context,
                 name: "Version".tr(),
@@ -52,28 +53,37 @@ class InfoPage extends StatelessWidget {
                 name: "#Tabu".tr(),
                 value: words.length,
               ),
-              Container(height: 60),
-              TextButton(
-                onPressed: () => buildPaymentWidget(),
-                child: new Text(
-                  "🌟  " + "Support".tr(),
-                  style: Theme.of(context).textTheme.headline4,
+              Container(height: smallScreen ? 0 : 60),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () => buildPaymentWidget(),
+                  child: new Text(
+                    "🌟  " + "Support".tr(),
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
                 ),
               ),
-              TextButton(
-                onPressed: () =>
-                    Get.to(()=>AnalyticsPage(), transition: Transition.upToDown),
-                child: new Text(
-                  "📊  " + "Analytics".tr(),
-                  style: Theme.of(context).textTheme.headline4,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () => Get.to(() => AnalyticsPage(),
+                      transition: Transition.upToDown),
+                  child: new Text(
+                    "📊  " + "Analytics".tr(),
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
                 ),
               ),
-              TextButton(
-                onPressed: () =>
-                    _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
-                child: new Text(
-                  "🤯  " + "report_bug".tr(),
-                  style: Theme.of(context).textTheme.headline4,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () =>
+                      _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
+                  child: new Text(
+                    "🤯  " + "report_bug".tr(),
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
                 ),
               ),
             ],

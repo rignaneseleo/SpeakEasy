@@ -553,18 +553,22 @@ class WordWidget extends ConsumerWidget {
       ));
     }
 
-    return new Column(
-      mainAxisSize: MainAxisSize.max,
+    return new ListView(
+      physics: BouncingScrollPhysics(),
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
-          child: new UpperCaseAutoSizeText(
-            _gameController.currentWord.wordToGuess,
-            style:
-                Theme.of(context).textTheme.headline2.copyWith(color: txtGrey),
-            maxFontSize: 56,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
+            child: new UpperCaseAutoSizeText(
+              _gameController.currentWord.wordToGuess,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline2
+                  .copyWith(color: txtGrey),
+              maxFontSize: 56,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
         Expanded(
