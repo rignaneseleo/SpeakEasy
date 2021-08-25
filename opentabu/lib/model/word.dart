@@ -9,7 +9,6 @@ class Word {
   List<String> _taboos;
 
   Word(this._wordToGuess, this._taboos) {
-
     _wordToGuess = _capitalize(_wordToGuess.trim());
 
     for (int i = 0; i < _taboos.length; i++) {
@@ -23,10 +22,9 @@ class Word {
     _taboos.shuffle();
   }
 
-  get wordToGuess => _wordToGuess;
+  String get wordToGuess => _wordToGuess;
 
-  get taboos {
-
+  List<String> get taboos {
     return _taboos;
   }
 
