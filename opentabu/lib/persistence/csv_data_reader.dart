@@ -14,7 +14,7 @@ class CSVDataReader {
   static Future<List<Word>> readData() async {
     List<Word> _words = new List<Word>();
 
-    String wordsCSV = await rootBundle.loadString('assets/csv/words.csv');
+    String wordsCSV = await rootBundle.loadString('assets/words/it/min.csv');
 
     List<List> words = CsvToListConverter().convert(wordsCSV);
 

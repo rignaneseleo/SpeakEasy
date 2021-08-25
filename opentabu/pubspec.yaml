@@ -46,7 +46,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/csv/words.csv
+    - assets/words/it/
     - assets/sounds/
     - assets/icons/
     - assets/lang/
