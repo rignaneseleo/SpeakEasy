@@ -6,6 +6,7 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/all.dart';
@@ -36,7 +37,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   InAppPurchaseConnection.enablePendingPurchases();
-
+  await Firebase.initializeApp();
 
   // Turn off landscape mode
   await SystemChrome.setPreferredOrientations(
@@ -63,10 +64,11 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       child: EasyLocalization(
-          supportedLocales: [Locale('en'), Locale('it')],
-          path: 'assets/lang',
-          fallbackLocale: Locale('en', 'US'),
-          child: OpenTabuApp()),
+        supportedLocales: [Locale('en'), Locale('it')],
+        path: 'assets/lang',
+        fallbackLocale: Locale('en'),
+        child: OpenTabuApp(),
+      ),
     ),
   );
 }
