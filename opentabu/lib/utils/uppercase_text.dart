@@ -1,5 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
 
 class UpperCaseText extends Text {
   UpperCaseText(
