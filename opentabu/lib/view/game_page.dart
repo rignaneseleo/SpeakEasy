@@ -559,7 +559,8 @@ class WordWidget extends ConsumerWidget {
         children: <Widget>[
           Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
+              padding:
+                  EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
               child: new UpperCaseAutoSizeText(
                 _gameController.currentWord.wordToGuess,
                 style: Theme.of(context)
@@ -572,16 +573,16 @@ class WordWidget extends ConsumerWidget {
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: taboos,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: taboos,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
 
     if (_gameController.skipLeftCurrentTeam > 0) {
