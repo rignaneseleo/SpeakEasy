@@ -45,8 +45,7 @@ class Game {
   }
 
   void wrongAnswer(int teamNumber) {
-    //TODO maybe it shouldn't go under 0
-    _scores[teamNumber]--;
+    if(_scores[teamNumber] > 0) _scores[teamNumber]--;
   }
 
   bool useSkip(int teamNumber) {
