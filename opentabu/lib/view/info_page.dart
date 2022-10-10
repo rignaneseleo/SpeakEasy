@@ -59,7 +59,7 @@ class InfoPage extends StatelessWidget {
                 child: TextButton(
                   onPressed: () => buildPaymentWidget(),
                   child: new Text(
-                    "🌟  " + "Support".tr(),
+                    "☕️  " + "Support".tr(),
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
