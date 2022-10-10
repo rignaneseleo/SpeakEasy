@@ -31,7 +31,7 @@
   "End": "End",
   "back_home": "Back home",
   "turn_is_over": "YOUR TIME IS OVER :(",
-  "pass_the_phone": "Pass the phone to the next player.",
+  "pass_the_phone": "Pass the phone to a player from {}",
   "missed_point_fix_score": "MISSED A POINT? FIX SCORE",
   "adjust_score": "ADJUST TEAM {} SCORE:",
   "next_turn": "NEXT TURN",
