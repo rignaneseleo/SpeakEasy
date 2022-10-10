@@ -386,7 +386,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
         Expanded(child: CountDownWidget(seconds: 3)),
         //SkipTextWidget(),
         AbsorbPointer(
-          absorbing: false,
+          absorbing: true,
           child: Opacity(
             opacity: 0.4,
             child: Row(
@@ -404,11 +404,13 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     );
   }
 
+
   Widget readyBody() {
     GameController _gameController = context.read(gameProvider);
     List<String> teams = _gameController.teams;
     int selectedIndex = _gameController.previousTeam;
     bool _isReady = false;
+
     return Column(
       children: [
         Expanded(
@@ -465,7 +467,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
               ?.copyWith(color: darkPurple),
         ),
         StatefulBuilder(builder: (context, setState) {
-          Timer(Duration(seconds: 1), () {
+         Timer t= Timer(Duration(seconds: 1), () {
             setState(() => _isReady = true);
           });
 
@@ -473,7 +475,10 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             text: "Start".tr(),
             bgColor: myYellow,
             textColor: txtBlack,
-            onPressed: (!_isReady) ? null : () => initCountdown(3),
+            onPressed: (!_isReady) ? null : () {
+              initCountdown(3);
+              t.cancel();
+            },
           );
         }),
       ],
@@ -601,13 +606,14 @@ class CountDownWidget extends StatefulWidget {
 
 class _CountDownWidgetState extends State<CountDownWidget> {
   int secondsPassed = 0;
+  List<String> countdownWords = ["ready?", "set", "go!"];
   Timer? t;
 
   @override
   void initState() {
     t = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        secondsPassed++;
+        if (secondsPassed < countdownWords.length-1) secondsPassed++;
       });
     });
     super.initState();
@@ -623,11 +629,11 @@ class _CountDownWidgetState extends State<CountDownWidget> {
   Widget build(BuildContext context) {
     return Center(
       child: new Text(
-        "${widget.seconds - secondsPassed}",
+        countdownWords[secondsPassed].tr().toUpperCase(),
         style: Theme.of(context)
             .textTheme
-            .headline1
-            ?.copyWith(color: Colors.black54),
+            .headline2
+            ?.copyWith(color: Colors.black87),
       ),
     );
   }
@@ -786,8 +792,8 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
 
     switch (_gameController.gameState) {
       case GameState.init:
-      case GameState.countdown:
       case GameState.playing:
+      case GameState.countdown:
         return new Container(
           decoration: new BoxDecoration(
             color: darkPurple,
