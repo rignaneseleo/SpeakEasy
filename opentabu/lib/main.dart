@@ -11,11 +11,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/sound_loader.dart';
 import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/view/game_page.dart';
 import 'package:opentabu/view/home_page.dart';
 import 'package:opentabu/view/splash_screen.dart';
 import 'package:package_info/package_info.dart';
@@ -34,7 +32,7 @@ bool smallScreen = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  //InAppPurchase.instance.InAppPurchaseConnection.enablePendingPurchases();
+  InAppPurchaseConnection.enablePendingPurchases();
 
   // Turn off landscape mode
   await SystemChrome.setPreferredOrientations(
