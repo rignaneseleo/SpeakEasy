@@ -26,7 +26,7 @@ class GameController extends ChangeNotifier {
   Game? _game;
   GameState gameState = GameState.init;
 
-  late int _numbersOfTurns;
+  int? _numbersOfTurns;
 
   Word? _currentWord;
   int _currentTeam = 0; //the team that starts
@@ -61,7 +61,7 @@ class GameController extends ChangeNotifier {
     gameState = GameState.ready;
 
     //Check if it's the end
-    if (_currentTurn >= _numbersOfTurns) gameState = GameState.ended;
+    if (_currentTurn >= _numbersOfTurns!) gameState = GameState.ended;
 
     notifyListeners();
   }
@@ -143,7 +143,7 @@ class GameController extends ChangeNotifier {
 
   int get numberOfPlayers => _game?.numberOfPlayers ?? 0;
 
-  int get nTurns => _numbersOfTurns;
+  int get nTurns => _numbersOfTurns??0;
 
   List<String> get teams => List<String>.generate(
       _game?.numberOfPlayers ?? 0, (i) => "Team ${i + 1}");
