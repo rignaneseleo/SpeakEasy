@@ -14,12 +14,12 @@ class Button extends StatelessWidget {
   final Icon icon;
 
   const Button({
-    Key key,
-    this.bgColor,
-    this.textColor,
-    this.onPressed,
-    this.text,
-    this.icon,
+    Key? key,
+    required this.bgColor,
+    required this.textColor,
+    required this.onPressed,
+    required this.text,
+    required this.icon,
   }) : super(key: key);
 
   @override
@@ -40,7 +40,7 @@ class Button extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .headline4
-                    .copyWith(color: textColor),
+                    ?.copyWith(color: textColor),
               ),
             ],
           ),

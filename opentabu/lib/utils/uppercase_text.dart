@@ -4,7 +4,8 @@ import 'package:flutter/widgets.dart';
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,
@@ -15,18 +16,18 @@ class UpperCaseTextFormatter extends TextInputFormatter {
 class UpperCaseText extends Text {
   UpperCaseText(
     String data, {
-    Key key,
-    TextStyle style,
-    StrutStyle strutStyle,
-    TextAlign textAlign,
-    TextDirection textDirection,
-    Locale locale,
-    bool softWrap,
-    TextOverflow overflow,
-    double textScaleFactor,
-    int maxLines,
-    String semanticsLabel,
-    TextWidthBasis textWidthBasis,
+    Key? key,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
+    TextOverflow? overflow,
+    double? textScaleFactor,
+    int? maxLines,
+    String? semanticsLabel,
+    TextWidthBasis? textWidthBasis,
   }) : super(
           data.toUpperCase(),
           key: key,
@@ -47,7 +48,7 @@ class UpperCaseText extends Text {
 class UpperCaseAutoSizeText extends AutoSizeText {
   UpperCaseAutoSizeText(
     data, {
-    Key key,
+    Key? key,
     textKey,
     style,
     strutStyle,
@@ -56,7 +57,7 @@ class UpperCaseAutoSizeText extends AutoSizeText {
     double stepGranularity = 1,
     presetFontSizes,
     group,
-    TextAlign textAlign,
+    TextAlign? textAlign,
     textDirection,
     locale,
     softWrap,

@@ -16,13 +16,13 @@ class IncrementalButton extends StatefulWidget {
   final ValueChanged<int> onValueChanged;
 
   const IncrementalButton(
-      {Key key,
-      this.increment,
-      this.onValueChanged,
-      this.initialValue,
-      this.text,
-      this.min,
-      this.max})
+      {Key? key,
+      required this.increment,
+      required this.onValueChanged,
+      required this.initialValue,
+      required this.text,
+      required this.min,
+      required this.max})
       : super(key: key);
 
   @override
@@ -32,7 +32,7 @@ class IncrementalButton extends StatefulWidget {
 
 class _IncrementalButtonState extends State<IncrementalButton> {
   int _value;
-  Timer incrementalTimer;
+  Timer? incrementalTimer;
 
   _IncrementalButtonState(this._value);
 

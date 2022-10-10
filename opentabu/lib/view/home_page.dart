@@ -31,9 +31,9 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> with AnimationMixin {
-  Settings _settings;
+  late Settings _settings;
 
-  Animation<double> sizeMenuItems;
+  late Animation<double> sizeMenuItems;
   bool _displayAdvancedPreferences = false;
 
   HomePageState() {
@@ -42,8 +42,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
 
   @override
   void initState() {
-    sizeMenuItems =
-        Tween(begin: 0.0, end: 50.0).animate(controller);
+    sizeMenuItems = Tween(begin: 0.0, end: 50.0).animate(controller);
 
     super.initState();
   }
@@ -57,7 +56,8 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             Icons.info,
             color: txtWhite,
           ),
-          onTap: () => Get.to(()=>InfoPage(), transition: Transition.upToDown),
+          onTap: () =>
+              Get.to(() => InfoPage(), transition: Transition.upToDown),
         ),
         widgets: <Widget>[
           Expanded(
@@ -161,10 +161,11 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             text: "Start".tr(),
             bgColor: lightPurple,
             textColor: txtWhite,
-            onPressed: () {
+            onPressed: () async {
               AnalyticsController.addNewMatch();
-              return Get.to(()=>GamePage(_settings),
+              await Get.to(() => GamePage(_settings),
                   transition: Transition.downToUp);
+              return;
             },
           ),
         ],

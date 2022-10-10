@@ -3,9 +3,9 @@ import 'package:opentabu/theme/theme.dart';
 
 class MyScaffold extends StatelessWidget {
   final List<Widget> widgets;
-  final Widget topIcon;
+  Widget? topIcon;
 
-  const MyScaffold({Key key, this.widgets, this.topIcon}) : super(key: key);
+  MyScaffold({Key? key, required this.widgets, this.topIcon}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

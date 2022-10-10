@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class BlinkingText extends StatefulWidget {
   final Text _target;
@@ -13,7 +14,7 @@ class BlinkingText extends StatefulWidget {
 
 class BlinkingTextState extends State<BlinkingText> {
   bool _show = true;
-  Timer _timer;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -25,19 +26,19 @@ class BlinkingTextState extends State<BlinkingText> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style;
+    TextStyle? style;
 
     if (_show)
       style = widget._target.style;
     else
-      style = widget._target.style.copyWith(color: Colors.transparent);
+      style = widget._target.style?.copyWith(color: Colors.transparent);
 
-    return Text(widget._target.data, style: style);
+    return Text(widget._target.data!, style: style);
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _timer.cancel();
     super.dispose();
   }
 }

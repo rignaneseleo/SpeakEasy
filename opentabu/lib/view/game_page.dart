@@ -45,14 +45,14 @@ class GamePage extends StatefulWidget {
 class GamePageState extends State<GamePage> with WidgetsBindingObserver {
   final settings;
 
-  Timer _turnTimer;
-  Timer _countSecondsTimer;
+  Timer? _turnTimer;
+  Timer? _countSecondsTimer;
 
-  int _timerDuration;
-  int _nTaboosToShow;
+  late int _timerDuration;
+  late int _nTaboosToShow;
 
   //info to show:
-  Map<String, int> matchInfo; //team name, score
+  Map<String, int> matchInfo = {}; //team name, score
 
   GamePageState(this.settings) {
     _timerDuration = settings.turnDurationInSeconds;
@@ -80,7 +80,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
       _countSecondsTimer =
           new Timer.periodic(new Duration(seconds: 1), (timer) {
-        if (_turnTimer.isActive) {
+        if (_turnTimer?.isActive ?? false) {
           GameController _gameController = context.read(gameProvider);
           _gameController.oneSecPassed();
 
@@ -123,7 +123,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
         !(_gameController.gameState == GameState.init)) return;
 
     //Cancel timer
-    _turnTimer.cancel();
+    _turnTimer?.cancel();
 
     //Pause game
     _gameController.pauseGame();
@@ -181,15 +181,11 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Stack(
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: [
                       if (!smallScreen) GameInfoWidget(),
                       if (smallScreen) GameInfoWidgetShrinked(),
-                      Positioned(
-                        bottom: smallScreen ? -28 : -40,
-                        child: TimeWidget(_timerDuration, () => pauseGame()),
-                      ),
                       Positioned(
                         left: 10,
                         top: 10,
@@ -227,6 +223,10 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
                         return Container();
                       }),
+                      Positioned(
+                        bottom: smallScreen ? -28 : -40,
+                        child: TimeWidget(_timerDuration, () => pauseGame()),
+                      ),
                     ],
                   ),
                   Consumer(
@@ -276,8 +276,10 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       AlertDialog(
         title: Text(
           'want_exit?'.tr(),
-          style:
-              Theme.of(context).textTheme.headline4.copyWith(color: darkPurple),
+          style: Theme.of(context)
+              .textTheme
+              .headline4
+              ?.copyWith(color: darkPurple),
         ),
         content: SingleChildScrollView(
           child: ListBody(
@@ -293,7 +295,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 style: Theme.of(context)
                     .textTheme
                     .headline5
-                    .copyWith(color: lightPurple)),
+                    ?.copyWith(color: lightPurple)),
             onPressed: () {
               Get.back();
             },
@@ -303,7 +305,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 style: Theme.of(context)
                     .textTheme
                     .headline5
-                    .copyWith(color: lightPurple)),
+                    ?.copyWith(color: lightPurple)),
             onPressed: () async {
               Get.back(canPop: true);
               Get.back(canPop: true);
@@ -333,7 +335,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 style: Theme.of(context)
                     .textTheme
                     .headline2
-                    .copyWith(color: darkPurple),
+                    ?.copyWith(color: darkPurple),
               ),
             ),
           ),
@@ -385,16 +387,17 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 style: Theme.of(context)
                     .textTheme
                     .headline2
-                    .copyWith(color: darkPurple),
+                    ?.copyWith(color: darkPurple),
                 maxLines: 2,
-                maxFontSize: Theme.of(context).textTheme.headline2.fontSize,
+                maxFontSize:
+                    Theme.of(context).textTheme.headline2?.fontSize ?? 48,
               ),
               Text(
                 "pass_the_phone".tr(),
                 style: Theme.of(context)
                     .textTheme
                     .headline6
-                    .copyWith(color: darkPurple),
+                    ?.copyWith(color: darkPurple),
               ),
               TextButton(
                 child: Text(
@@ -402,7 +405,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                   style: Theme.of(context)
                       .textTheme
                       .headline6
-                      .copyWith(color: lightPurple),
+                      ?.copyWith(color: lightPurple),
                 ),
                 onPressed: () => Get.dialog(AlertDialog(
                     shape: RoundedRectangleBorder(
@@ -453,7 +456,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
               style: Theme.of(context)
                   .textTheme
                   .headline2
-                  .copyWith(color: darkPurple),
+                  ?.copyWith(color: darkPurple),
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
@@ -486,7 +489,7 @@ class TurnWidget extends ConsumerWidget {
         _gameController.gameState == GameState.ended
             ? "End".tr()
             : "Turn".tr() + " " + (_gameController.currentTurn).toString(),
-        style: Theme.of(context).textTheme.headline5.copyWith(color: txtWhite),
+        style: Theme.of(context).textTheme.headline5?.copyWith(color: txtWhite),
       ),
     );
   }
@@ -517,7 +520,7 @@ class TimeWidget extends ConsumerWidget {
           child: Center(
             child: new Text(
               secondsLeft.toString(),
-              style: Theme.of(context).textTheme.headline4.copyWith(
+              style: Theme.of(context).textTheme.headline4?.copyWith(
                     color: _timerDuration - _gameController.secondsPassed < 8
                         ? myRed
                         : txtWhite,
@@ -542,13 +545,13 @@ class WordWidget extends ConsumerWidget {
 
     List<Widget> taboos = [];
 
-    List<String> _taboos = _gameController.currentWord.taboos;
+    List<String> _taboos = _gameController.currentWord!.taboos;
 
     for (int i = 0; i < _nTaboosToShow; i++) {
       taboos.add(UpperCaseAutoSizeText(
         _taboos[i],
         maxFontSize: 35.0,
-        style: Theme.of(context).textTheme.headline2.copyWith(color: txtBlack),
+        style: Theme.of(context).textTheme.headline2?.copyWith(color: txtBlack),
         maxLines: 1,
       ));
     }
@@ -562,11 +565,11 @@ class WordWidget extends ConsumerWidget {
               padding:
                   EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
               child: new UpperCaseAutoSizeText(
-                _gameController.currentWord.wordToGuess,
+                _gameController.currentWord!.wordToGuess,
                 style: Theme.of(context)
                     .textTheme
                     .headline2
-                    .copyWith(color: txtGrey),
+                    ?.copyWith(color: txtGrey),
                 maxFontSize: 56,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -601,7 +604,7 @@ class GameInfoWidget extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
-    List<Widget> teams = new List<Widget>();
+    List<Widget> teams = [];
 
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
       bool isCurrentTeam = _gameController.currentTeam == i;
@@ -678,7 +681,7 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
       style: Theme.of(context)
           .textTheme
           .headline5
-          .copyWith(fontWeight: FontWeight.bold),
+          ?.copyWith(fontWeight: FontWeight.bold),
       maxLines: 1,
     );
 
@@ -734,7 +737,11 @@ class TeamItem extends StatelessWidget {
   final String name;
   final int score;
 
-  const TeamItem({Key key, this.disabled, this.name, this.score})
+  const TeamItem(
+      {Key? key,
+      required this.disabled,
+      required this.name,
+      required this.score})
       : super(key: key);
 
   @override
@@ -756,12 +763,14 @@ class TeamItem extends StatelessWidget {
             children: [
               UpperCaseAutoSizeText(
                 name,
-                maxFontSize: Theme.of(context).textTheme.headline5.fontSize,
+                maxFontSize:
+                    Theme.of(context).textTheme.headline5?.fontSize ?? 20,
                 style: Theme.of(context).textTheme.headline6,
               ),
               UpperCaseAutoSizeText(
                 score.toString(),
-                maxFontSize: Theme.of(context).textTheme.headline4.fontSize,
+                maxFontSize:
+                    Theme.of(context).textTheme.headline4?.fontSize ?? 25,
                 style: Theme.of(context).textTheme.headline4,
               ),
             ],
@@ -784,7 +793,7 @@ class SkipTextWidget extends ConsumerWidget {
             " " +
             "Skips".tr().toUpperCase(),
         style:
-            Theme.of(context).textTheme.headline6.copyWith(color: darkPurple),
+            Theme.of(context).textTheme.headline6?.copyWith(color: darkPurple),
       ),
     );
   }
@@ -792,7 +801,7 @@ class SkipTextWidget extends ConsumerWidget {
 
 class IncorrectAnswerButton extends ConsumerWidget {
   //This is used to fix the scores
-  final int customTeam;
+  final int? customTeam;
 
   IncorrectAnswerButton({this.customTeam});
 
@@ -817,7 +826,7 @@ class IncorrectAnswerButton extends ConsumerWidget {
 
 class SkipButton extends ConsumerWidget {
   //This is used to fix the scores
-  final int customTeam;
+  final int? customTeam;
 
   SkipButton({this.customTeam});
 
@@ -846,7 +855,7 @@ class SkipButton extends ConsumerWidget {
                       style: Theme.of(context)
                           .textTheme
                           .headline5
-                          .copyWith(color: txtBlack),
+                          ?.copyWith(color: txtBlack),
                     ),
                   ],
                 ),
@@ -871,7 +880,7 @@ class SkipButton extends ConsumerWidget {
 
 class CorrectAnswerButton extends ConsumerWidget {
   //This is used to fix the scores
-  final int customTeam;
+  final int? customTeam;
 
   CorrectAnswerButton({this.customTeam});
 

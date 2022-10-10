@@ -5,7 +5,7 @@
 * */
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:opentabu/model/game.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/model/word.dart';
@@ -22,12 +22,12 @@ enum GameState {
 }
 
 class GameController extends ChangeNotifier {
-  Game _game;
+  Game? _game;
   GameState gameState = GameState.init;
 
-  int _numbersOfTurns;
+  late int _numbersOfTurns;
 
-  Word _currentWord;
+  Word? _currentWord;
   int _currentTeam = 0; //the team that starts
   int _currentTurn = 0;
 
@@ -35,7 +35,7 @@ class GameController extends ChangeNotifier {
 
   void init(Settings settings, List<Word> words) {
     _game = new Game(words, nTeams: settings.nPlayers, nSkips: settings.nSkip);
-    _currentWord = _game.newWord;
+    _currentWord = _game!.newWord;
     _numbersOfTurns = settings.nTurns;
 
     gameState = GameState.ready;
@@ -44,16 +44,18 @@ class GameController extends ChangeNotifier {
 
   //returns true if the game is over
   void changeTurn() {
+    if (_game == null) return;
+
     _currentTeam++;
-    if (_currentTeam == _game.numberOfPlayers) {
+    if (_currentTeam == _game!.numberOfPlayers) {
       _currentTeam = 0;
       _currentTurn++;
     }
 
-    _game.resetSkip();
+    _game!.resetSkip();
     _secondsPassed = 0;
 
-    _currentWord = _game.newWord;
+    _currentWord = _game!.newWord;
 
     gameState = GameState.ready;
 
@@ -87,31 +89,31 @@ class GameController extends ChangeNotifier {
       throw Exception("Resume game from a state $gameState");
   }
 
-  void rightAnswer({int team}) {
+  void rightAnswer({int? team}) {
     if (team != null) {
       //This is used to fix the scores
-      _game.rightAnswer(team);
+      _game!.rightAnswer(team);
     } else {
-      _game.rightAnswer(_currentTeam);
-      _currentWord = _game.newWord;
+      _game!.rightAnswer(_currentTeam);
+      _currentWord = _game!.newWord;
     }
 
     notifyListeners();
   }
 
-  void wrongAnswer({int team}) {
+  void wrongAnswer({int? team}) {
     if (team != null) {
       //This is used to fix the scores
-      _game.wrongAnswer(team);
+      _game!.wrongAnswer(team);
     } else {
-      _game.wrongAnswer(_currentTeam);
-      _currentWord = _game.newWord;
+      _game!.wrongAnswer(_currentTeam);
+      _currentWord = _game!.newWord;
     }
     notifyListeners();
   }
 
   void skipAnswer() {
-    if (_game.useSkip(_currentTeam)) _currentWord = _game.newWord;
+    if (_game!.useSkip(_currentTeam)) _currentWord = _game!.newWord;
     notifyListeners();
   }
 
@@ -120,15 +122,15 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<int> get winners => _game.winners;
+  List<int> get winners => _game!.winners;
 
   int get currentTurn => _currentTurn + 1;
 
-  int get skipLeftCurrentTeam => _game.getSkipLeft(_currentTeam);
+  int get skipLeftCurrentTeam => _game!.getSkipLeft(_currentTeam);
 
-  Word get currentWord => _currentWord;
+  Word? get currentWord => _currentWord;
 
-  List<int> get scores => _game.scores;
+  List<int> get scores => _game!.scores;
 
   int get numberOfPlayers => _game?.numberOfPlayers ?? 0;
 

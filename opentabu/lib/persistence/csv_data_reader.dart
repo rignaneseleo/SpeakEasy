@@ -12,7 +12,7 @@ import 'package:opentabu/persistence/data_reader.dart';
 
 class CSVDataReader {
   static Future<List<Word>> readData() async {
-    List<Word> _words = new List<Word>();
+    List<Word> _words = [];
 
     String wordsCSV = await rootBundle.loadString('assets/words/it/min.csv');
 

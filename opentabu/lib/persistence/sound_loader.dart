@@ -1,11 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
-Soundpool _soundpool;
-int _correctSoundId, _wrongSoundId, _skipSoundId,_timeoutId,_tickId;
+Soundpool _soundpool = Soundpool(streamType: StreamType.music);
+late int _correctSoundId, _wrongSoundId, _skipSoundId, _timeoutId, _tickId;
 
 Future loadSounds() async {
-  _soundpool = Soundpool(maxStreams: 1);
   _correctSoundId = await _soundpool
       .load(await rootBundle.load("assets/sounds/correct_answer.mp3"));
   _wrongSoundId = await _soundpool
@@ -14,8 +13,8 @@ Future loadSounds() async {
       .load(await rootBundle.load("assets/sounds/skip_sound.mp3"));
   _timeoutId = await _soundpool
       .load(await rootBundle.load("assets/sounds/timeover.mp3"));
-  _tickId = await _soundpool
-      .load(await rootBundle.load("assets/sounds/tick.mp3"));
+  _tickId =
+      await _soundpool.load(await rootBundle.load("assets/sounds/tick.mp3"));
 }
 
 playCorrectAnswerSound() async {

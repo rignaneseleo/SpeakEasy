@@ -54,7 +54,7 @@ class AnalyticsPage extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .headline3
-                        .copyWith(color: myYellow),
+                        ?.copyWith(color: myYellow),
                   ),
                   buildFutureLine(
                     context,
@@ -85,36 +85,41 @@ class AnalyticsPage extends StatelessWidget {
     );
   }
 
-  Widget buildLine(context, {String name, value}) {
+  Widget buildLine(context, {required String name, value}) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
           child: new Text(
             name.tr(),
-            style:
-                Theme.of(context).textTheme.headline4.copyWith(color: txtWhite),
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                ?.copyWith(color: txtWhite),
           ),
         ),
         Text(value.toString(),
             style: Theme.of(context)
                 .textTheme
                 .headline4
-                .copyWith(color: txtWhite)),
+                ?.copyWith(color: txtWhite)),
       ],
     );
   }
 
-  Widget buildFutureLine(context, {String name, Future<int> value}) {
+  Widget buildFutureLine(context,
+      {required String name, required Future<int> value}) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
           child: AutoSizeText(
             name,
-            maxFontSize: Theme.of(context).textTheme.headline4.fontSize,
-            style:
-                Theme.of(context).textTheme.headline4.copyWith(color: txtWhite),
+            maxFontSize: Theme.of(context).textTheme.headline4?.fontSize ?? 25,
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                ?.copyWith(color: txtWhite),
           ),
         ),
         FutureBuilder(
@@ -125,13 +130,13 @@ class AnalyticsPage extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .headline4
-                      .copyWith(color: txtWhite));
+                      ?.copyWith(color: txtWhite));
             }
             return Text("...",
                 style: Theme.of(context)
                     .textTheme
                     .headline4
-                    .copyWith(color: txtWhite));
+                    ?.copyWith(color: txtWhite));
           },
         )
       ],

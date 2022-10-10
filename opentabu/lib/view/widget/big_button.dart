@@ -13,7 +13,11 @@ class BigButton extends StatelessWidget {
   final String text;
 
   const BigButton(
-      {Key key, this.bgColor, this.textColor, this.onPressed, this.text})
+      {Key? key,
+      required this.bgColor,
+      required this.textColor,
+      required this.onPressed,
+      required this.text})
       : super(key: key);
 
   @override
@@ -31,7 +35,7 @@ class BigButton extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .headline2
-                .copyWith(color: textColor),
+                ?.copyWith(color: textColor),
           ),
           color: bgColor,
           shape:
@@ -48,7 +52,11 @@ class BigIconButton extends StatelessWidget {
   final double size;
 
   const BigIconButton(
-      {Key key, this.bgColor, this.onPressed, this.icon, this.size = 90})
+      {Key? key,
+      required this.bgColor,
+      required this.onPressed,
+      required this.icon,
+      this.size = 90})
       : super(key: key);
 
   @override

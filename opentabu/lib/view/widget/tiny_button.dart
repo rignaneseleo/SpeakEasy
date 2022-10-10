@@ -8,8 +8,12 @@ class TinyButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
 
-  const TinyButton({Key key, this.textColor, this.onPressed, this.text})
-      : super(key: key);
+  const TinyButton({
+    Key? key,
+    required this.textColor,
+    required this.onPressed,
+    required this.text,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,7 @@ class TinyButton extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .headline6
-                .copyWith(color: textColor),
+                ?.copyWith(color: textColor),
           ),
           onTap: onPressed,
         ),

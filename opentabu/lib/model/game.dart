@@ -13,21 +13,18 @@ class Game {
   int _wordIndex = 0;
   final nSkips;
 
-  List<int> _scores;
-  List<int> _skips;
+  List<int> _scores = [];
+  List<int> _skips = [];
 
-  Game(this._words, {int nTeams, this.nSkips}) {
+  Game(this._words, {int nTeams = 2, this.nSkips}) {
     _words.shuffle();
-
-    _scores = new List(nTeams);
-    _skips = new List(nTeams);
 
     for (int i = 0; i < nTeams; i++) {
       //set every team score to 0
-      _scores[i] = 0;
+      _scores.add(0);
 
       //set every skip to nSkips
-      _skips[i] = nSkips;
+      _skips.add(nSkips);
     }
   }
 

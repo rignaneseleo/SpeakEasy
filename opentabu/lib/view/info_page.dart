@@ -46,7 +46,7 @@ class InfoPage extends StatelessWidget {
               buildLine(
                 context,
                 name: "Version".tr(),
-                value: packageInfo.version.toString(),
+                value: packageInfo?.version.toString(),
               ),
               buildLine(
                 context,
@@ -91,11 +91,11 @@ class InfoPage extends StatelessWidget {
         ),
         new AutoSizeText(
           "Made by",
-          maxFontSize: Theme.of(context).textTheme.headline2.fontSize,
+          maxFontSize: Theme.of(context).textTheme.headline2?.fontSize ?? 48,
           style: Theme.of(context)
               .textTheme
               .headline1
-              .copyWith(color: materialPurple),
+              ?.copyWith(color: materialPurple),
           maxLines: 1,
         ),
         GestureDetector(
@@ -111,22 +111,24 @@ class InfoPage extends StatelessWidget {
     );
   }
 
-  Widget buildLine(context, {String name, value}) {
+  Widget buildLine(context, {required String name, value}) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
           child: new Text(
             name.tr(),
-            style:
-                Theme.of(context).textTheme.headline4.copyWith(color: txtWhite),
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                ?.copyWith(color: txtWhite),
           ),
         ),
         Text(value.toString(),
             style: Theme.of(context)
                 .textTheme
                 .headline4
-                .copyWith(color: txtWhite)),
+                ?.copyWith(color: txtWhite)),
       ],
     );
   }

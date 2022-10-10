@@ -10,7 +10,10 @@ class SelectorButton extends StatefulWidget {
   final ValueChanged<int> onValueChanged;
 
   const SelectorButton(
-      {Key key, this.items, this.indexSelected, this.onValueChanged})
+      {Key? key,
+      required this.items,
+      required this.indexSelected,
+      required this.onValueChanged})
       : super(key: key);
 
   @override
@@ -62,14 +65,13 @@ class SelectionItem extends StatelessWidget {
   final String text;
   final bool highlighted;
   final bool disabled;
-  final VoidCallback onPressed;
-  final GestureLongPressStartCallback onLongPressStart;
-  final GestureLongPressEndCallback onLongPressEnd;
-
+  final VoidCallback? onPressed;
+  final GestureLongPressStartCallback? onLongPressStart;
+  final GestureLongPressEndCallback? onLongPressEnd;
 
   SelectionItem({
-    Key key,
-    this.text,
+    Key? key,
+    required this.text,
     this.highlighted = false,
     this.onPressed,
     this.disabled = false,
@@ -95,7 +97,8 @@ class SelectionItem extends StatelessWidget {
           child: Center(
             child: AutoSizeText(
               text,
-              maxFontSize: Theme.of(context).textTheme.headline5.fontSize,
+              maxFontSize:
+                  Theme.of(context).textTheme.headline5?.fontSize ?? 20,
               style: Theme.of(context).textTheme.headline6,
             ),
           ),

@@ -2,33 +2,36 @@ name: opentabu
 description: Open source version of tabu
 version: 1.2.4+9
 
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
 environment:
-  sdk: ">=2.5.2 <3.0.0"
+  sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
-  csv: 5.0.0
-  flutter_launcher_icons: 0.9.0
+  csv: 5.0.1
+  flutter_launcher_icons: 0.10.0
   equatable: 2.0.0
   flutter_riverpod: 0.14.0+3
-  soundpool: 2.1.0
-  url_launcher: 6.0.3
-  get: 4.1.4
-  blinking_text: 1.0.1+2
-  vibration: 1.7.3
-  auto_size_text: 2.1.0
-  wakelock: 0.5.1
-  google_fonts: 2.0.0
-  simple_animations: 3.1.1
-  page_transition: 2.0.2
-  fluttertoast: 8.0.6
-  easy_localization: 3.0.0
-  in_app_review: 2.0.2
-  shared_preferences: 2.0.5
-  flutter_svg: 0.22.0
-  package_info: 2.0.0
+  soundpool: 2.3.0
+  url_launcher: 6.1.6
+  get: 4.6.5
+  blinking_text: 1.0.2
+  vibration: 1.7.6
+  auto_size_text: 3.0.0
+  wakelock: 0.6.2
+  google_fonts: 3.0.1
+  simple_animations: 5.0.0+2
+  page_transition: 2.0.9
+  fluttertoast: 8.0.9
+  easy_localization: 3.0.1
+  in_app_review: 2.0.4
+  shared_preferences: 2.0.15
+  flutter_svg: 1.1.5
+  package_info: 2.0.2
   in_app_purchase: 0.5.2
 
 
@@ -39,7 +42,10 @@ dev_dependencies:
 flutter_icons:
   #android: "launcher_icon"
   ios: true
-  android: true
+  android: true 
+  web:
+    generate: true
+    background_color: "#FFF"
   image_path: "assets/icons/logo.png"
 
 flutter:
