@@ -4,32 +4,27 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
+import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:opentabu/main.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:opentabu/controller/analytics_controller.dart';
 import 'package:opentabu/controller/game_controller.dart';
+import 'package:opentabu/main.dart';
 import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/sound_loader.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
 import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/blinking_text.dart';
-import 'package:opentabu/view/widget/my_scaffold.dart';
-import 'package:opentabu/view/widget/selector_button.dart';
-import 'package:opentabu/view/widget/tiny_button.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
-
-import '../main.dart';
 
 class GamePage extends StatefulWidget {
   final Settings _settings;
@@ -110,6 +105,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
   }
 
   void initGame() {
+    context.read(gameProvider).startCountdown();
+
     //Start the turn
     context.read(gameProvider).startTurn();
 
@@ -186,22 +183,28 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     children: [
                       if (!smallScreen) GameInfoWidget(),
                       if (smallScreen) GameInfoWidgetShrinked(),
-                      Positioned(
-                        left: 10,
-                        top: 10,
-                        child: SafeArea(
-                          child: GestureDetector(
-                            child: Icon(
-                              Icons.exit_to_app_rounded,
-                              color: txtWhite,
+                      Consumer(builder: (context, watch, child) {
+                        GameController _gameController = watch(gameProvider);
+                        if (_gameController.gameState != GameState.ended) {
+                          return Positioned(
+                            left: 10,
+                            top: 10,
+                            child: SafeArea(
+                              child: GestureDetector(
+                                child: Icon(
+                                  Icons.exit_to_app_rounded,
+                                  color: txtWhite,
+                                ),
+                                onTap: () {
+                                  pauseGame();
+                                  showDialogToExit();
+                                },
+                              ),
                             ),
-                            onTap: () {
-                              pauseGame();
-                              showDialogToExit();
-                            },
-                          ),
-                        ),
-                      ),
+                          );
+                        }
+                        return Container();
+                      }),
                       Consumer(builder: (context, watch, child) {
                         GameController _gameController = watch(gameProvider);
                         if (_gameController.gameState == GameState.playing ||
@@ -392,13 +395,6 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 maxFontSize:
                     Theme.of(context).textTheme.headline2?.fontSize ?? 48,
               ),
-              Text(
-                "pass_the_phone".tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6
-                    ?.copyWith(color: darkPurple),
-              ),
               TextButton(
                 child: Text(
                   "missed_point_fix_score".tr().toUpperCase(),
@@ -429,8 +425,15 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             ],
           ),
         ),
+        Text(
+          "pass_the_phone".tr(),
+          style: Theme.of(context)
+              .textTheme
+              .headline6
+              ?.copyWith(color: darkPurple),
+        ),
         BigButton(
-          text: "next_turn".tr(),
+          text: "start".tr(),
           bgColor: myYellow,
           textColor: txtBlack,
           onPressed: () => initGame(),
@@ -484,11 +487,25 @@ class TurnWidget extends ConsumerWidget {
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
 
+    String turnText = "";
+    switch (_gameController.gameState) {
+      case GameState.playing:
+        turnText = "${"Turn".tr()} ${_gameController.currentTurn}";
+        break;
+      case GameState.init:
+      case GameState.ready:
+      case GameState.pause:
+        turnText =
+            "${"Turn".tr()} ${_gameController.currentTurn}/${_gameController.nTurns}";
+        break;
+      case GameState.ended:
+        turnText = "End".tr();
+        break;
+    }
+
     return Center(
       child: new Text(
-        _gameController.gameState == GameState.ended
-            ? "End".tr()
-            : "Turn".tr() + " " + (_gameController.currentTurn).toString(),
+        turnText,
         style: Theme.of(context).textTheme.headline5?.copyWith(color: txtWhite),
       ),
     );

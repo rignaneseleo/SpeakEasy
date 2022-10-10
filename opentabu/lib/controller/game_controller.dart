@@ -134,6 +134,8 @@ class GameController extends ChangeNotifier {
 
   int get numberOfPlayers => _game?.numberOfPlayers ?? 0;
 
+  int get nTurns => _numbersOfTurns;
+
   List<String> get teams => List<String>.generate(
       _game?.numberOfPlayers ?? 0, (i) => "Team ${i + 1}");
 
