@@ -16,6 +16,7 @@ final gameProvider =
 enum GameState {
   init, //Initial state, not ready
   ready, //Ready to start state
+  countdown,
   playing, //While a team is playing
   pause, //In pause
   ended, //When there is a winner
@@ -65,8 +66,16 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startTurn() {
+  void startCountdown(int seconds) {
     if (gameState == GameState.ready) {
+      gameState = GameState.countdown;
+      notifyListeners();
+    } else
+      throw Exception("Start turn with a state $gameState");
+  }
+
+  void startTurn() {
+    if (gameState == GameState.ready || gameState == GameState.countdown) {
       gameState = GameState.playing;
       notifyListeners();
     } else

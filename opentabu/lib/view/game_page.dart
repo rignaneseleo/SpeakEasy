@@ -4,7 +4,6 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
-import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -87,7 +86,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
         }
       });
 
-      initGame();
+      initCountdown(3);
     });
   }
 
@@ -104,9 +103,12 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     }
   }
 
-  void initGame() {
-    context.read(gameProvider).startCountdown();
+  void initCountdown(int seconds) {
+    context.read(gameProvider).startCountdown(seconds);
+    Timer(Duration(seconds: seconds), () => initGame());
+  }
 
+  void initGame() {
     //Start the turn
     context.read(gameProvider).startTurn();
 
@@ -159,6 +161,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             case GameState.playing:
               pauseGame();
               break;
+            case GameState.countdown:
             case GameState.ready:
             case GameState.pause:
             case GameState.ended:
@@ -239,6 +242,10 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                       switch (_gameController.gameState) {
                         case GameState.ready:
                           _body = readyBody();
+                          Wakelock.enable();
+                          break;
+                        case GameState.countdown:
+                          _body = countDownBody();
                           Wakelock.enable();
                           break;
                         case GameState.playing:
@@ -372,11 +379,36 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     );
   }
 
+  Widget countDownBody() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(child: CountDownWidget(seconds: 3)),
+        //SkipTextWidget(),
+        AbsorbPointer(
+          absorbing: false,
+          child: Opacity(
+            opacity: 0.4,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IncorrectAnswerButton(),
+                SkipButton(),
+                CorrectAnswerButton(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget readyBody() {
     GameController _gameController = context.read(gameProvider);
     List<String> teams = _gameController.teams;
     int selectedIndex = _gameController.previousTeam;
-
+    bool _isReady = false;
     return Column(
       children: [
         Expanded(
@@ -426,18 +458,24 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           ),
         ),
         Text(
-          "pass_the_phone".tr(),
+          "pass_the_phone".tr(args: [teams[_gameController.currentTeam]]),
           style: Theme.of(context)
               .textTheme
               .headline6
               ?.copyWith(color: darkPurple),
         ),
-        BigButton(
-          text: "start".tr(),
-          bgColor: myYellow,
-          textColor: txtBlack,
-          onPressed: () => initGame(),
-        ),
+        StatefulBuilder(builder: (context, setState) {
+          Timer(Duration(seconds: 1), () {
+            setState(() => _isReady = true);
+          });
+
+          return BigButton(
+            text: "Start".tr(),
+            bgColor: myYellow,
+            textColor: txtBlack,
+            onPressed: (!_isReady) ? null : () => initCountdown(3),
+          );
+        }),
       ],
     );
   }
@@ -489,6 +527,7 @@ class TurnWidget extends ConsumerWidget {
 
     String turnText = "";
     switch (_gameController.gameState) {
+      case GameState.countdown:
       case GameState.playing:
         turnText = "${"Turn".tr()} ${_gameController.currentTurn}";
         break;
@@ -546,6 +585,49 @@ class TimeWidget extends ConsumerWidget {
           ),
         ),
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+class CountDownWidget extends StatefulWidget {
+  final int seconds;
+
+  CountDownWidget({required this.seconds}) {}
+
+  @override
+  State<CountDownWidget> createState() => _CountDownWidgetState();
+}
+
+class _CountDownWidgetState extends State<CountDownWidget> {
+  int secondsPassed = 0;
+  Timer? t;
+
+  @override
+  void initState() {
+    t = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        secondsPassed++;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    t?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: new Text(
+        "${widget.seconds - secondsPassed}",
+        style: Theme.of(context)
+            .textTheme
+            .headline1
+            ?.copyWith(color: Colors.black54),
       ),
     );
   }
@@ -704,6 +786,7 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
 
     switch (_gameController.gameState) {
       case GameState.init:
+      case GameState.countdown:
       case GameState.playing:
         return new Container(
           decoration: new BoxDecoration(

@@ -3,20 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:opentabu/main.dart';
-import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/utils/uppercase_text.dart';
 
 class BigButton extends StatelessWidget {
   final Color bgColor;
   final Color textColor;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String text;
 
   const BigButton(
       {Key? key,
       required this.bgColor,
       required this.textColor,
-      required this.onPressed,
+      this.onPressed,
       required this.text})
       : super(key: key);
 
@@ -25,22 +23,21 @@ class BigButton extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(top: 20),
       child: MaterialButton(
-          elevation: 0,
-          minWidth: double.infinity,
-          height: 90,
-          child: AutoSizeText(
-            text.toUpperCase(),
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .headline2
-                ?.copyWith(color: textColor),
-          ),
-          color: bgColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          onPressed: onPressed),
+        elevation: 0,
+        minWidth: double.infinity,
+        height: 90,
+        child: AutoSizeText(
+          text.toUpperCase(),
+          maxLines: 1,
+          textAlign: TextAlign.center,
+          style:
+              Theme.of(context).textTheme.headline2?.copyWith(color: textColor),
+        ),
+        color: bgColor,
+        disabledColor: bgColor.withOpacity(0.6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        onPressed: onPressed,
+      ),
     );
   }
 }
