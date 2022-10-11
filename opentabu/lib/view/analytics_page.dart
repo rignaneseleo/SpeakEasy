@@ -29,14 +29,16 @@ class AnalyticsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Theme.of(context).canvasColor,
-                    ),
-                    onPressed: () => Get.back()),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_ios_rounded,
+                        color: Theme.of(context).canvasColor,
+                      ),
+                      onPressed: () => Get.back()),
+                ),
               ),
               Container(height: 60),
               new AutoSizeText(

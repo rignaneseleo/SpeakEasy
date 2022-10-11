@@ -29,6 +29,24 @@ PackageInfo? packageInfo;
 
 bool smallScreen = false;
 
+/*
+altre modalità di gioco:
+INDOVINO SINGOLO
+Nel corso di quest’unico turno di gioco, il suggeritore deve scegliere un solo compagno di
+squadra, che dovrà provare a indovinare in solitudine quante più parole misteriose possibile.
+TEMPO DOPPIO
+Quando è finito il tempo concesso dalla prima clessidra, voltatela di nuovo e continuate
+a giocare fino a nuovo esaurimento del tempo! Per fare sì che ogni sfida sia equilibrata,
+lo stesso vantaggio spetterà anche all’altra squadra nel turno di gioco immediatamente
+successivo.
+STATUA DI SALE
+Il suggeritore deve stare seduto perfettamente immobile mentre suggerisce le parole da
+indovinare ai compagni: a girare le carte, di volta in volta, ci penseranno i membri della
+squadra avversaria.
+DENTRO TUTTI!
+Se esce questo simbolo, entrambe le squadre possono provare a indovinare le parole
+misteriose che vengono suggerite.*/
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();

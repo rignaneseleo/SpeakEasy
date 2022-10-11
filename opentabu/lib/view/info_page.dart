@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/material.dart';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -9,6 +8,7 @@ import 'package:opentabu/main.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/toast.dart';
 import 'package:opentabu/view/analytics_page.dart';
+import 'package:opentabu/view/rules_page.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,10 +50,21 @@ class InfoPage extends StatelessWidget {
               ),
               buildLine(
                 context,
-                name: "#Tabu".tr(),
+                name: "#Tabu",
                 value: words.length,
               ),
               Container(height: smallScreen ? 0 : 60),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () => Get.to(() => RulesPage(),
+                      transition: Transition.upToDown),
+                  child: new Text(
+                    "📙  " + "Rules".tr(),
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ),
+              ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
@@ -68,7 +79,7 @@ class InfoPage extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () => Get.to(() => AnalyticsPage(),
-                      transition: Transition.upToDown),
+                      transition: Transition.downToUp),
                   child: new Text(
                     "📊  " + "Analytics".tr(),
                     style: Theme.of(context).textTheme.headline4,
