@@ -20,10 +20,13 @@ import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/persistence/sound_loader.dart';
 import 'package:opentabu/theme/theme.dart';
 import 'package:opentabu/utils/uppercase_text.dart';
+import 'package:opentabu/view/rules_page.dart';
 import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
+
+import 'info_page.dart';
 
 class GamePage extends StatefulWidget {
   final Settings _settings;
@@ -226,9 +229,28 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                             ),
                           );
                         }
+                        else   if (_gameController.gameState == GameState.pause ||
+                            _gameController.gameState == GameState.ended){
+                          return Positioned(
+                            right: 10,
+                            top: 10,
+                            child: SafeArea(
+                              child: GestureDetector(
+                                child: Icon(
+                                  Icons.info,
+                                  color: txtWhite,
+                                ),
+                                onTap: () =>
+                                    Get.to(() => RulesPage(), transition: Transition.downToUp),
+                              ),
+                            ),
+                          );
+                        }
+
 
                         return Container();
                       }),
+
                       Positioned(
                         bottom: smallScreen ? -28 : -40,
                         child: TimeWidget(_timerDuration, () => pauseGame()),
