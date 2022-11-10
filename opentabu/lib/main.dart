@@ -68,7 +68,7 @@ Future<void> main() async {
     ),
   );
 
-  words = await CSVDataReader.readData();
+  words = await CSVDataReader.readData('assets/words/it/min.csv');
   await loadSounds();
   hasVibration = await Vibration.hasVibrator() ?? false;
   prefs = await SharedPreferences.getInstance();

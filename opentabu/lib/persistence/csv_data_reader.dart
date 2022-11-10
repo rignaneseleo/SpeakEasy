@@ -11,8 +11,8 @@ import 'package:opentabu/model/word.dart';
 import 'package:opentabu/persistence/data_reader.dart';
 
 class CSVDataReader {
-  static Future<List<Word>> readData() async {
-    List<Word> _words = [];
+  static Future<List<Word>> readData(String filePath) async {
+    Map<String, Word> _words = {};
 
     String wordsCSV = await rootBundle.loadString('assets/words/it/min.csv');
 
