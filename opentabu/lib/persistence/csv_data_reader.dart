@@ -20,24 +20,21 @@ class CSVDataReader {
     for (List row in words) {
       var rowList = List<String>.from(row);
       String wordToGuess = rowList[0].toLowerCase().trim();
+      if (wordToGuess.isEmpty) continue;
       if (_words.containsKey(wordToGuess)) {
         // if the word is already in the map, add the new tabu
-        print("WARNING: ${wordToGuess.toUpperCase()} already in the map, merging the tabus:");
-        print("OLD: ${_words[wordToGuess]!.taboos}");
-        print("CURRENT: ${rowList.sublist(1)}");
+        print(
+            "WARNING: ${wordToGuess.toUpperCase()} already in the map, merging the tabus:");
+        print("${_words[wordToGuess]!.taboos} + ${rowList.sublist(1)}");
         _words[wordToGuess]!.addTabus(rowList.sublist(1));
-        print("NEW: ${_words[wordToGuess]!.taboos}");
+        //print("NEW: ${_words[wordToGuess]!.taboos}");
       } else {
         //new word
-        _words[wordToGuess] = _createWord(rowList);
+        _words[wordToGuess] = Word(rowList[0], rowList.sublist(1));
       }
     }
 
+    print("Loaded ${_words.length} unique words from ${filePath}");
     return _words.values.toList();
-  }
-
-  static Word _createWord(List<String> row) {
-    //print("Read the word '${row[0]}'");
-    return new Word(row[0], row.sublist(1));
   }
 }
