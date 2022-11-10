@@ -26,8 +26,6 @@ import 'package:opentabu/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
 
-import 'info_page.dart';
-
 class GamePage extends StatefulWidget {
   final Settings _settings;
 
@@ -228,9 +226,9 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                               ),
                             ),
                           );
-                        }
-                        else   if (_gameController.gameState == GameState.pause ||
-                            _gameController.gameState == GameState.ended){
+                        } else if (_gameController.gameState ==
+                                GameState.pause ||
+                            _gameController.gameState == GameState.ended) {
                           return Positioned(
                             right: 10,
                             top: 10,
@@ -240,17 +238,15 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                                   Icons.book,
                                   color: txtWhite,
                                 ),
-                                onTap: () =>
-                                    Get.to(() => RulesPage(), transition: Transition.downToUp),
+                                onTap: () => Get.to(() => RulesPage(),
+                                    transition: Transition.downToUp),
                               ),
                             ),
                           );
                         }
 
-
                         return Container();
                       }),
-
                       Positioned(
                         bottom: smallScreen ? -28 : -40,
                         child: TimeWidget(_timerDuration, () => pauseGame()),
@@ -426,7 +422,6 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     );
   }
 
-
   Widget readyBody() {
     GameController _gameController = context.read(gameProvider);
     List<String> teams = _gameController.teams;
@@ -489,7 +484,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
               ?.copyWith(color: darkPurple),
         ),
         StatefulBuilder(builder: (context, setState) {
-         Timer t= Timer(Duration(seconds: 1), () {
+          Timer t = Timer(Duration(seconds: 1), () {
             setState(() => _isReady = true);
           });
 
@@ -497,10 +492,12 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             text: "Start".tr(),
             bgColor: myYellow,
             textColor: txtBlack,
-            onPressed: (!_isReady) ? null : () {
-              initCountdown(3);
-              t.cancel();
-            },
+            onPressed: (!_isReady)
+                ? null
+                : () {
+                    initCountdown(3);
+                    t.cancel();
+                  },
           );
         }),
       ],
@@ -635,7 +632,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
   void initState() {
     t = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (secondsPassed < countdownWords.length-1) secondsPassed++;
+        if (secondsPassed < countdownWords.length - 1) secondsPassed++;
       });
     });
     super.initState();
@@ -669,50 +666,62 @@ class WordWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, watch) {
     GameController _gameController = watch(gameProvider);
-
-    List<Widget> taboos = [];
-
     List<String> _taboos = _gameController.currentWord!.taboos;
 
-    for (int i = 0; i < _nTaboosToShow; i++) {
-      taboos.add(UpperCaseAutoSizeText(
-        _taboos[i],
-        maxFontSize: 35.0,
-        style: Theme.of(context).textTheme.headline2?.copyWith(color: txtBlack),
-        maxLines: 1,
-      ));
-    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      //physics: BouncingScrollPhysics(),
+      children: <Widget>[
+        Container(
+          //width: double.infinity,
+          height: 150,
+          child: Center(
+            child: new UpperCaseAutoSizeText(
+              _gameController.currentWord!.wordToGuess,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline2
+                  ?.copyWith(color: txtGrey),
+              maxFontSize: 56,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+        FittedBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              for (int i = 0; i < _nTaboosToShow; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: UpperCaseAutoSizeText(
+                    _taboos[i],
+                    maxFontSize: 35.0,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline2
+                        ?.copyWith(color: txtBlack),
+                    maxLines: 1,
+                  ),
+                ),
+            ],
+          ),
+        )
 
-    return FittedBox(
-      child: new Column(
-        //physics: BouncingScrollPhysics(),
-        children: <Widget>[
-          Center(
-            child: Padding(
-              padding:
-                  EdgeInsets.symmetric(vertical: (smallScreen ? 0.0 : 25.0)),
-              child: new UpperCaseAutoSizeText(
-                _gameController.currentWord!.wordToGuess,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline2
-                    ?.copyWith(color: txtGrey),
-                maxFontSize: 56,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+        /* Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: taboos,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: taboos,
-            ),
-          ),
-        ],
-      ),
+        ),*/
+      ],
     );
 
     if (_gameController.skipLeftCurrentTeam > 0) {
