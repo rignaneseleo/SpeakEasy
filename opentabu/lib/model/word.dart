@@ -4,29 +4,43 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
+import '../utils/utils.dart';
+
 class Word {
-  String _wordToGuess;
-  List<String> _taboos;
-
-  Word(this._wordToGuess, this._taboos) {
-    _wordToGuess = _capitalize(_wordToGuess.trim());
-
-    for (int i = 0; i < _taboos.length; i++) {
-      if (_taboos[i].length == 0) //if the string is empty
-        _taboos.removeAt(i--); //remove it
-      else
-        _taboos[i] = _capitalize(_taboos[i].trim());
-    }
-
-    //every time I load the game, the taboos will be in different order
-    _taboos.shuffle();
-  }
+  late String _wordToGuess;
+  List<String> _taboos = [];
 
   String get wordToGuess => _wordToGuess;
 
-  List<String> get taboos {
-    return _taboos;
+  List<String> get taboos => _taboos;
+
+  int get nTabu => _taboos.length;
+
+  Word(String wordToGuess, List<String> taboos) {
+    _wordToGuess = capitalize(wordToGuess.trim());
+    addTabus(taboos);
+
+    //every time I load the game, the taboos will be in different order
+    _taboos.shuffle();
+
+    assert(_wordToGuess.isNotEmpty);
+    assert(_taboos.isNotEmpty);
   }
 
-  String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+  bool addTabus(List<String> taboos) {
+    bool success = true;
+    for (String taboo in taboos) {
+      if (!addTabu(taboo)) success = false;
+    }
+    return success;
+  }
+
+  bool addTabu(String tabu) {
+    tabu = capitalize(tabu.trim());
+    if (tabu.length == 0) return false;
+
+    if (_taboos.contains(tabu)) return false;
+    _taboos.add(tabu);
+    return true;
+  }
 }
