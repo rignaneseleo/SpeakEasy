@@ -12,6 +12,7 @@ import 'package:opentabu/controller/analytics_controller.dart';
 import 'package:opentabu/main.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/theme/theme.dart';
+import 'package:opentabu/view/rules_page.dart';
 import 'package:opentabu/view/widget/incremental_button.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:opentabu/view/widget/my_title.dart';
@@ -42,7 +43,8 @@ class HomePageState extends State<HomePage> with AnimationMixin {
 
   @override
   void initState() {
-    sizeMenuItems = Tween(begin: 0.0, end: 50.0).animate(controller);
+    sizeMenuItems = Tween(begin: 0.00000001, end: 5000.0).animate(controller);
+
 
     super.initState();
   }
@@ -100,7 +102,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value,
+                    height: sizeMenuItems.value/100,
                     child: SelectorButton(
                       indexSelected: _settings.nTaboos - 3,
                       items: [
@@ -115,7 +117,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value,
+                    height: sizeMenuItems.value/100,
                     child: IncrementalButton(
                       increment: 1,
                       initialValue: _settings.nTurns,
@@ -128,7 +130,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value,
+                    height: sizeMenuItems.value/100,
                     child: IncrementalButton(
                       increment: 10,
                       text: "Sec".tr(),
@@ -141,7 +143,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value,
+                    height: sizeMenuItems.value/100,
                     child: IncrementalButton(
                       increment: 1,
                       initialValue: _settings.nSkip,
