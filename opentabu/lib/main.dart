@@ -69,6 +69,9 @@ Future<void> main() async {
   );
 
   words = await CSVDataReader.readData('assets/words/it/min.csv');
+  words.shuffle();
+  //_printWords(words);
+
   await loadSounds();
   hasVibration = await Vibration.hasVibrator() ?? false;
   prefs = await SharedPreferences.getInstance();
@@ -84,6 +87,16 @@ Future<void> main() async {
       ),
     ),
   );
+}
+
+void _printOrderedWords(List<Word> words) {
+  words.sort((a, b) => a.nTabu.compareTo(b.nTabu));
+
+  print("---------------------");
+  for(var w in words.reversed) {
+    print("${w.wordToGuess},${w.taboos}");
+  }
+  print("---------------------");
 }
 
 class OpenTabuApp extends StatelessWidget {
