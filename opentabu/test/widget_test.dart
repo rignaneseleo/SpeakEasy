@@ -7,24 +7,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:opentabu/main.dart';
+import 'package:opentabu/persistence/csv_data_reader.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Testing the CSV read', (WidgetTester tester) async {
+    words = await CSVDataReader.readData('assets/words/it/min.csv');
+    assert(words.length > 0);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    var wordTabusCount = {
+      "libro": 18, //duplicate tabu
+      "profondo": 8, //duplicate row
+    };
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    for (var wordTabus in wordTabusCount.entries) {
+      var w =
+          words.firstWhere((w) => w.wordToGuess.toLowerCase() == wordTabus.key);
+      assert(w.nTabu == wordTabus.value,
+          "The word ${w.wordToGuess} has ${w.nTabu} tabus, but ${wordTabus.value} were expected: ${w.taboos}");
+    }
   });
 }
