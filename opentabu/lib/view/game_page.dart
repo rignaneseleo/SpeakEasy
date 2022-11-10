@@ -237,7 +237,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                             child: SafeArea(
                               child: GestureDetector(
                                 child: Icon(
-                                  Icons.info,
+                                  Icons.book,
                                   color: txtWhite,
                                 ),
                                 onTap: () =>
