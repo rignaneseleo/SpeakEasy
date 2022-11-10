@@ -50,7 +50,7 @@ class InfoPage extends StatelessWidget {
               ),
               buildLine(
                 context,
-                name: "#Tabu",
+                name: "#Parole",
                 value: words.length,
               ),
               Container(height: smallScreen ? 0 : 60),

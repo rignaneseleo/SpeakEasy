@@ -33,6 +33,7 @@
   "App": "App",
   "Match": "Partite",
   "#Tabu": "# Tabu",
+  "#Words": "# Parole",
   "#Played": "# Giocate",
   "Correct": "Parole indovinate",
   "Wrong": "Errori",
