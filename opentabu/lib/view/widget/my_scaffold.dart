@@ -1,41 +1,86 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:opentabu/theme/theme.dart';
+
+import '../../theme/theme.dart';
 
 class MyScaffold extends StatelessWidget {
   final List<Widget> widgets;
-  Widget? topIcon;
+  Widget? topRightWidget;
+  Widget? topLeftWidget;
 
-  MyScaffold({Key? key, required this.widgets, this.topIcon}) : super(key: key);
+  MyScaffold({
+    Key? key,
+    required this.widgets,
+    this.topRightWidget,
+    this.topLeftWidget,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Material(
         color: Theme.of(context).primaryColor,
-        child: Stack(
+        child: Column(
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: 28,
-                vertical: 28,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: widgets,
+            SafeArea(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 14.0, horizontal: 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    topLeftWidget ?? Container(),
+                    topRightWidget ?? Container(),
+                  ],
+                ),
               ),
             ),
-            Positioned(
-              child: SafeArea(child: topIcon ?? Container()),
-              right: 10,
-              top: 10,
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 28,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: widgets,
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+Widget buildLine(context, {required String text, dynamic value, onTap}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: 6.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            child: new Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline4
+                  ?.copyWith(color: txtWhite),
+            ),
+          ),
+          if (value != null)
+            Text(value.toString(),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline4
+                    ?.copyWith(color: txtWhite)),
+        ],
+      ),
+    ),
+  );
 }

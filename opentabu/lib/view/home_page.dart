@@ -3,20 +3,18 @@
 * GNU Affero General Public License v3.0: https://choosealicense.com/licenses/agpl-3.0/
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:opentabu/controller/analytics_controller.dart';
-import 'package:opentabu/main.dart';
 import 'package:opentabu/model/settings.dart';
 import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/view/rules_page.dart';
+import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/incremental_button.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:opentabu/view/widget/my_title.dart';
-import 'package:opentabu/view/widget/big_button.dart';
 import 'package:opentabu/view/widget/selector_button.dart';
 import 'package:opentabu/view/widget/tiny_button.dart';
 import 'package:simple_animations/simple_animations.dart';
@@ -45,7 +43,6 @@ class HomePageState extends State<HomePage> with AnimationMixin {
   void initState() {
     sizeMenuItems = Tween(begin: 0.00000001, end: 5000.0).animate(controller);
 
-
     super.initState();
   }
 
@@ -53,14 +50,28 @@ class HomePageState extends State<HomePage> with AnimationMixin {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: MyScaffold(
-        topIcon: GestureDetector(
+        topLeftWidget: GestureDetector(
           child: Icon(
             Icons.info,
             color: txtWhite,
+            size: 28,
           ),
           onTap: () =>
               Get.to(() => InfoPage(), transition: Transition.upToDown),
         ),
+        topRightWidget: AnalyticsController.getStartedMatches() == 0
+            ? null
+            : GestureDetector(
+                child: Text(
+                  "More words?".tr(),
+                  style: TextStyle(
+                    color: txtWhite,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () =>
+                    Get.to(() => InfoPage(), transition: Transition.upToDown),
+              ),
         widgets: <Widget>[
           Expanded(
             child: Align(
@@ -102,7 +113,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value/100,
+                    height: sizeMenuItems.value / 100,
                     child: SelectorButton(
                       indexSelected: _settings.nTaboos - 3,
                       items: [
@@ -117,7 +128,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value/100,
+                    height: sizeMenuItems.value / 100,
                     child: IncrementalButton(
                       increment: 1,
                       initialValue: _settings.nTurns,
@@ -130,7 +141,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value/100,
+                    height: sizeMenuItems.value / 100,
                     child: IncrementalButton(
                       increment: 10,
                       text: "Sec".tr(),
@@ -143,7 +154,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     ),
                   ),
                   SizedBox(
-                    height: sizeMenuItems.value/100,
+                    height: sizeMenuItems.value / 100,
                     child: IncrementalButton(
                       increment: 1,
                       initialValue: _settings.nSkip,

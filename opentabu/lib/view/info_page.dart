@@ -12,6 +12,8 @@ import 'package:opentabu/view/rules_page.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../utils/utils.dart';
+
 class InfoPage extends StatelessWidget {
   //TODO email da codificare con https://www.w3schools.com/tags/ref_urlencode.asp
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
@@ -26,131 +28,83 @@ class InfoPage extends StatelessWidget {
           Get.back();
         }
       },
-      child: MyScaffold(widgets: [
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: Theme.of(context).canvasColor,
-                ),
-                onPressed: () => Get.back()),
-          ),
-        ),
-        Expanded(
-          child: ListView(
-            physics: BouncingScrollPhysics(),
-            children: [
-              Container(height: smallScreen ? 0 : 40),
-              buildLine(
-                context,
-                name: "Version".tr(),
-                value: packageInfo?.version.toString(),
+      child: MyScaffold(
+          topLeftWidget: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Theme.of(context).canvasColor,
               ),
-              buildLine(
-                context,
-                name: "#Parole",
-                value: words.length,
-              ),
-              Container(height: smallScreen ? 0 : 60),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () => Get.to(() => RulesPage(),
-                      transition: Transition.upToDown),
-                  child: new Text(
-                    "📙  " + "Rules".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+              onPressed: () => Get.back()),
+          widgets: [
+            //Expanded(child: Container()),
+            //SizedBox(height: 30),
+            Expanded(
+              child: ListView(
+                shrinkWrap: false,
+                physics: BouncingScrollPhysics(),
+                children: [
+                  Container(height: smallScreen ? 0 : 40),
+                  buildLine(
+                    context,
+                    text: "Version".tr(),
+                    value: packageInfo?.version.toString(),
                   ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () => buildPaymentWidget(),
-                  child: new Text(
-                    "☕️  " + "Support".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                  buildLine(
+                    context,
+                    text: "#Words".tr(),
+                    value: words.length.toString(),
                   ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () => Get.to(() => AnalyticsPage(),
-                      transition: Transition.downToUp),
-                  child: new Text(
-                    "📊  " + "Analytics".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                  Container(height: smallScreen ? 0 : 60),
+                  buildLine(
+                    context,
+                    text: "📙  " + "Rules".tr(),
+                    onTap: () => Get.to(() => RulesPage(),
+                        transition: Transition.downToUp),
                   ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () =>
-                      _launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
-                  child: new Text(
-                    "🤯  " + "report_bug".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                  buildLine(
+                    context,
+                    text: "☕️  " + "Support".tr(),
+                    onTap: () => buildPaymentWidget(),
                   ),
-                ),
+                  buildLine(
+                    context,
+                    text: "📈  " + "Analytics".tr(),
+                    onTap: () => Get.to(() => AnalyticsPage(),
+                        transition: Transition.downToUp),
+                  ),
+                  buildLine(
+                    context,
+                    text: "🤯  " + "report_bug".tr(),
+                    onTap: () =>
+                        launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        new AutoSizeText(
-          "Made by",
-          maxFontSize: Theme.of(context).textTheme.headline2?.fontSize ?? 48,
-          style: Theme.of(context)
-              .textTheme
-              .headline1
-              ?.copyWith(color: materialPurple),
-          maxLines: 1,
-        ),
-        GestureDetector(
-          child: new AutoSizeText(
-            "Leonardo Rignanese",
-            style: Theme.of(context).textTheme.headline1,
-            maxLines: 2,
-          ),
-          onTap: () async =>
-              await _launchURL("https://www.linkedin.com/in/rignaneseleo/"),
-        ),
-      ]),
+            ),
+            new AutoSizeText(
+              "Made by",
+              maxFontSize:
+                  Theme.of(context).textTheme.headline2?.fontSize ?? 48,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline1
+                  ?.copyWith(color: materialPurple),
+              maxLines: 1,
+            ),
+            GestureDetector(
+              child: new AutoSizeText(
+                "Leonardo Rignanese",
+                style: Theme.of(context).textTheme.headline1,
+                maxLines: 2,
+              ),
+              onTap: () async =>
+                  await launchURL("https://www.twitter.com/rignaneseleo/"),
+            ),
+          ]),
     );
   }
 
-  Widget buildLine(context, {required String name, value}) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: new Text(
-            name.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .headline4
-                ?.copyWith(color: txtWhite),
-          ),
-        ),
-        Text(value.toString(),
-            style: Theme.of(context)
-                .textTheme
-                .headline4
-                ?.copyWith(color: txtWhite)),
-      ],
-    );
-  }
 
-  _launchURL(url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   Future buildPaymentWidget() async {
     bool available = await InAppPurchaseConnection.instance.isAvailable();

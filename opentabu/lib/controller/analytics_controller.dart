@@ -3,8 +3,7 @@ import 'package:opentabu/main.dart';
 class AnalyticsController {
   static const String kStartedMatchesKey = "started_matches";
 
-  static Future<int> getStartedMatches() async =>
-      await _getVal(kStartedMatchesKey);
+  static int getStartedMatches() => _getVal(kStartedMatchesKey);
 
   static Future addNewMatch() async => await _increaseSP(kStartedMatchesKey);
 
@@ -12,7 +11,7 @@ class AnalyticsController {
 
   static const String kSkipUsedKey = "skip_used";
 
-  static Future<int> getSkipUsed() async => await _getVal(kSkipUsedKey);
+  static int getSkipUsed() => _getVal(kSkipUsedKey);
 
   static Future addNewSkip() async => await _increaseSP(kSkipUsedKey);
 
@@ -20,8 +19,7 @@ class AnalyticsController {
 
   static const String kCorrectAnswersKey = "correct_answers";
 
-  static Future<int> getCorrectAnswers() async =>
-      await _getVal(kCorrectAnswersKey);
+  static int getCorrectAnswers() => _getVal(kCorrectAnswersKey);
 
   static Future addCorrectAnswer() async =>
       await _increaseSP(kCorrectAnswersKey);
@@ -30,13 +28,13 @@ class AnalyticsController {
 
   static const String kWrongAnswersKey = "wrong_answers";
 
-  static Future<int> getWrongAnswers() async => await _getVal(kWrongAnswersKey);
+  static int getWrongAnswers() => _getVal(kWrongAnswersKey);
 
   static Future addWrongAnswer() async => await _increaseSP(kWrongAnswersKey);
 
   //---------
 
-  static Future<int> _getVal(String key) async {
+  static int _getVal(String key) {
     return prefs.getInt(key) ?? 0;
   }
 
