@@ -128,41 +128,4 @@ class RulesPage extends StatelessWidget {
       ],
     );
   }
-
-  Future buildPaymentWidget() async {
-    bool available = await InAppPurchaseConnection.instance.isAvailable();
-    if (!available) {
-      showToast("error_trylater".tr());
-      return;
-    }
-
-    //Get stuff available
-    const Set<String> _kIds = <String>{'donation0'};
-    final ProductDetailsResponse response =
-        await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-    if (response.notFoundIDs.isNotEmpty) {
-      showToast("error_trylater".tr());
-      return;
-    }
-
-    //Register for updates
-    final Stream purchaseUpdated =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    purchaseUpdated.listen((purchaseDetailsList) {}, onDone: () {
-      showToast("thankyou".tr() + " 🍻");
-    }, onError: (error) {
-      print("Payment error: " + error.toString());
-      showToast("error_trylater".tr());
-    });
-
-    //Perform the payment
-    List<ProductDetails> products = response.productDetails;
-    final ProductDetails productDetails = products.elementAt(0);
-    final PurchaseParam purchaseParam =
-        PurchaseParam(productDetails: productDetails);
-    InAppPurchaseConnection.instance
-        .buyConsumable(purchaseParam: purchaseParam);
-
-    // From here the purchase flow will be handled by the underlying store.
-  }
 }

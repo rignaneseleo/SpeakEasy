@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +12,12 @@ import 'package:opentabu/utils/toast.dart';
 import 'package:opentabu/view/analytics_page.dart';
 import 'package:opentabu/view/rules_page.dart';
 import 'package:opentabu/view/widget/my_scaffold.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/utils.dart';
 
 class InfoPage extends StatelessWidget {
+  StreamSubscription<List<PurchaseDetails>>? _paymentSubscription;
+
   //TODO email da codificare con https://www.w3schools.com/tags/ref_urlencode.asp
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
 
@@ -104,9 +107,56 @@ class InfoPage extends StatelessWidget {
     );
   }
 
-
-
   Future buildPaymentWidget() async {
+    //get the product
+    const Set<String> _kIds = <String>{'donation0'};
+    final ProductDetailsResponse response =
+        await InAppPurchase.instance.queryProductDetails(_kIds);
+    if (response.notFoundIDs.isNotEmpty) {
+      showToast("Product not found");
+      showToast("error_trylater".tr());
+      return;
+    }
+
+    //set the listener
+    Stream<List<PurchaseDetails>> purchaseUpdated =
+        InAppPurchase.instance.purchaseStream;
+    _paymentSubscription =
+        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
+      // handle  purchaseDetailsList
+      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+        if (purchaseDetails.status == PurchaseStatus.pending) {
+        } else {
+          if (purchaseDetails.status == PurchaseStatus.error) {
+            showToast("error_trylater".tr());
+          } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+              purchaseDetails.status == PurchaseStatus.restored) {
+            showToast("thankyou".tr() + " ❤️");
+          }
+          if (purchaseDetails.pendingCompletePurchase) {
+            await InAppPurchase.instance.completePurchase(purchaseDetails);
+          }
+        }
+      });
+    }, onDone: () {
+      showToast("thankyou".tr() + " 🍻");
+      print("Close subscription");
+      _paymentSubscription?.cancel();
+    }, onError: (error) {
+      print("Payment error: " + error.toString());
+      showToast("error_trylater".tr());
+      _paymentSubscription?.cancel();
+    });
+
+    //show the dialog
+    List<ProductDetails> products = response.productDetails;
+    var product = products.first;
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    await InAppPurchase.instance.buyConsumable(purchaseParam: purchaseParam);
+
+    return;
+
+    /*
     bool available = await InAppPurchaseConnection.instance.isAvailable();
     if (!available) {
       showToast("error_trylater".tr());
@@ -139,7 +189,7 @@ class InfoPage extends StatelessWidget {
         PurchaseParam(productDetails: productDetails);
     InAppPurchaseConnection.instance
         .buyConsumable(purchaseParam: purchaseParam);
-
+*/
     // From here the purchase flow will be handled by the underlying store.
   }
 }

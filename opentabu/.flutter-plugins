@@ -1,6 +1,8 @@
 # This is a generated file; do not edit or check into version control.
 fluttertoast=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-8.0.9/
-in_app_purchase=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/in_app_purchase-0.5.2/
+in_app_purchase=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/in_app_purchase-3.0.8/
+in_app_purchase_android=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/in_app_purchase_android-0.2.3+6/
+in_app_purchase_storekit=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/in_app_purchase_storekit-0.3.3/
 in_app_review=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/in_app_review-2.0.4/
 package_info=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/package_info-2.0.2/
 path_provider=/Users/leonardorignanese/Progetti/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-2.0.11/
