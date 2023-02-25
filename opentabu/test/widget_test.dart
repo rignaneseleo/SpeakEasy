@@ -7,8 +7,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:opentabu/main.dart';
-import 'package:opentabu/persistence/csv_data_reader.dart';
+import 'package:speakeasy/main.dart';
+import 'package:speakeasy/persistence/csv_data_reader.dart';
 
 void main() {
   testWidgets('Testing the CSV read', (WidgetTester tester) async {

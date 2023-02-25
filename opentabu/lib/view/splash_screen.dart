@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:opentabu/main.dart';
-import 'package:opentabu/view/widget/my_scaffold.dart';
-import 'package:opentabu/view/widget/my_title.dart';
+import 'package:speakeasy/main.dart';
+import 'package:speakeasy/view/widget/my_scaffold.dart';
+import 'package:speakeasy/view/widget/my_title.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

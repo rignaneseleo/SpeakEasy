@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/utils/uppercase_text.dart';
+import 'package:speakeasy/theme/theme.dart';
+import 'package:speakeasy/utils/uppercase_text.dart';
 
 class TinyButton extends StatelessWidget {
   final Color textColor;

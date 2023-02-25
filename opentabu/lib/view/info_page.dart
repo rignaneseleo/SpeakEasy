@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:opentabu/main.dart';
-import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/utils/toast.dart';
-import 'package:opentabu/view/analytics_page.dart';
-import 'package:opentabu/view/rules_page.dart';
-import 'package:opentabu/view/widget/my_scaffold.dart';
+import 'package:speakeasy/main.dart';
+import 'package:speakeasy/theme/theme.dart';
+import 'package:speakeasy/utils/toast.dart';
+import 'package:speakeasy/view/analytics_page.dart';
+import 'package:speakeasy/view/rules_page.dart';
+import 'package:speakeasy/view/widget/my_scaffold.dart';
 
 import '../utils/utils.dart';
 

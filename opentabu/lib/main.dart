@@ -11,11 +11,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:opentabu/model/word.dart';
-import 'package:opentabu/persistence/sound_loader.dart';
-import 'package:opentabu/theme/theme.dart';
-import 'package:opentabu/view/home_page.dart';
-import 'package:opentabu/view/splash_screen.dart';
+import 'package:speakeasy/model/word.dart';
+import 'package:speakeasy/persistence/sound_loader.dart';
+import 'package:speakeasy/theme/theme.dart';
+import 'package:speakeasy/view/home_page.dart';
+import 'package:speakeasy/view/splash_screen.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
@@ -105,7 +105,7 @@ class OpenTabuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'OpenTabu',
+      title: 'SpeakEasy',
       home: new HomePage(),
       theme: mainTheme,
       routes: {

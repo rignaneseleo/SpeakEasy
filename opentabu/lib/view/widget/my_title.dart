@@ -7,7 +7,7 @@ class MyTitle extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: Text(
-        "Open\nTabu",
+        "Speak\nEasy",
         style: Theme.of(context).textTheme.headline1,
       ),
     );

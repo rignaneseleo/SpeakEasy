@@ -7,7 +7,7 @@ import 'dart:async';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:opentabu/model/word.dart';
+import 'package:speakeasy/model/word.dart';
 
 class CSVDataReader {
   static Future<List<Word>> readData(String filePath) async {

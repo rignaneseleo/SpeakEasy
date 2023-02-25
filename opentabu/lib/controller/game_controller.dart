@@ -6,9 +6,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:opentabu/model/game.dart';
-import 'package:opentabu/model/settings.dart';
-import 'package:opentabu/model/word.dart';
+import 'package:speakeasy/model/game.dart';
+import 'package:speakeasy/model/settings.dart';
+import 'package:speakeasy/model/word.dart';
 
 final gameProvider =
     ChangeNotifierProvider.autoDispose((ref) => GameController());

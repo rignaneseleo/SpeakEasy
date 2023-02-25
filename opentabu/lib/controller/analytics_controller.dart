@@ -1,4 +1,4 @@
-import 'package:opentabu/main.dart';
+import 'package:speakeasy/main.dart';
 
 class AnalyticsController {
   static const String kStartedMatchesKey = "started_matches";

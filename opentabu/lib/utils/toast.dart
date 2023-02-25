@@ -1,5 +1,5 @@
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:opentabu/theme/theme.dart';
+import 'package:speakeasy/theme/theme.dart';
 
 void showToast(String text) => Fluttertoast.showToast(
       msg: text,

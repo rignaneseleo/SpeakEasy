@@ -6,7 +6,7 @@
 
 import 'dart:math';
 
-import 'package:opentabu/model/word.dart';
+import 'package:speakeasy/model/word.dart';
 
 class Game {
   final List<Word> _words;
