@@ -16,3 +16,4 @@ opentabu/ios/Flutter/.last_build_id
 opentabu/ios/Podfile.lock
 opentabu/assets/words/it/extra.csv
 .idea/workspace.xml
+.DS_Store
