@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
   csv: 5.0.1
-  flutter_launcher_icons: 0.10.0
+  flutter_launcher_icons: 0.13.1
   equatable: 2.0.0
   flutter_riverpod: 0.14.0+3
   soundpool: 2.3.0
@@ -38,13 +38,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-flutter_icons:
+flutter_launcher_icons:
   #android: "launcher_icon"
   ios: true
-  android: true 
-  web:
-    generate: true
-    background_color: "#FFF"
+  android: true
+  remove_alpha_ios: true
   image_path: "assets/icons/logo.png"
 
 flutter:
