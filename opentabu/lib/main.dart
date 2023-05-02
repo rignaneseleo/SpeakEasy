@@ -82,7 +82,7 @@ Future<void> main() async {
         supportedLocales: [Locale('en'), Locale('it')],
         path: 'assets/lang',
         fallbackLocale: Locale('en'),
-        child: OpenTabuApp(),
+        child: SpeakEasyApp(),
       ),
     ),
   );
@@ -98,8 +98,8 @@ void _printOrderedWords(List<Word> words) {
   print("---------------------");
 }
 
-class OpenTabuApp extends StatelessWidget {
-  const OpenTabuApp({Key? key}) : super(key: key);
+class SpeakEasyApp extends StatelessWidget {
+  const SpeakEasyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
