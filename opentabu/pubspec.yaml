@@ -25,7 +25,7 @@ dependencies:
   google_fonts: 3.0.1
   simple_animations: 5.0.0+2
   page_transition: 2.0.9
-  fluttertoast: 8.0.9
+  fluttertoast: 8.2.1
   easy_localization: 3.0.1
   in_app_review: 2.0.4
   shared_preferences: 2.0.15
