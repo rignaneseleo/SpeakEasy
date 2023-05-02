@@ -63,7 +63,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             ? null
             : GestureDetector(
                 child: Text(
-                  "More words?".tr(),
+                  "More words".tr()+"?",
                   style: TextStyle(
                     color: txtWhite,
                     fontSize: 18,
