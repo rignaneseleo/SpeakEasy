@@ -15,11 +15,15 @@ import 'package:speakeasy/view/widget/my_scaffold.dart';
 
 import '../utils/utils.dart';
 
-class InfoPage extends StatelessWidget {
-  StreamSubscription<List<PurchaseDetails>>? _paymentSubscription;
-
-  //TODO email da codificare con https://www.w3schools.com/tags/ref_urlencode.asp
+class InfoPage extends StatefulWidget {
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
+
+  @override
+  State<InfoPage> createState() => _InfoPageState();
+}
+
+class _InfoPageState extends State<InfoPage> {
+  StreamSubscription<List<PurchaseDetails>>? _paymentSubscription;
 
   @override
   void dispose() {
@@ -85,7 +89,7 @@ class InfoPage extends StatelessWidget {
                     context,
                     text: "🤯  " + "report_bug".tr(),
                     onTap: () =>
-                        launchURL("mailto:$emailLeo?subject=Bug%20tabu%20"),
+                        launchURL("mailto:${InfoPage.emailLeo}?subject=Bug%20tabu%20"),
                   ),
                 ],
               ),
