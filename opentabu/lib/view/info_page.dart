@@ -22,6 +22,12 @@ class InfoPage extends StatelessWidget {
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
 
   @override
+  void dispose() {
+    _paymentSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onVerticalDragUpdate: (details) {
@@ -121,7 +127,7 @@ class InfoPage extends StatelessWidget {
     //set the listener
     Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchase.instance.purchaseStream;
-    _paymentSubscription =
+    _paymentSubscription ??=
         purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
       // handle  purchaseDetailsList
       purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
@@ -141,11 +147,9 @@ class InfoPage extends StatelessWidget {
     }, onDone: () {
       showToast("thankyou".tr() + " 🍻");
       print("Close subscription");
-      _paymentSubscription?.cancel();
     }, onError: (error) {
       print("Payment error: " + error.toString());
       showToast("error_trylater".tr());
-      _paymentSubscription?.cancel();
     });
 
     //show the dialog
