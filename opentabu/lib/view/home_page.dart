@@ -19,6 +19,7 @@ import 'package:speakeasy/view/widget/selector_button.dart';
 import 'package:speakeasy/view/widget/tiny_button.dart';
 import 'package:simple_animations/simple_animations.dart';
 
+import '../main.dart';
 import 'game_page.dart';
 import 'info_page.dart';
 
@@ -59,18 +60,19 @@ class HomePageState extends State<HomePage> with AnimationMixin {
           onTap: () =>
               Get.to(() => InfoPage(), transition: Transition.upToDown),
         ),
-        topRightWidget: AnalyticsController.getStartedMatches() == 0
+        topRightWidget: AnalyticsController.getStartedMatches() == 0 ||
+                (sp.getBool("1000words") ?? false)
             ? null
             : GestureDetector(
                 child: Text(
-                  "More words".tr()+"?",
+                  "More words".tr() + "?",
                   style: TextStyle(
                     color: txtWhite,
                     fontSize: 18,
                   ),
                 ),
-                onTap: () =>
-                    Get.to(() => InfoPage(), transition: Transition.upToDown),
+                onTap: () => Get.to(() => InfoPage(openPaymentDialog: true),
+                    transition: Transition.upToDown),
               ),
         widgets: <Widget>[
           Expanded(

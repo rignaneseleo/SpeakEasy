@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:locale_emoji/locale_emoji.dart' as le;
 
@@ -23,6 +24,9 @@ import '../utils/utils.dart';
 
 class InfoPage extends StatefulWidget {
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
+  bool openPaymentDialog = false;
+
+  InfoPage({Key? key, this.openPaymentDialog = false}) : super(key: key);
 
   @override
   State<InfoPage> createState() => _InfoPageState();
@@ -76,6 +80,9 @@ class _InfoPageState extends State<InfoPage> {
       print("Payment error: " + error.toString());
       showToast("error_trylater".tr());
     });
+
+    if (widget.openPaymentDialog)
+      Future.delayed(Duration(milliseconds: 500), () => showPaymentDialog());
   }
 
   @override
@@ -128,7 +135,7 @@ class _InfoPageState extends State<InfoPage> {
                     buildLine(
                       context,
                       text: "🚀  " + "Buy more words".tr(),
-                      onTap: () => buildPaymentDialog(),
+                      onTap: () => showPaymentDialog(),
                     ),
                     Container(height: smallScreen ? 0 : 20),
                   ],
@@ -161,6 +168,14 @@ class _InfoPageState extends State<InfoPage> {
                     onTap: () => launchURL(
                         "mailto:${InfoPage.emailLeo}?subject=Bug%20tabu%20"),
                   ),
+                  if (kDebugMode)
+                    buildLine(context, text: "--- reset sp", onTap: () {
+                      sp.remove("100words");
+                      sp.remove("500words");
+                      sp.remove("1000words");
+                      
+                      showToast("done");
+                    }),
                 ],
               ),
             ),
@@ -188,7 +203,7 @@ class _InfoPageState extends State<InfoPage> {
     );
   }
 
-  Future buildPaymentDialog() async {
+  Future showPaymentDialog() async {
     const Set<String> _kIds = <String>{
       '100words',
       '500words',
@@ -217,7 +232,7 @@ class _InfoPageState extends State<InfoPage> {
           if (_100words != null)
             ListTile(
               enabled: !(sp.getBool("100words") ?? false),
-              leading: Icon(
+              trailing: Icon(
                 Icons.chat_bubble_outlined,
                 size: 20,
               ),
@@ -234,7 +249,7 @@ class _InfoPageState extends State<InfoPage> {
           if (_500words != null)
             ListTile(
               enabled: !(sp.getBool("500words") ?? false),
-              leading: Icon(
+              trailing: Icon(
                 Icons.chat_bubble_outlined,
                 size: 25,
               ),
@@ -251,7 +266,7 @@ class _InfoPageState extends State<InfoPage> {
           if (_1000words != null)
             ListTile(
               enabled: !(sp.getBool("1000words") ?? false),
-              leading: Icon(
+              trailing: Icon(
                 Icons.chat_bubble_outlined,
                 size: 35,
               ),
@@ -274,6 +289,16 @@ class _InfoPageState extends State<InfoPage> {
               Get.back();
             },
           ),
+          /*ListTile(
+            title: Text("secret_code".tr()),
+            subtitle: Text("unlock_cool_stuff".tr()),
+            onTap: () async {
+
+
+              await InAppPurchase.instance.restorePurchases();
+              Get.back();
+            },
+          ),*/
         ],
       ),
     );
