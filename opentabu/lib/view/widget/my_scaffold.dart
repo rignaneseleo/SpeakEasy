@@ -25,7 +25,7 @@ class MyScaffold extends StatelessWidget {
             SafeArea(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 14.0, horizontal: 14),
+                    const EdgeInsets.symmetric(vertical: 1.0, horizontal: 14),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -60,7 +60,7 @@ Widget buildLine(context, {required String text, dynamic value, onTap}) {
   return GestureDetector(
     onTap: onTap,
     child: Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
