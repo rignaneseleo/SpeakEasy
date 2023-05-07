@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -48,6 +49,13 @@ DENTRO TUTTI!
 Se esce questo simbolo, entrambe le squadre possono provare a indovinare le parole
 misteriose che vengono suggerite.*/
 
+List<Locale> supportedLanguages = const [
+  Locale('en', "US"),
+  Locale('it', "IT"),
+];
+
+late SharedPreferences sp;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -68,7 +76,9 @@ Future<void> main() async {
     ),
   );
 
-  var defaultLocale = Platform.localeName;
+  sp = await SharedPreferences.getInstance();
+
+  var defaultLocale = sp.getString("saved_locale") ?? Platform.localeName;
   words = await CSVDataReader.readData(
       'assets/words/${defaultLocale.substring(0, 2)}/min.csv');
   words.shuffle();
@@ -82,12 +92,10 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       child: EasyLocalization(
-        supportedLocales: [
-          Locale('en',"US"),
-          Locale('it',"IT"),
-        ],
+        supportedLocales: supportedLanguages,
         path: 'assets/lang',
-        fallbackLocale: Locale('en',"US"),
+        saveLocale: true,
+        fallbackLocale: supportedLanguages.first,
         child: SpeakEasyApp(),
       ),
     ),
@@ -118,7 +126,10 @@ class SpeakEasyApp extends StatelessWidget {
         "/home": (_) => new HomePage(),
       },
       //Easy_localization:
-      localizationsDelegates: context.localizationDelegates,
+      localizationsDelegates: [
+        LocaleNamesLocalizationsDelegate(),
+        ...context.localizationDelegates
+      ],
       supportedLocales: context.supportedLocales,
       locale: context.locale,
     );

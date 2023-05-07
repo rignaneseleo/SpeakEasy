@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:locale_emoji/locale_emoji.dart' as le;
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:speakeasy/main.dart';
 import 'package:speakeasy/theme/theme.dart';
 import 'package:speakeasy/utils/toast.dart';
@@ -88,8 +92,13 @@ class _InfoPageState extends State<InfoPage> {
                   buildLine(
                     context,
                     text: "🤯  " + "report_bug".tr(),
-                    onTap: () =>
-                        launchURL("mailto:${InfoPage.emailLeo}?subject=Bug%20tabu%20"),
+                    onTap: () => launchURL(
+                        "mailto:${InfoPage.emailLeo}?subject=Bug%20tabu%20"),
+                  ),
+                  buildLine(
+                    context,
+                    text: "🌍  " + "language".tr(),
+                    onTap: () => showLanguageDialog(context),
                   ),
                 ],
               ),
@@ -199,5 +208,39 @@ class _InfoPageState extends State<InfoPage> {
         .buyConsumable(purchaseParam: purchaseParam);
 */
     // From here the purchase flow will be handled by the underlying store.
+  }
+
+  showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //title: Text("language".tr()),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: supportedLanguages.length,
+              itemBuilder: (context, i) {
+                var localeStr = supportedLanguages[i].toString();
+                return ListTile(
+                  leading: Text(le.getFlagEmoji(
+                          languageCode: localeStr.substring(0, 2)) ??
+                      ""),
+                  title: Text(
+                      LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr),
+                  onTap: () async {
+                    await sp.setString("saved_locale", localeStr);
+                    await context.setLocale(supportedLanguages[i]);
+                    //need to reboot so it reads the correct csv
+                    Restart.restartApp();
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 }

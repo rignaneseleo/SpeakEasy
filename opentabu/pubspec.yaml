@@ -32,6 +32,9 @@ dependencies:
   flutter_svg: 1.1.5
   package_info: 2.0.2
   in_app_purchase: 3.0.8
+  locale_emoji: ^0.2.1
+  flutter_localized_locales: ^2.0.4
+  restart_app: ^1.1.2
 
 
 dev_dependencies:
