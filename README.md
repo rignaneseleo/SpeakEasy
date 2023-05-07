@@ -12,6 +12,7 @@ SpeakEasy is a mobile board game app that challenges players to guess a secret w
 
 - Free to download and play (200 words for free)
 - No ads
+- The tabus are shuffled and more than the ones displayed so every game is different
 - Multi - language
 - No physical cards needed; all gameplay is done through the app
 - Play with friends in person
