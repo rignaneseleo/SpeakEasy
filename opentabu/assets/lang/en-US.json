@@ -40,5 +40,16 @@
   "language": "Language",
   "thankyou": "Thank you",
   "Rules": "Rules",
-  "More words": "More words"
+  "More words": "More words",
+  "goal": "Goal",
+  "goalDescription": "Taboo is a team game. The goal is to score more points than the opposing teams. In turn, a player called the 'Guesser' will hold this cellphone and try to make their teammates guess the secret word (the word in gray on the top of the screen) without using any of the taboo words related to that term (list of words in black).",
+  "preparation": "Preparation",
+  "preparationDescription": "Form teams of 2 to 5 players with an even number of players (at least two players per team). Arrange the players in a circle, alternating players from each team. One person from the first team will start in the role of 'Guesser', which is the person who must make their team members guess a word without using any taboo words.",
+  "game": "The Game",
+  "gameDescription": "Each turn is timed. During each turn, the Guesser must try to make their teammates guess as many words as possible, while members of opposing teams have the role of checking that the Guesser is not using any taboo words. \r\n\r\nThe Guesser must hold this cellphone. At the end of each turn, the cellphone is passed to the player on their right. \r\n\r\nA word is considered guessed only if it is pronounced exactly as written on the screen, other verb forms and singular/plural forms are not valid.\r\n\r\nFor the Guesser, it is forbidden to:\r\n- say parts that compose the taboo words or the secret word (you cannot say 'pig' or 'thorn' if the word is 'Porcupine');\r\n- use the plural forms of the indicated words, not even in irregular forms (for example, you cannot say 'parks' to make your teammates guess 'park');\r\n- make gestures;\r\n- say 'rhymes with,' 'sounds like,' or 'looks like';\r\n- use abbreviations (for example, you cannot say 'PC' to suggest 'computer0).\r\n\r\nIf one of the players who is guessing pronounces one of the taboo words, that word becomes usable by the Guesser.",
+  "points": "Points",
+  "pointsDescription": "For each guessed word, press the green button and earn a point. \r\n\r\nFor each taboo word pronounced or rule infringement, press the red button and lose one point.",
+  "ready?": "Ready?",
+  "set": "Set",
+  "go!": "GO!"
 }
