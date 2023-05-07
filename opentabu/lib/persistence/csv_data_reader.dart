@@ -14,11 +14,19 @@ import 'package:speakeasy/model/word.dart';
 import '../main.dart';
 
 class CSVDataReader {
-  static Future<List<Word>> loadWords(String localeName) async {
+  static Future<List<Word>> loadWords({String? localeName}) async {
+    localeName ??= sp.getString("saved_locale") ?? Platform.localeName;
     var words =
         await readWords('assets/words/${localeName.substring(0, 2)}/words.csv');
+
     //if not payed, limit to 200
-    if (words.length > 200) words = words.sublist(0, 200);
+    int wordsLimit = 200;
+
+    if (!(sp.getBool("1000words") ?? false)) {
+      if (sp.getBool("100words") ?? false) wordsLimit += 100;
+      if (sp.getBool("500words") ?? false) wordsLimit += 500;
+      if (words.length > wordsLimit) words = words.sublist(0, wordsLimit);
+    }
 
     return words..shuffle();
     //_printWords(words);

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:get/get.dart' hide Trans;
 import 'package:locale_emoji/locale_emoji.dart' as le;
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -17,6 +18,7 @@ import 'package:speakeasy/view/analytics_page.dart';
 import 'package:speakeasy/view/rules_page.dart';
 import 'package:speakeasy/view/widget/my_scaffold.dart';
 
+import '../persistence/csv_data_reader.dart';
 import '../utils/utils.dart';
 
 class InfoPage extends StatefulWidget {
@@ -28,6 +30,53 @@ class InfoPage extends StatefulWidget {
 
 class _InfoPageState extends State<InfoPage> {
   StreamSubscription<List<PurchaseDetails>>? _paymentSubscription;
+
+  @override
+  void initState() {
+    _setupPaymentSubscription();
+    super.initState();
+  }
+
+  _setupPaymentSubscription() {
+    //set the listener
+    _paymentSubscription ??= InAppPurchase.instance.purchaseStream.listen(
+        (List<PurchaseDetails> purchaseDetailsList) {
+      // handle  purchaseDetailsList
+      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+        if (purchaseDetails.status == PurchaseStatus.pending) {
+        } else {
+          if (purchaseDetails.status == PurchaseStatus.error) {
+            showToast("error_trylater".tr());
+          } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+              purchaseDetails.status == PurchaseStatus.restored) {
+            if (purchaseDetails.productID.contains("words")) {
+              if (purchaseDetails.productID == "100words")
+                await sp.setBool("100words", true);
+              else if (purchaseDetails.productID == "1000words")
+                await sp.setBool("1000words", true);
+              else if (purchaseDetails.productID == "500words")
+                await sp.setBool("500words", true);
+
+              //load the new words
+              words = await CSVDataReader.loadWords();
+              setState(() {});
+            }
+
+            showToast("thankyou".tr() + " ❤️");
+          }
+          if (purchaseDetails.pendingCompletePurchase) {
+            await InAppPurchase.instance.completePurchase(purchaseDetails);
+          }
+        }
+      });
+    }, onDone: () {
+      showToast("thankyou".tr() + " 🍻");
+      print("Close subscription");
+    }, onError: (error) {
+      print("Payment error: " + error.toString());
+      showToast("error_trylater".tr());
+    });
+  }
 
   @override
   void dispose() {
@@ -55,33 +104,44 @@ class _InfoPageState extends State<InfoPage> {
           widgets: [
             //Expanded(child: Container()),
             //SizedBox(height: 30),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildLine(
+                  context,
+                  text: "Version".tr(),
+                  value: packageInfo?.version.toString(),
+                ),
+                buildLine(
+                  context,
+                  text: "#Words".tr(),
+                  value: words.length.toString(),
+                ),
+              ],
+            ),
             Expanded(
               child: ListView(
                 shrinkWrap: false,
                 physics: BouncingScrollPhysics(),
                 children: [
-                  Container(height: smallScreen ? 0 : 40),
+                  if (!(sp.getBool("1000words") ?? false)) ...[
+                    buildLine(
+                      context,
+                      text: "🚀  " + "Buy more words".tr(),
+                      onTap: () => buildPaymentDialog(),
+                    ),
+                    Container(height: smallScreen ? 0 : 20),
+                  ],
                   buildLine(
                     context,
-                    text: "Version".tr(),
-                    value: packageInfo?.version.toString(),
+                    text: "🌍  " + "language".tr(),
+                    onTap: () => showLanguageDialog(context),
                   ),
-                  buildLine(
-                    context,
-                    text: "#Words".tr(),
-                    value: words.length.toString(),
-                  ),
-                  Container(height: smallScreen ? 0 : 60),
                   buildLine(
                     context,
                     text: "📙  " + "Rules".tr(),
                     onTap: () => Get.to(() => RulesPage(),
                         transition: Transition.downToUp),
-                  ),
-                  buildLine(
-                    context,
-                    text: "☕️  " + "Support".tr(),
-                    onTap: () => buildPaymentWidget(),
                   ),
                   buildLine(
                     context,
@@ -91,18 +151,20 @@ class _InfoPageState extends State<InfoPage> {
                   ),
                   buildLine(
                     context,
+                    text: "👨🏽‍💻  " + "look_code".tr(),
+                    onTap: () =>
+                        launchURL("https://github.com/rignaneseleo/SpeakEasy"),
+                  ),
+                  buildLine(
+                    context,
                     text: "🤯  " + "report_bug".tr(),
                     onTap: () => launchURL(
                         "mailto:${InfoPage.emailLeo}?subject=Bug%20tabu%20"),
                   ),
-                  buildLine(
-                    context,
-                    text: "🌍  " + "language".tr(),
-                    onTap: () => showLanguageDialog(context),
-                  ),
                 ],
               ),
             ),
+            Container(height: smallScreen ? 0 : 30),
             new AutoSizeText(
               "Made by",
               maxFontSize:
@@ -120,94 +182,107 @@ class _InfoPageState extends State<InfoPage> {
                 maxLines: 2,
               ),
               onTap: () async =>
-                  await launchURL("https://www.twitter.com/rignaneseleo/"),
+                  await launchURL("https://www.twitter.com/leorigna/"),
             ),
           ]),
     );
   }
 
-  Future buildPaymentWidget() async {
-    //get the product
-    const Set<String> _kIds = <String>{'donation0'};
+  Future buildPaymentDialog() async {
+    const Set<String> _kIds = <String>{
+      '100words',
+      '500words',
+      '1000words',
+    };
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(_kIds);
     if (response.notFoundIDs.isNotEmpty) {
-      showToast("Product not found");
+      print("Product not found");
       showToast("error_trylater".tr());
       return;
     }
-
-    //set the listener
-    Stream<List<PurchaseDetails>> purchaseUpdated =
-        InAppPurchase.instance.purchaseStream;
-    _paymentSubscription ??=
-        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
-      // handle  purchaseDetailsList
-      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-        if (purchaseDetails.status == PurchaseStatus.pending) {
-        } else {
-          if (purchaseDetails.status == PurchaseStatus.error) {
-            showToast("error_trylater".tr());
-          } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-              purchaseDetails.status == PurchaseStatus.restored) {
-            showToast("thankyou".tr() + " ❤️");
-          }
-          if (purchaseDetails.pendingCompletePurchase) {
-            await InAppPurchase.instance.completePurchase(purchaseDetails);
-          }
-        }
-      });
-    }, onDone: () {
-      showToast("thankyou".tr() + " 🍻");
-      print("Close subscription");
-    }, onError: (error) {
-      print("Payment error: " + error.toString());
-      showToast("error_trylater".tr());
-    });
-
-    //show the dialog
     List<ProductDetails> products = response.productDetails;
-    var product = products.first;
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    await InAppPurchase.instance.buyConsumable(purchaseParam: purchaseParam);
+    var _100words = products.firstWhereOrNull((p) => p.id == "100words");
+    var _500words = products.firstWhereOrNull((p) => p.id == "500words");
+    var _1000words = products.firstWhereOrNull((p) => p.id == "1000words");
 
+    AlertDialog alert = AlertDialog(
+      contentPadding: EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15.0))),
+      //title: Text("Buy more words",style: TextStyle(color: Colors.black),),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_100words != null)
+            ListTile(
+              enabled: !(sp.getBool("100words") ?? false),
+              leading: Icon(
+                Icons.chat_bubble_outlined,
+                size: 20,
+              ),
+              title: Text("Buy {} words".tr(args: ["100"])),
+              subtitle: Text(_100words.price),
+              onTap: () async {
+                final PurchaseParam purchaseParam =
+                    PurchaseParam(productDetails: _100words);
+                var res = await InAppPurchase.instance
+                    .buyNonConsumable(purchaseParam: purchaseParam);
+                if (res) Get.back();
+              },
+            ),
+          if (_500words != null)
+            ListTile(
+              enabled: !(sp.getBool("500words") ?? false),
+              leading: Icon(
+                Icons.chat_bubble_outlined,
+                size: 25,
+              ),
+              title: Text("Buy {} words".tr(args: ["500"])),
+              subtitle: Text(_500words.price),
+              onTap: () async {
+                final PurchaseParam purchaseParam =
+                    PurchaseParam(productDetails: _500words);
+                var res = await InAppPurchase.instance
+                    .buyNonConsumable(purchaseParam: purchaseParam);
+                if (res) Get.back();
+              },
+            ),
+          if (_1000words != null)
+            ListTile(
+              enabled: !(sp.getBool("1000words") ?? false),
+              leading: Icon(
+                Icons.chat_bubble_outlined,
+                size: 35,
+              ),
+              title: Text("Buy {} words".tr(args: ["1000"])),
+              subtitle: Text(_1000words.price),
+              onTap: () async {
+                final PurchaseParam purchaseParam =
+                    PurchaseParam(productDetails: _1000words);
+                var res = await InAppPurchase.instance
+                    .buyNonConsumable(purchaseParam: purchaseParam);
+                if (res) Get.back();
+              },
+            ),
+          //restore
+          ListTile(
+            title: Text("Restore".tr()),
+            subtitle: Text("Restore your purchases".tr()),
+            onTap: () async {
+              await InAppPurchase.instance.restorePurchases();
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => alert,
+    );
     return;
-
-    /*
-    bool available = await InAppPurchaseConnection.instance.isAvailable();
-    if (!available) {
-      showToast("error_trylater".tr());
-      return;
-    }
-
-    //Get stuff available
-    const Set<String> _kIds = <String>{'donation0'};
-    final ProductDetailsResponse response =
-        await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-    if (response.notFoundIDs.isNotEmpty) {
-      showToast("error_trylater".tr());
-      return;
-    }
-
-    //Register for updates
-    final Stream purchaseUpdated =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    purchaseUpdated.listen((purchaseDetailsList) {}, onDone: () {
-      showToast("thankyou".tr() + " 🍻");
-    }, onError: (error) {
-      print("Payment error: " + error.toString());
-      showToast("error_trylater".tr());
-    });
-
-    //Perform the payment
-    List<ProductDetails> products = response.productDetails;
-    final ProductDetails productDetails = products.elementAt(0);
-    final PurchaseParam purchaseParam =
-        PurchaseParam(productDetails: productDetails);
-    InAppPurchaseConnection.instance
-        .buyConsumable(purchaseParam: purchaseParam);
-*/
-    // From here the purchase flow will be handled by the underlying store.
   }
 
   showLanguageDialog(BuildContext context) {
@@ -227,9 +302,11 @@ class _InfoPageState extends State<InfoPage> {
               itemBuilder: (context, i) {
                 var localeStr = supportedLanguages[i].toString();
                 return ListTile(
-                  leading: Text(le.getFlagEmoji(
-                          languageCode: localeStr.substring(0, 2)) ??
-                      "",style: TextStyle(fontSize: 28)),
+                  leading: Text(
+                      le.getFlagEmoji(
+                              languageCode: localeStr.substring(0, 2)) ??
+                          "",
+                      style: TextStyle(fontSize: 28)),
                   title: Text(
                       LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr),
                   onTap: () async {
@@ -238,9 +315,10 @@ class _InfoPageState extends State<InfoPage> {
                     //need to reboot so it reads the correct csv
                     Restart.restartApp();
                   },
-                  trailing: localeStr == Localizations.localeOf(context).toString()
-                      ? Icon(Icons.check)
-                      : null,
+                  trailing:
+                      localeStr == Localizations.localeOf(context).toString()
+                          ? Icon(Icons.check)
+                          : null,
                 );
               },
             ),

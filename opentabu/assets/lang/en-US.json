@@ -51,5 +51,10 @@
   "pointsDescription": "For each guessed word, press the green button and earn a point. \r\n\r\nFor each taboo word pronounced or rule infringement, press the red button and lose one point.",
   "ready?": "Ready?",
   "set": "Set",
-  "go!": "GO!"
+  "go!": "GO!",
+  "Buy more words": "Buy more words",
+  "Buy {} words": "Buy {} words",
+  "Restore": "Restore",
+  "Restore your purchases": "Restore your purchases",
+  "look_code": "Look at the code"
 }

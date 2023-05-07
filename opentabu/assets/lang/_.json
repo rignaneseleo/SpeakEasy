@@ -40,5 +40,10 @@
   "thankyou": "Thank you",
   "Version": "Version",
   "Rules": "Rules",
-  "More words": "More words"
+  "More words": "More words",
+  "Buy more words": "Buy more words",
+  "Buy {} words": "Buy {} words",
+  "Restore": "Restore",
+  "Restore your purchases": "Restore your purchases",
+  "look_code": "Look at the code"
 }
