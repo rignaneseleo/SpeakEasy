@@ -215,6 +215,9 @@ class _InfoPageState extends State<InfoPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          contentPadding: EdgeInsets.all(0),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15.0))),
           //title: Text("language".tr()),
           content: Container(
             width: double.maxFinite,
@@ -226,7 +229,7 @@ class _InfoPageState extends State<InfoPage> {
                 return ListTile(
                   leading: Text(le.getFlagEmoji(
                           languageCode: localeStr.substring(0, 2)) ??
-                      ""),
+                      "",style: TextStyle(fontSize: 28)),
                   title: Text(
                       LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr),
                   onTap: () async {
@@ -235,6 +238,9 @@ class _InfoPageState extends State<InfoPage> {
                     //need to reboot so it reads the correct csv
                     Restart.restartApp();
                   },
+                  trailing: localeStr == Localizations.localeOf(context).toString()
+                      ? Icon(Icons.check)
+                      : null,
                 );
               },
             ),
