@@ -6,6 +6,7 @@
 import 'dart:async';
 
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:speakeasy/model/word.dart';
 
@@ -13,9 +14,10 @@ class CSVDataReader {
   static Future<List<Word>> readData(String filePath) async {
     Map<String, Word> _words = {};
 
-    String wordsCSV = await rootBundle.loadString(filePath);
+    String wordsCSV =
+        await rootBundle.loadString(filePath, cache: kReleaseMode);
 
-    List<List> words = CsvToListConverter().convert(wordsCSV);
+    List<List> words = CsvToListConverter().convert(wordsCSV, eol: "\n");
 
     for (List row in words) {
       var rowList = List<String>.from(row);

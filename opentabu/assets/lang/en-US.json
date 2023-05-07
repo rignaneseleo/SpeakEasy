@@ -1,17 +1,4 @@
 {
-  "msg": "{} are written in the {} language",
-  "msg_named": "Easy localization are written in the {lang} language",
-  "msg_mixed": "{} are written in the {lang} language",
-  "gender": {
-    "male": "Hi man ;) {}",
-    "female": "Hello girl :) {}",
-    "other": "Hello {}"
-  },
-  "example": {
-    "hello": "Hello",
-    "world": "World!",
-    "helloWorld": "@:example.hello @:example.world"
-  },
   "#Teams": "{} Teams",
   "Team": "Team",
   "#Taboos": "{} Tabus",
@@ -51,7 +38,6 @@
   "Version": "Version",
   "error_trylater": "Error. Try later",
   "thankyou": "Thank you",
-  "Version": "Version",
   "Rules": "Rules",
   "More words": "More words"
 }

@@ -50,6 +50,7 @@ flutter:
 
   assets:
     - assets/words/it/
+    - assets/words/en/
     - assets/sounds/
     - assets/icons/
     - assets/lang/

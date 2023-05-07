@@ -4,6 +4,7 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,9 @@ Future<void> main() async {
     ),
   );
 
-  words = await CSVDataReader.readData('assets/words/it/min.csv');
+  var defaultLocale = Platform.localeName;
+  words = await CSVDataReader.readData(
+      'assets/words/${defaultLocale.substring(0, 2)}/min.csv');
   words.shuffle();
   //_printWords(words);
 
@@ -79,9 +82,12 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       child: EasyLocalization(
-        supportedLocales: [Locale('en'), Locale('it')],
+        supportedLocales: [
+          Locale('en',"US"),
+          Locale('it',"IT"),
+        ],
         path: 'assets/lang',
-        fallbackLocale: Locale('en'),
+        fallbackLocale: Locale('en',"US"),
         child: SpeakEasyApp(),
       ),
     ),
@@ -92,7 +98,7 @@ void _printOrderedWords(List<Word> words) {
   words.sort((a, b) => a.nTabu.compareTo(b.nTabu));
 
   print("---------------------");
-  for(var w in words.reversed) {
+  for (var w in words.reversed) {
     print("${w.wordToGuess},${w.taboos}");
   }
   print("---------------------");
