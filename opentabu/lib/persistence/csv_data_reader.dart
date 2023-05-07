@@ -4,20 +4,34 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
+import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:speakeasy/model/word.dart';
 
+import '../main.dart';
+
 class CSVDataReader {
-  static Future<List<Word>> readData(String filePath) async {
+  static Future<List<Word>> loadWords(String localeName) async {
+    var words =
+        await readWords('assets/words/${localeName.substring(0, 2)}/words.csv');
+    //if not payed, limit to 200
+    if (words.length > 200) words = words.sublist(0, 200);
+
+    return words..shuffle();
+    //_printWords(words);
+  }
+
+  static Future<List<Word>> readWords(String filePath) async {
     Map<String, Word> _words = {};
 
     String wordsCSV =
         await rootBundle.loadString(filePath, cache: kReleaseMode);
 
     List<List> words = CsvToListConverter().convert(wordsCSV, eol: "\n");
+    print("CSV READER: ${words.length} rows");
 
     for (List row in words) {
       var rowList = List<String>.from(row);

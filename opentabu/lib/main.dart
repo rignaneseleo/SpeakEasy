@@ -78,11 +78,8 @@ Future<void> main() async {
 
   sp = await SharedPreferences.getInstance();
 
-  var defaultLocale = sp.getString("saved_locale") ?? Platform.localeName;
-  words = await CSVDataReader.readData(
-      'assets/words/${defaultLocale.substring(0, 2)}/min.csv');
-  words.shuffle();
-  //_printWords(words);
+  var savedLocale = sp.getString("saved_locale") ?? Platform.localeName;
+  words = await CSVDataReader.loadWords(savedLocale);
 
   await loadSounds();
   hasVibration = await Vibration.hasVibrator() ?? false;
