@@ -12,7 +12,7 @@ import 'package:speakeasy/persistence/csv_data_reader.dart';
 
 void main() {
   testWidgets('Testing the CSV read', (WidgetTester tester) async {
-    words = await CSVDataReader.readData('assets/words/it/min.csv');
+    words = await CSVDataReader.readWords('assets/words/it/min.csv');
     assert(words.length > 0);
 
     var wordTabusCount = {
