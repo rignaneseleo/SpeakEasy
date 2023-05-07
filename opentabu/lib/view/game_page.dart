@@ -625,7 +625,7 @@ class CountDownWidget extends StatefulWidget {
 
 class _CountDownWidgetState extends State<CountDownWidget> {
   int secondsPassed = 0;
-  List<String> countdownWords = ["ready?", "set", "go!"];
+  List<String> countdownWords = ["ready?".tr(), "set".tr(), "go!".tr()];
   Timer? t;
 
   @override
