@@ -56,8 +56,8 @@
   "set": "Partenza",
   "go!": "Via!",
   "Buy more words": "Compra pi\u00f9 parole",
-  "Compra {} parole": "Compra {} parole",
-  "Ripristina": "Ripristina",
-  "Ripristina i tuoi acquisti": "Ripristina i tuoi acquisti",
-  "Guarda il codice": "Guarda il codice"
+  "Buy {} words": "Acquista {} parole",
+  "Restore": "Ripristina",
+  "Restore your purchases": "Ripristina i tuoi acquisti",
+  "look_code": "Guarda il codice"
 }
