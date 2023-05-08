@@ -38,27 +38,27 @@ class CSVDataReader {
     String wordsCSV =
         await rootBundle.loadString(filePath, cache: kReleaseMode);
 
-    List<List> words = CsvToListConverter().convert(wordsCSV, eol: "\n");
-    print("CSV READER: ${words.length} rows");
+    List<List> rows = CsvToListConverter().convert(wordsCSV, eol: "\n");
+    print("CSV READER: ${rows.length} rows");
 
-    for (List row in words) {
+    for (List row in rows) {
       var rowList = List<String>.from(row);
       String wordToGuess = rowList[0].toLowerCase().trim();
       if (wordToGuess.isEmpty) continue;
       if (_words.containsKey(wordToGuess)) {
-        // if the word is already in the map, add the new tabu
+        // if the row is already in the map, add the new tabu
         print(
             "WARNING: ${wordToGuess.toUpperCase()} already in the map, merging the tabus:");
-        print("${_words[wordToGuess]!.taboos} + ${rowList.sublist(1)}");
         _words[wordToGuess]!.addTabus(rowList.sublist(1));
+        print("Result: ${_words[wordToGuess]!.taboos}");
         //print("NEW: ${_words[wordToGuess]!.taboos}");
       } else {
-        //new word
+        //new row
         _words[wordToGuess] = Word(rowList[0], rowList.sublist(1));
       }
     }
 
-    print("Loaded ${_words.length} unique words from ${filePath}");
+    print("Loaded ${_words.length} unique rows from ${filePath}");
     return _words.values.toList();
   }
 }
