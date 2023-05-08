@@ -40,6 +40,13 @@ class Word {
     if (tabu.length == 0) return false;
 
     if (_taboos.contains(tabu)) return false;
+
+    if (wordToGuess.contains(tabu)) {
+      print(
+          "WARNING: $tabu is a substring of $wordToGuess, it will be ignored");
+      return false;
+    }
+
     _taboos.add(tabu);
     return true;
   }

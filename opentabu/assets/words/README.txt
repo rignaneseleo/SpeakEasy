@@ -7,7 +7,9 @@ To install the module, run the following command:
 
 To decrypt the file, you need to use:
     encrypt-file --func decrypt --file extra.csv.enc --password <password>
+    encrypt-file --func decrypt --file extra.csv.enc --password <password>
 
 To encrypt use:
     encrypt-file --func encrypt --file extra.csv --password <password>
+    encrypt-file --func encrypt --file /Users/leonardorignanese/Progetti/OpenTabu/opentabu/assets/words/en/words.csv --password 031112
 
