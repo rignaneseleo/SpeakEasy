@@ -56,5 +56,7 @@
   "Buy {} words": "Buy {} words",
   "Restore": "Restore",
   "Restore your purchases": "Restore your purchases",
-  "look_code": "Look at the code"
+  "look_code": "Look at the code",
+  "secret_code": "Use a secret code",
+  "unlock_cool_stuff": "Unlock cool stuff"
 }

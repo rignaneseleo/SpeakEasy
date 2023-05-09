@@ -59,5 +59,7 @@
   "Buy {} words": "Acquista {} parole",
   "Restore": "Ripristina",
   "Restore your purchases": "Ripristina i tuoi acquisti",
-  "look_code": "Guarda il codice"
+  "look_code": "Guarda il codice",
+  "secret_code": "Usa un codice segreto",
+  "unlock_cool_stuff": "Sblocca cose fighe"
 }
