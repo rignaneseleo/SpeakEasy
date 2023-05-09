@@ -1,15 +1,12 @@
-Extra.csv file is encrypted using encrypt-file (https://github.com/brunocampos01/encrypt-file)
+with: https://superuser.com/questions/370388/simple-built-in-way-to-encrypt-and-decrypt-a-file-on-a-mac-via-command-line
 
-To install the module, run the following command:
-    pip install encrypt-file
-    pip install pyopenssl
-    pip install cryptography
 
-To decrypt the file, you need to use:
-    encrypt-file --func decrypt --file extra.csv.enc --password <password>
-    encrypt-file --func decrypt --file extra.csv.enc --password <password>
 
-To encrypt use:
-    encrypt-file --func encrypt --file extra.csv --password <password>
-    encrypt-file --func encrypt --file /Users/leonardorignanese/Progetti/OpenTabu/opentabu/assets/words/en/words.csv --password 031112
+enc:
+
+    openssl enc -aes-256-cbc -salt -pass pass:<pw> -in /Users/leonardorignanese/Progetti/OpenTabu/opentabu/assets/words/en/words.csv -out /Users/leonardorignanese/Progetti/OpenTabu/opentabu/assets/words/en/words.csv.enc
+
+dec:
+
+        openssl enc -aes-256-cbc -d -salt -pass pass:<pw> -in /Users/leonardorignanese/Progetti/OpenTabu/opentabu/assets/words/en/words.csv.enc -out /Users/leonardorignanese/Progetti/OpenTabu/opentabu/assets/words/en/words.csv
 
