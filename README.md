@@ -1,3 +1,7 @@
+
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
 # SpeakEasy
 
 SpeakEasy is a mobile board game app that challenges players to guess a secret word without using certain taboo words. The game tests players' creativity, wit, and ability to communicate effectively with their teammates.
