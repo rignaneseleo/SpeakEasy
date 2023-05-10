@@ -35,7 +35,7 @@ class RulesPage extends StatelessWidget {
           ),
           widgets: [
             new AutoSizeText(
-              "rules".tr(),
+              "Rules".tr(),
               style: Theme.of(context).textTheme.headline2,
               maxLines: 2,
             ),
