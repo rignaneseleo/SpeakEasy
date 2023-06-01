@@ -53,7 +53,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
       child: MyScaffold(
         topLeftWidget: GestureDetector(
           child: Icon(
-            Icons.info,
+            Icons.settings,
             color: txtWhite,
             size: 28,
           ),

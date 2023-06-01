@@ -25,7 +25,7 @@ class MyScaffold extends StatelessWidget {
             SafeArea(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 1.0, horizontal: 14),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
