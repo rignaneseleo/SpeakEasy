@@ -1,6 +1,6 @@
 name: speakeasy
 description: Open source version of tabu
-version: 1.4.6+21
+version: 1.4.7+22
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
