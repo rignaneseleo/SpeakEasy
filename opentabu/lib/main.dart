@@ -16,6 +16,8 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:speakeasy/model/word.dart';
 import 'package:speakeasy/persistence/sound_loader.dart';
 import 'package:speakeasy/theme/theme.dart';
+import 'package:speakeasy/utils/toast.dart';
+import 'package:speakeasy/utils/utils.dart';
 import 'package:speakeasy/view/home_page.dart';
 import 'package:speakeasy/view/splash_screen.dart';
 import 'package:package_info/package_info.dart';
@@ -78,8 +80,7 @@ Future<void> main() async {
 
   sp = await SharedPreferences.getInstance();
 
-  var savedLocale = sp.getString("saved_locale") ?? Platform.localeName;
-  words = await CSVDataReader.loadWords(localeName: savedLocale);
+  words = await CSVDataReader.loadWords();
 
   await loadSounds();
   hasVibration = await Vibration.hasVibrator() ?? false;
@@ -89,6 +90,7 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       child: EasyLocalization(
+        startLocale: getSelectedLocale(),
         supportedLocales: supportedLanguages,
         path: 'assets/lang',
         saveLocale: true,
