@@ -21,7 +21,7 @@ import 'package:simple_animations/simple_animations.dart';
 
 import '../main.dart';
 import 'game_page.dart';
-import 'info_page.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
             size: 28,
           ),
           onTap: () =>
-              Get.to(() => InfoPage(), transition: Transition.upToDown),
+              Get.to(() => SettingsPage(), transition: Transition.upToDown),
         ),
         topRightWidget: AnalyticsController.getStartedMatches() == 0 ||
                 (sp.getBool("1000words") ?? false)
@@ -71,7 +71,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
                     fontSize: 18,
                   ),
                 ),
-                onTap: () => Get.to(() => InfoPage(openPaymentDialog: true),
+                onTap: () => Get.to(() => SettingsPage(openPaymentDialog: true),
                     transition: Transition.upToDown),
               ),
         widgets: <Widget>[

@@ -22,17 +22,17 @@ import 'package:speakeasy/view/widget/my_scaffold.dart';
 import '../persistence/csv_data_reader.dart';
 import '../utils/utils.dart';
 
-class InfoPage extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
   bool openPaymentDialog = false;
 
-  InfoPage({Key? key, this.openPaymentDialog = false}) : super(key: key);
+  SettingsPage({Key? key, this.openPaymentDialog = false}) : super(key: key);
 
   @override
-  State<InfoPage> createState() => _InfoPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _InfoPageState extends State<InfoPage> {
+class _SettingsPageState extends State<SettingsPage> {
   StreamSubscription<List<PurchaseDetails>>? _paymentSubscription;
 
   @override
@@ -166,14 +166,14 @@ class _InfoPageState extends State<InfoPage> {
                     context,
                     text: "🤯  " + "report_bug".tr(),
                     onTap: () => launchURL(
-                        "mailto:${InfoPage.emailLeo}?subject=Bug%20tabu%20"),
+                        "mailto:${SettingsPage.emailLeo}?subject=Bug%20tabu%20"),
                   ),
                   if (kDebugMode)
                     buildLine(context, text: "--- reset sp", onTap: () {
                       sp.remove("100words");
                       sp.remove("500words");
                       sp.remove("1000words");
-                      
+
                       showToast("done");
                     }),
                 ],
@@ -340,10 +340,10 @@ class _InfoPageState extends State<InfoPage> {
                     //need to reboot so it reads the correct csv
                     Restart.restartApp();
                   },
-                  trailing:
-                      localeStr == Localizations.localeOf(context).toString()
-                          ? Icon(Icons.check)
-                          : null,
+                  trailing: localeStr ==
+                          getSelectedLocale(context: context)!.toString()
+                      ? Icon(Icons.check)
+                      : null,
                 );
               },
             ),
