@@ -17,7 +17,6 @@ import '../utils/toast.dart';
 class CSVDataReader {
   static Future<List<Word>> loadWords() async {
     var localeName = sp.getString("saved_locale") ?? Platform.localeName;
-    showToast("${sp.getString("saved_locale")}\r\n${Platform.localeName}");
     var words =
         await readWords('assets/words/${localeName.substring(0, 2)}/words.csv');
 
