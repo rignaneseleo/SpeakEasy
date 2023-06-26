@@ -25,6 +25,7 @@ import 'package:speakeasy/view/widget/big_button.dart';
 import 'package:speakeasy/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
+import 'dart:math' as math;
 
 class GamePage extends StatefulWidget {
   final Settings _settings;
@@ -195,16 +196,20 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                             top: 10,
                             child: SafeArea(
                               child: GestureDetector(
-                                child: Icon(
-                                  Icons.exit_to_app_rounded,
-                                  color: txtWhite,
-                                ),
                                 onTap: () {
                                   pauseGame();
                                   showDialogToExit();
                                 },
+                                child: Transform.rotate(
+                                  angle: math.pi,
+                                  child: Icon(
+                                    Icons.exit_to_app,
+                                    color: txtWhite,
+                                  ),
+                                ),
                               ),
-                            ),
+                            )
+
                           );
                         }
                         return Container();
