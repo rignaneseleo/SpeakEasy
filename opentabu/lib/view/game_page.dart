@@ -499,7 +499,7 @@ class GamePageState extends ConsumerState<GamePage>
             text: "Hold to start".tr(),
             bgColor: myYellow,
             textColor: txtBlack,
-            onPressed: (!_isReady)
+            onLongPressed: (!_isReady)
                 ? null
                 : () {
                     initCountdown(3);

@@ -8,6 +8,7 @@ class BigButton extends StatelessWidget {
   final Color bgColor;
   final Color textColor;
   final VoidCallback? onPressed;
+  final VoidCallback? onLongPressed;
   final String text;
 
   const BigButton(
@@ -15,6 +16,7 @@ class BigButton extends StatelessWidget {
       required this.bgColor,
       required this.textColor,
       this.onPressed,
+      this.onLongPressed,
       required this.text})
       : super(key: key);
 
@@ -37,6 +39,7 @@ class BigButton extends StatelessWidget {
         disabledColor: bgColor.withOpacity(0.6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         onPressed: onPressed,
+        onLongPress: onLongPressed,
       ),
     );
   }
