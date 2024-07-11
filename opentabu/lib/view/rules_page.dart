@@ -3,11 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:speakeasy/theme/theme.dart';
-import 'package:speakeasy/utils/toast.dart';
 import 'package:speakeasy/view/widget/my_scaffold.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class RulesPage extends StatelessWidget {
   @override
@@ -85,7 +82,8 @@ class RulesPage extends StatelessWidget {
     );
   }
 
-  Widget buildLine(context, {required String name, value}) {
+ /* Widget buildLine(BuildContext context,
+      {required String name, required String value}) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -105,5 +103,5 @@ class RulesPage extends StatelessWidget {
                 ?.copyWith(color: txtWhite)),
       ],
     );
-  }
+  }*/
 }

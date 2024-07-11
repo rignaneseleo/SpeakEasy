@@ -47,26 +47,27 @@ class UpperCaseText extends Text {
 
 class UpperCaseAutoSizeText extends AutoSizeText {
   UpperCaseAutoSizeText(
-    data, {
+    String data, {
     Key? key,
-    textKey,
-    style,
-    strutStyle,
+    Key? textKey,
+    TextStyle? style,
+    StrutStyle? strutStyle,
     double minFontSize = 12.0,
     double maxFontSize = double.infinity,
-    double stepGranularity = 1,
-    presetFontSizes,
-    group,
+    List<double>? presetFontSizes,
+    AutoSizeGroup? group,
     TextAlign? textAlign,
-    textDirection,
-    locale,
-    softWrap,
+    double stepGranularity = 1,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
     bool wrapWords = true,
-    overflow,
-    overflowReplacement,
-    textScaleFactor,
-    maxLines,
-    semanticsLabel,
+    TextOverflow? overflow,
+    Widget? overflowReplacement,
+    double? textScaleFactor,
+    int? maxLines,
+    String? semanticsLabel,
+    TextSpan? textSpan,
   }) : super(
           data.toUpperCase(),
           key: key,
@@ -88,5 +89,8 @@ class UpperCaseAutoSizeText extends AutoSizeText {
           stepGranularity: stepGranularity,
           textKey: textKey,
           wrapWords: wrapWords,
-        );
+        ) {
+    // TODO: implement UpperCaseAutoSizeText
+    throw UnimplementedError();
+  }
 }

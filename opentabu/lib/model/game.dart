@@ -11,12 +11,12 @@ import 'package:speakeasy/model/word.dart';
 class Game {
   final List<Word> _words;
   int _wordIndex = 0;
-  final nSkips;
+  final int nSkips;
 
   List<int> _scores = [];
   List<int> _skips = [];
 
-  Game(this._words, {int nTeams = 2, this.nSkips}) {
+  Game(this._words, {required int nTeams, required this.nSkips}) {
     _words.shuffle();
 
     for (int i = 0; i < nTeams; i++) {
@@ -28,7 +28,7 @@ class Game {
     }
   }
 
-  get newWord {
+  Word get newWord {
     _wordIndex++;
 
     //TODO actually if it's the end, starts again from 0
@@ -45,7 +45,7 @@ class Game {
   }
 
   void wrongAnswer(int teamNumber) {
-    if(_scores[teamNumber] > 0) _scores[teamNumber]--;
+    if (_scores[teamNumber] > 0) _scores[teamNumber]--;
   }
 
   bool useSkip(int teamNumber) {

@@ -28,9 +28,9 @@ import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class GamePage extends ConsumerStatefulWidget {
-  final Settings _settings;
+  GamePage(this._settings, {super.key});
 
-  GamePage(this._settings);
+  final Settings _settings;
 
   @override
   createState() {
@@ -40,6 +40,13 @@ class GamePage extends ConsumerStatefulWidget {
 
 class GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
+  //team name, score
+
+  GamePageState(this.settings) {
+    _timerDuration = settings.turnDurationInSeconds;
+    _nTaboosToShow = settings.nTaboos;
+  }
+
   final Settings settings;
 
   Timer? _turnTimer;
@@ -49,12 +56,7 @@ class GamePageState extends ConsumerState<GamePage>
   late int _nTaboosToShow;
 
   //info to show:
-  Map<String, int> matchInfo = {}; //team name, score
-
-  GamePageState(this.settings) {
-    _timerDuration = settings.turnDurationInSeconds;
-    _nTaboosToShow = settings.nTaboos;
-  }
+  Map<String, int> matchInfo = {};
 
   @override
   void dispose() {
@@ -552,8 +554,10 @@ class GamePageState extends ConsumerState<GamePage>
 }
 
 class TurnWidget extends ConsumerWidget {
+  const TurnWidget({super.key});
+
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     String turnText = "";
@@ -586,24 +590,25 @@ class TurnWidget extends ConsumerWidget {
 }
 
 class TimeWidget extends ConsumerWidget {
-  final _timerDuration;
-  final onTap;
+  const TimeWidget(this._timerDuration, this.onTap, {super.key});
 
-  TimeWidget(this._timerDuration, this.onTap);
+  final int _timerDuration;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //every second this is called
-    GameController _gameController = ref.watch(gameProvider);
+    final _gameController = ref.watch(gameProvider);
 
-    int secondsLeft = _timerDuration - _gameController.secondsPassed;
+    final secondsLeft = _timerDuration - _gameController.secondsPassed;
 
-    return new Center(
+    return Center(
       child: GestureDetector(
+        onTap: onTap,
         child: Container(
           height: smallScreen ? 50 : 65,
           width: smallScreen ? 50 : 65,
-          decoration: new BoxDecoration(
+          decoration: const BoxDecoration(
             color: lightPurple,
             shape: BoxShape.circle,
           ),
@@ -618,16 +623,14 @@ class TimeWidget extends ConsumerWidget {
             ),
           ),
         ),
-        onTap: onTap,
       ),
     );
   }
 }
 
 class CountDownWidget extends StatefulWidget {
+  CountDownWidget({super.key, required this.seconds}) {}
   final int seconds;
-
-  CountDownWidget({required this.seconds}) {}
 
   @override
   State<CountDownWidget> createState() => _CountDownWidgetState();
@@ -669,12 +672,12 @@ class _CountDownWidgetState extends State<CountDownWidget> {
 }
 
 class WordWidget extends ConsumerWidget {
+  WordWidget(this._nTaboosToShow, {super.key});
+
   final int _nTaboosToShow;
 
-  WordWidget(this._nTaboosToShow);
-
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
     List<String> _taboos = _gameController.currentWord!.taboos;
 
@@ -742,12 +745,12 @@ class WordWidget extends ConsumerWidget {
 }
 
 class GameInfoWidget extends ConsumerWidget {
+  GameInfoWidget({super.key, this.clockOpacity = 1});
+
   final int clockOpacity;
 
-  GameInfoWidget({this.clockOpacity = 1});
-
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     List<Widget> teams = [];
@@ -799,12 +802,12 @@ class GameInfoWidget extends ConsumerWidget {
 }
 
 class GameInfoWidgetShrinked extends ConsumerWidget {
+  GameInfoWidgetShrinked({super.key, this.clockOpacity = 1});
+
   final int clockOpacity;
 
-  GameInfoWidgetShrinked({this.clockOpacity = 1});
-
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     List<Widget> teams = [];
@@ -880,16 +883,15 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
 }
 
 class TeamItem extends StatelessWidget {
-  final bool disabled;
-  final String name;
-  final int score;
-
   const TeamItem(
       {Key? key,
       required this.disabled,
       required this.name,
       required this.score})
       : super(key: key);
+  final bool disabled;
+  final String name;
+  final int score;
 
   @override
   Widget build(BuildContext context) {
@@ -929,8 +931,10 @@ class TeamItem extends StatelessWidget {
 }
 
 class SkipTextWidget extends ConsumerWidget {
+  const SkipTextWidget({super.key});
+
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     return Container(
@@ -947,13 +951,13 @@ class SkipTextWidget extends ConsumerWidget {
 }
 
 class IncorrectAnswerButton extends ConsumerWidget {
+  IncorrectAnswerButton({super.key, this.customTeam});
+
   //This is used to fix the scores
   final int? customTeam;
 
-  IncorrectAnswerButton({this.customTeam});
-
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     return new Expanded(
@@ -972,13 +976,13 @@ class IncorrectAnswerButton extends ConsumerWidget {
 }
 
 class SkipButton extends ConsumerWidget {
+  SkipButton({super.key, this.customTeam});
+
   //This is used to fix the scores
   final int? customTeam;
 
-  SkipButton({this.customTeam});
-
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     return new Expanded(
@@ -1026,13 +1030,13 @@ class SkipButton extends ConsumerWidget {
 }
 
 class CorrectAnswerButton extends ConsumerWidget {
+  CorrectAnswerButton({super.key, this.customTeam});
+
   //This is used to fix the scores
   final int? customTeam;
 
-  CorrectAnswerButton({this.customTeam});
-
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     return new Expanded(

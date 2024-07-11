@@ -52,7 +52,8 @@ class MyScaffold extends StatelessWidget {
   }
 }
 
-Widget buildLine(context, {required String text, dynamic value, onTap}) {
+Widget buildLine(BuildContext context,
+    {required String text, dynamic value, GestureTapCallback? onTap}) {
   return GestureDetector(
     onTap: onTap,
     child: Padding(
