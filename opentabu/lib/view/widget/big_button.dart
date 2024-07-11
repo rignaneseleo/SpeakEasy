@@ -31,7 +31,7 @@ class BigButton extends StatelessWidget {
           maxLines: 1,
           textAlign: TextAlign.center,
           style:
-              Theme.of(context).textTheme.headline2?.copyWith(color: textColor),
+              Theme.of(context).textTheme.displayMedium?.copyWith(color: textColor),
         ),
         color: bgColor,
         disabledColor: bgColor.withOpacity(0.6),

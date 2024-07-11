@@ -20,33 +20,31 @@ ThemeData mainTheme = ThemeData(
   }),
   //primarySwatch: materialPurple,
   textTheme: TextTheme(
-    headline1: TextStyle(
+    displayLarge: TextStyle(
       color: txtWhite,
       fontSize: 90,
       height: 0.9,
     ),
-    headline2: TextStyle(
+    displayMedium: TextStyle(
       color: txtWhite,
       fontSize: 48,
     ),
-    headline3: TextStyle(
+    displaySmall: TextStyle(
       fontSize: 35,
     ),
-    headline4: TextStyle(
+    headlineMedium: TextStyle(
       color: txtWhite,
       fontSize: 25,
     ),
-    headline5: TextStyle(
+    headlineSmall: TextStyle(
       color: txtWhite,
       fontSize: 20,
     ),
-    headline6: TextStyle(
+    titleLarge: TextStyle(
       color: txtWhite,
       fontSize: 13,
     ),
   ),
   primaryColor: darkPurple,
-  accentColor: lightPurple,
-  canvasColor: bgWhite,
   fontFamily: 'SFPro',
 );

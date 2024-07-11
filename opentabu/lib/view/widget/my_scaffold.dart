@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/theme.dart';
@@ -18,39 +17,36 @@ class MyScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Material(
-        color: Theme.of(context).primaryColor,
-        child: Column(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    topLeftWidget ?? Container(),
-                    topRightWidget ?? Container(),
-                  ],
-                ),
+      backgroundColor: Theme.of(context).primaryColor,
+      body: Column(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  topLeftWidget ?? Container(),
+                  topRightWidget ?? Container(),
+                ],
               ),
             ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 28,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: widgets,
-                ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 28,
+                vertical: 28,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: widgets,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -69,7 +65,7 @@ Widget buildLine(context, {required String text, dynamic value, onTap}) {
               text,
               style: Theme.of(context)
                   .textTheme
-                  .headline4
+                  .headlineMedium
                   ?.copyWith(color: txtWhite),
             ),
           ),
@@ -77,7 +73,7 @@ Widget buildLine(context, {required String text, dynamic value, onTap}) {
             Text(value.toString(),
                 style: Theme.of(context)
                     .textTheme
-                    .headline4
+                    .headlineMedium
                     ?.copyWith(color: txtWhite)),
         ],
       ),

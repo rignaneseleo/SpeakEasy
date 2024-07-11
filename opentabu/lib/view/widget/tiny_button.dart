@@ -26,7 +26,7 @@ class TinyButton extends StatelessWidget {
             text,
             style: Theme.of(context)
                 .textTheme
-                .headline6
+                .titleLarge
                 ?.copyWith(color: textColor),
           ),
           onTap: onPressed,

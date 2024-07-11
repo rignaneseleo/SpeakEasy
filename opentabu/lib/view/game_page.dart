@@ -4,11 +4,12 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
@@ -24,22 +25,22 @@ import 'package:speakeasy/view/rules_page.dart';
 import 'package:speakeasy/view/widget/big_button.dart';
 import 'package:speakeasy/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
-import 'package:wakelock/wakelock.dart';
-import 'dart:math' as math;
+import 'package:wakelock_plus/wakelock_plus.dart';
 
-class GamePage extends StatefulWidget {
+class GamePage extends ConsumerStatefulWidget {
   final Settings _settings;
 
   GamePage(this._settings);
 
   @override
-  State<StatefulWidget> createState() {
+  createState() {
     return new GamePageState(_settings);
   }
 }
 
-class GamePageState extends State<GamePage> with WidgetsBindingObserver {
-  final settings;
+class GamePageState extends ConsumerState<GamePage>
+    with WidgetsBindingObserver {
+  final Settings settings;
 
   Timer? _turnTimer;
   Timer? _countSecondsTimer;
@@ -60,7 +61,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _turnTimer?.cancel();
     _countSecondsTimer?.cancel();
-    Wakelock.disable();
+    WakelockPlus.disable();
     super.dispose();
   }
 
@@ -72,12 +73,12 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
     //Needed to fix this: https://github.com/rrousselGit/river_pod/issues/177
     Future.delayed(Duration.zero, () {
-      context.read(gameProvider).init(settings, words);
+      ref.read(gameProvider).init(settings, words);
 
       _countSecondsTimer =
           new Timer.periodic(new Duration(seconds: 1), (timer) {
         if (_turnTimer?.isActive ?? false) {
-          GameController _gameController = context.read(gameProvider);
+          GameController _gameController = ref.read(gameProvider);
           _gameController.oneSecPassed();
 
           int secondsLeft = _timerDuration - _gameController.secondsPassed;
@@ -100,26 +101,27 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
         pauseGame();
         break;
     }
   }
 
   void initCountdown(int seconds) {
-    context.read(gameProvider).startCountdown(seconds);
+    ref.read(gameProvider).startCountdown(seconds);
     Timer(Duration(seconds: seconds), () => initGame());
   }
 
   void initGame() {
     //Start the turn
-    context.read(gameProvider).startTurn();
+    ref.read(gameProvider).startTurn();
 
     //Launch the timer
     setupTimer(_timerDuration);
   }
 
   void pauseGame() {
-    GameController _gameController = context.read(gameProvider);
+    GameController _gameController = ref.read(gameProvider);
     if (!(_gameController.gameState == GameState.playing) &&
         !(_gameController.gameState == GameState.init)) return;
 
@@ -131,13 +133,13 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
   }
 
   void resumeGame() {
-    GameController _gameController = context.read(gameProvider);
+    GameController _gameController = ref.read(gameProvider);
 
     //Launch the timer
     setupTimer(_timerDuration - _gameController.secondsPassed);
 
     //Resume the turn
-    context.read(gameProvider).resumeGame();
+    ref.read(gameProvider).resumeGame();
   }
 
   void setupTimer(int seconds) {
@@ -146,7 +148,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
       if (hasVibration) Vibration.vibrate(duration: 1000);
 
       playTimeoutSound();
-      context.read(gameProvider).changeTurn();
+      ref.read(gameProvider).changeTurn();
     });
   }
 
@@ -156,7 +158,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
     return WillPopScope(
         onWillPop: () async {
-          GameController _gameController = context.read(gameProvider);
+          GameController _gameController = ref.read(gameProvider);
 
           switch (_gameController.gameState) {
             case GameState.init:
@@ -188,34 +190,34 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     children: [
                       if (!smallScreen) GameInfoWidget(),
                       if (smallScreen) GameInfoWidgetShrinked(),
-                      Consumer(builder: (context, watch, child) {
-                        GameController _gameController = watch(gameProvider);
+                      Consumer(builder: (context, ref, child) {
+                        GameController _gameController =
+                            ref.watch(gameProvider);
                         if (_gameController.gameState != GameState.ended) {
                           return Positioned(
-                            left: 10,
-                            top: 10,
-                            child: SafeArea(
-                              child: GestureDetector(
-                                onTap: () {
-                                  pauseGame();
-                                  showDialogToExit();
-                                },
-                                child: Transform.rotate(
-                                  angle: math.pi,
-                                  child: Icon(
-                                    Icons.exit_to_app,
-                                    color: txtWhite,
+                              left: 10,
+                              top: 10,
+                              child: SafeArea(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    pauseGame();
+                                    showDialogToExit();
+                                  },
+                                  child: Transform.rotate(
+                                    angle: math.pi,
+                                    child: Icon(
+                                      Icons.exit_to_app,
+                                      color: txtWhite,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )
-
-                          );
+                              ));
                         }
                         return Container();
                       }),
-                      Consumer(builder: (context, watch, child) {
-                        GameController _gameController = watch(gameProvider);
+                      Consumer(builder: (context, ref, child) {
+                        GameController _gameController =
+                            ref.watch(gameProvider);
                         if (_gameController.gameState == GameState.playing ||
                             _gameController.gameState == GameState.init) {
                           return Positioned(
@@ -259,29 +261,29 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     ],
                   ),
                   Consumer(
-                    builder: (context, watch, child) {
-                      GameController _gameController = watch(gameProvider);
+                    builder: (context, ref, child) {
+                      GameController _gameController = ref.watch(gameProvider);
 
                       switch (_gameController.gameState) {
                         case GameState.ready:
                           _body = readyBody();
-                          Wakelock.enable();
+                          WakelockPlus.enable();
                           break;
                         case GameState.countdown:
                           _body = countDownBody();
-                          Wakelock.enable();
+                          WakelockPlus.enable();
                           break;
                         case GameState.playing:
                           _body = playingBody();
-                          Wakelock.enable();
+                          WakelockPlus.enable();
                           break;
                         case GameState.ended:
                           _body = endBody(_gameController.winners);
-                          Wakelock.disable();
+                          WakelockPlus.disable();
                           break;
                         case GameState.pause:
                           _body = pauseBody();
-                          Wakelock.disable();
+                          WakelockPlus.disable();
                           break;
                         case GameState.init:
                           break;
@@ -311,7 +313,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           'want_exit?'.tr(),
           style: Theme.of(context)
               .textTheme
-              .headline4
+              .headlineMedium
               ?.copyWith(color: darkPurple),
         ),
         content: SingleChildScrollView(
@@ -327,7 +329,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             child: Text('Nope'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .headline5
+                    .headlineSmall
                     ?.copyWith(color: lightPurple)),
             onPressed: () {
               Get.back();
@@ -337,7 +339,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
             child: Text('Yep'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .headline5
+                    .headlineSmall
                     ?.copyWith(color: lightPurple)),
             onPressed: () async {
               Get.back(canPop: true);
@@ -367,7 +369,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 "Pause".tr().toUpperCase(),
                 style: Theme.of(context)
                     .textTheme
-                    .headline2
+                    .displayMedium
                     ?.copyWith(color: darkPurple),
               ),
             ),
@@ -428,7 +430,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
   }
 
   Widget readyBody() {
-    GameController _gameController = context.read(gameProvider);
+    GameController _gameController = ref.read(gameProvider);
     List<String> teams = _gameController.teams;
     int selectedIndex = _gameController.previousTeam;
     bool _isReady = false;
@@ -445,18 +447,18 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
-                    .headline2
+                    .displayMedium
                     ?.copyWith(color: darkPurple),
                 maxLines: 2,
                 maxFontSize:
-                    Theme.of(context).textTheme.headline2?.fontSize ?? 48,
+                    Theme.of(context).textTheme.displayMedium?.fontSize ?? 48,
               ),
               TextButton(
                 child: Text(
                   "missed_point_fix_score".tr().toUpperCase(),
                   style: Theme.of(context)
                       .textTheme
-                      .headline6
+                      .titleLarge
                       ?.copyWith(color: lightPurple),
                 ),
                 onPressed: () => Get.dialog(AlertDialog(
@@ -485,7 +487,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           "pass_the_phone".tr(args: [teams[_gameController.currentTeam]]),
           style: Theme.of(context)
               .textTheme
-              .headline6
+              .titleLarge
               ?.copyWith(color: darkPurple),
         ),
         StatefulBuilder(builder: (context, setState) {
@@ -494,7 +496,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
           });
 
           return BigButton(
-            text: "Start".tr(),
+            text: "Hold to start".tr(),
             bgColor: myYellow,
             textColor: txtBlack,
             onPressed: (!_isReady)
@@ -525,7 +527,7 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
               text,
               style: Theme.of(context)
                   .textTheme
-                  .headline2
+                  .displayMedium
                   ?.copyWith(color: darkPurple),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -551,8 +553,8 @@ class GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
 class TurnWidget extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     String turnText = "";
     switch (_gameController.gameState) {
@@ -574,7 +576,10 @@ class TurnWidget extends ConsumerWidget {
     return Center(
       child: new Text(
         turnText,
-        style: Theme.of(context).textTheme.headline5?.copyWith(color: txtWhite),
+        style: Theme.of(context)
+            .textTheme
+            .headlineSmall
+            ?.copyWith(color: txtWhite),
       ),
     );
   }
@@ -587,9 +592,9 @@ class TimeWidget extends ConsumerWidget {
   TimeWidget(this._timerDuration, this.onTap);
 
   @override
-  Widget build(BuildContext context, watch) {
+  Widget build(BuildContext context, ref) {
     //every second this is called
-    GameController _gameController = watch(gameProvider);
+    GameController _gameController = ref.watch(gameProvider);
 
     int secondsLeft = _timerDuration - _gameController.secondsPassed;
 
@@ -605,7 +610,7 @@ class TimeWidget extends ConsumerWidget {
           child: Center(
             child: new Text(
               secondsLeft.toString(),
-              style: Theme.of(context).textTheme.headline4?.copyWith(
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: _timerDuration - _gameController.secondsPassed < 8
                         ? myRed
                         : txtWhite,
@@ -656,7 +661,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
         countdownWords[secondsPassed].tr().toUpperCase(),
         style: Theme.of(context)
             .textTheme
-            .headline2
+            .displayMedium
             ?.copyWith(color: Colors.black87),
       ),
     );
@@ -669,8 +674,8 @@ class WordWidget extends ConsumerWidget {
   WordWidget(this._nTaboosToShow);
 
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
     List<String> _taboos = _gameController.currentWord!.taboos;
 
     return Column(
@@ -687,7 +692,7 @@ class WordWidget extends ConsumerWidget {
               _gameController.currentWord!.wordToGuess,
               style: Theme.of(context)
                   .textTheme
-                  .headline2
+                  .displayMedium
                   ?.copyWith(color: txtGrey),
               maxFontSize: 56,
               maxLines: 1,
@@ -709,7 +714,7 @@ class WordWidget extends ConsumerWidget {
                     maxFontSize: 35.0,
                     style: Theme.of(context)
                         .textTheme
-                        .headline2
+                        .displayMedium
                         ?.copyWith(color: txtBlack),
                     maxLines: 1,
                   ),
@@ -742,8 +747,8 @@ class GameInfoWidget extends ConsumerWidget {
   GameInfoWidget({this.clockOpacity = 1});
 
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     List<Widget> teams = [];
 
@@ -799,8 +804,8 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
   GameInfoWidgetShrinked({this.clockOpacity = 1});
 
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     List<Widget> teams = [];
 
@@ -821,7 +826,7 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
           _gameController.scores[_gameController.currentTeam].toString(),
       style: Theme.of(context)
           .textTheme
-          .headline5
+          .headlineSmall
           ?.copyWith(fontWeight: FontWeight.bold),
       maxLines: 1,
     );
@@ -906,14 +911,14 @@ class TeamItem extends StatelessWidget {
               UpperCaseAutoSizeText(
                 name,
                 maxFontSize:
-                    Theme.of(context).textTheme.headline5?.fontSize ?? 20,
-                style: Theme.of(context).textTheme.headline6,
+                    Theme.of(context).textTheme.headlineSmall?.fontSize ?? 20,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               UpperCaseAutoSizeText(
                 score.toString(),
                 maxFontSize:
-                    Theme.of(context).textTheme.headline4?.fontSize ?? 25,
-                style: Theme.of(context).textTheme.headline4,
+                    Theme.of(context).textTheme.headlineMedium?.fontSize ?? 25,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
           ),
@@ -925,8 +930,8 @@ class TeamItem extends StatelessWidget {
 
 class SkipTextWidget extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -935,7 +940,7 @@ class SkipTextWidget extends ConsumerWidget {
             " " +
             "Skips".tr().toUpperCase(),
         style:
-            Theme.of(context).textTheme.headline6?.copyWith(color: darkPurple),
+            Theme.of(context).textTheme.titleLarge?.copyWith(color: darkPurple),
       ),
     );
   }
@@ -948,8 +953,8 @@ class IncorrectAnswerButton extends ConsumerWidget {
   IncorrectAnswerButton({this.customTeam});
 
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     return new Expanded(
         child: Container(
@@ -973,8 +978,8 @@ class SkipButton extends ConsumerWidget {
   SkipButton({this.customTeam});
 
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     return new Expanded(
       child: Opacity(
@@ -996,7 +1001,7 @@ class SkipButton extends ConsumerWidget {
                       _gameController.skipLeftCurrentTeam.toString(),
                       style: Theme.of(context)
                           .textTheme
-                          .headline5
+                          .headlineSmall
                           ?.copyWith(color: txtBlack),
                     ),
                   ],
@@ -1027,8 +1032,8 @@ class CorrectAnswerButton extends ConsumerWidget {
   CorrectAnswerButton({this.customTeam});
 
   @override
-  Widget build(BuildContext context, watch) {
-    GameController _gameController = watch(gameProvider);
+  Widget build(BuildContext context, ref) {
+    GameController _gameController = ref.watch(gameProvider);
 
     return new Expanded(
       child: Container(

@@ -183,17 +183,17 @@ class _SettingsPageState extends State<SettingsPage> {
             new AutoSizeText(
               "Made by",
               maxFontSize:
-                  Theme.of(context).textTheme.headline2?.fontSize ?? 48,
+                  Theme.of(context).textTheme.displayMedium?.fontSize ?? 48,
               style: Theme.of(context)
                   .textTheme
-                  .headline1
+                  .displayLarge
                   ?.copyWith(color: materialPurple),
               maxLines: 1,
             ),
             GestureDetector(
               child: new AutoSizeText(
                 "Leonardo Rignanese",
-                style: Theme.of(context).textTheme.headline1,
+                style: Theme.of(context).textTheme.displayLarge,
                 maxLines: 2,
               ),
               onTap: () async =>

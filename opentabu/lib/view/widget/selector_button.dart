@@ -98,8 +98,8 @@ class SelectionItem extends StatelessWidget {
             child: AutoSizeText(
               text,
               maxFontSize:
-                  Theme.of(context).textTheme.headline5?.fontSize ?? 20,
-              style: Theme.of(context).textTheme.headline6,
+                  Theme.of(context).textTheme.headlineSmall?.fontSize ?? 20,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
         ),

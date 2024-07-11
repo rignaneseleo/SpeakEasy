@@ -14,7 +14,7 @@ class RulesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var txtStyle = Theme.of(context)
         .textTheme
-        .bodyText1
+        .bodyLarge
         ?.copyWith(color: txtWhite, height: 1.8, fontWeight: FontWeight.normal);
 
     return GestureDetector(
@@ -36,7 +36,7 @@ class RulesPage extends StatelessWidget {
           widgets: [
             new AutoSizeText(
               "Rules".tr(),
-              style: Theme.of(context).textTheme.headline2,
+              style: Theme.of(context).textTheme.displayMedium,
               maxLines: 2,
             ),
             Expanded(
@@ -45,7 +45,7 @@ class RulesPage extends StatelessWidget {
                 children: [
                   Text(
                     "goal".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   Text(
                     "goalDescription".tr(),
@@ -54,7 +54,7 @@ class RulesPage extends StatelessWidget {
                   Container(height: 30),
                   Text(
                     "preparation".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   Text(
                     "preparationDescription".tr(),
@@ -63,7 +63,7 @@ class RulesPage extends StatelessWidget {
                   Container(height: 30),
                   Text(
                     "game".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   Text(
                     "gameDescription".tr(),
@@ -72,7 +72,7 @@ class RulesPage extends StatelessWidget {
                   Container(height: 30),
                   Text(
                     "points".tr(),
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   Text(
                     "pointsDescription".tr(),
@@ -94,14 +94,14 @@ class RulesPage extends StatelessWidget {
             name.tr(),
             style: Theme.of(context)
                 .textTheme
-                .headline4
+                .headlineMedium
                 ?.copyWith(color: txtWhite),
           ),
         ),
         Text(value.toString(),
             style: Theme.of(context)
                 .textTheme
-                .headline4
+                .headlineMedium
                 ?.copyWith(color: txtWhite)),
       ],
     );

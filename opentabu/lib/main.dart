@@ -10,7 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:speakeasy/model/word.dart';
@@ -61,6 +61,15 @@ late SharedPreferences sp;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  // Set the navigation bar color
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black, // Set the navigation bar color
+    systemNavigationBarIconBrightness: Brightness.light, // Set the icon brightness
+
+  ));
 
   // Turn off landscape mode
   await SystemChrome.setPreferredOrientations(

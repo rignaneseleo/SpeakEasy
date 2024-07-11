@@ -35,7 +35,7 @@ class AnalyticsPage extends StatelessWidget {
                 children: [
                   new AutoSizeText(
                     "Analytics".tr(),
-                    style: Theme.of(context).textTheme.headline2,
+                    style: Theme.of(context).textTheme.displayMedium,
                     maxLines: 2,
                   ),
                   Expanded(
@@ -46,7 +46,7 @@ class AnalyticsPage extends StatelessWidget {
                           "Match".tr().toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
-                              .headline3
+                              .displaySmall
                               ?.copyWith(color: myYellow),
                         ),
                         buildLine(
