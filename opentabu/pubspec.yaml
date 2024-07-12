@@ -38,6 +38,7 @@ dependencies:
   json_annotation: 4.9.0
   flutter_riverpod: 2.5.1
   riverpod_annotation: 2.3.5
+  animated_emoji: ^3.1.0
 
 
 dev_dependencies:
@@ -68,6 +69,9 @@ flutter:
     - assets/sounds/
     - assets/icons/
     - assets/lang/
+    # animated emoji
+    - packages/animated_emoji/lottie/partyPopper.json
+    - packages/animated_emoji/lottie/neutralFace.json
 
   fonts:
     - family: SFPro

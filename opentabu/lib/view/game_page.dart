@@ -6,6 +6,8 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:animated_emoji/emoji.dart';
+import 'package:animated_emoji/emojis.g.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -497,12 +499,16 @@ class GamePageState extends ConsumerState<GamePage>
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
-                child: Text(
-                  winners.isEmpty ? "😐" : "🎉",
-                  style: TextStyle(fontSize: 50),
+              if (winners.isEmpty)
+                const AnimatedEmoji(
+                  AnimatedEmojis.neutralFace,
+                  size: 100,
+                )
+              else
+                const AnimatedEmoji(
+                  AnimatedEmojis.partyPopper,
+                  size: 100,
                 ),
-              ),
               SizedBox(height: 20),
               Container(
                 child: Center(
