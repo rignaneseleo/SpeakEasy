@@ -71,9 +71,11 @@ class Game {
     }
   }
 
-  /// Returns the team number that won, or an empty list if there is a tie
+  /// Returns the team number that won, or an full list if there is a tie
   List<int> get winners {
-    if(areAllElementsSame(_scores)) return [];
+    if (areAllElementsSame(_scores)) {
+      return List.generate(_scores.length, (index) => index + 1);
+    }
 
     int highestScore = _scores.reduce(max);
 

@@ -126,7 +126,7 @@ class GamePageState extends ConsumerState<GamePage>
     ref.read(gameProvider).startTurn();
 
     //Launch the timer
-    setupTimer(_timerDuration);
+    startTimer(_timerDuration);
   }
 
   void pauseGame() {
@@ -145,19 +145,20 @@ class GamePageState extends ConsumerState<GamePage>
     GameController _gameController = ref.read(gameProvider);
 
     //Launch the timer
-    setupTimer(_timerDuration - _gameController.secondsPassed);
+    startTimer(_timerDuration - _gameController.secondsPassed);
 
     //Resume the turn
     ref.read(gameProvider).resumeGame();
   }
 
-  void setupTimer(int seconds) {
+  void startTimer(int seconds) {
     _turnTimer = new Timer(new Duration(seconds: seconds), () {
       //TIMEOUT
       if (hasVibration) Vibration.vibrate(duration: 1000);
 
       playTimeoutSound();
-      ref.read(gameProvider).changeTurn();
+
+      ref.read(gameProvider).endTurn();
     });
   }
 
@@ -167,8 +168,6 @@ class GamePageState extends ConsumerState<GamePage>
 
     return WillPopScope(
         onWillPop: () async {
-          GameController _gameController = ref.read(gameProvider);
-
           switch (_gameController.gameState) {
             case GameState.init:
             case GameState.playing:
@@ -197,8 +196,10 @@ class GamePageState extends ConsumerState<GamePage>
                     clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: [
-                      if (!smallScreen) GameInfoWidget(),
-                      if (smallScreen) GameInfoWidgetShrinked(),
+                      GameInfoWidget(
+                        shrinked: smallScreen,
+                        highlightTeams: _gameController.winners,
+                      ),
                       if (_gameController.gameState != GameState.ended)
                         Positioned(
                             left: 10,
@@ -249,7 +250,10 @@ class GamePageState extends ConsumerState<GamePage>
                             ),
                           ),
                         ),
-                      if (_gameController.gameState != GameState.ended)
+                      if (![
+                        GameState.ended,
+                        GameState.ready,
+                      ].contains(_gameController.gameState))
                         Positioned(
                           bottom: smallScreen ? -28 : -40,
                           child: TimeWidget(_timerDuration, () => pauseGame()),
@@ -401,7 +405,7 @@ class GamePageState extends ConsumerState<GamePage>
 
   Widget readyBody(GameController _gameController) {
     List<String> teams = _gameController.teams;
-    int selectedIndex = _gameController.previousTeam;
+    int selectedIndex = _gameController.currentTeam;
     bool _isReady = false;
 
     return Column(
@@ -430,30 +434,34 @@ class GamePageState extends ConsumerState<GamePage>
                       .titleLarge
                       ?.copyWith(color: lightPurple),
                 ),
-                onPressed: () => Get.dialog(AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("adjust_score"
-                            .tr(args: [(selectedIndex + 1).toString()])),
-                        Row(
+                onPressed: () => Get.dialog(
+                    barrierColor: Colors.black38,
+                    AlertDialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        content: Column(
                           mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            IncorrectAnswerButton(customTeam: selectedIndex),
-                            CorrectAnswerButton(customTeam: selectedIndex),
+                            Text("adjust_score"
+                                .tr(args: [(selectedIndex + 1).toString()])),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IncorrectAnswerButton(
+                                    customTeam: selectedIndex),
+                                CorrectAnswerButton(customTeam: selectedIndex),
+                              ],
+                            ),
                           ],
-                        ),
-                      ],
-                    ))),
+                        ))),
               ),
             ],
           ),
         ),
         Text(
-          "pass_the_phone".tr(args: [teams[_gameController.currentTeam]]),
+          "pass_the_phone".tr(args: [teams[_gameController.nextTeam]]),
           style: Theme.of(context)
               .textTheme
               .titleLarge
@@ -471,6 +479,7 @@ class GamePageState extends ConsumerState<GamePage>
             onLongPressed: (!_isReady)
                 ? null
                 : () {
+                    ref.read(gameProvider).changeTurn();
                     initCountdown(3);
                     t.cancel();
                   },
@@ -482,8 +491,8 @@ class GamePageState extends ConsumerState<GamePage>
 
   Widget endBody(GameController _gameController) {
     String text;
-    List<int> winners = _gameController.winners;
-    if (winners.isEmpty)
+    List<int> winners = _gameController.winners!;
+    if (winners.length == _gameController.numberOfPlayers)
       text = "tie".tr();
     else if (winners.length > 1) {
       text = "winners_are".tr();
@@ -732,81 +741,33 @@ class WordWidget extends ConsumerWidget {
 }
 
 class GameInfoWidget extends ConsumerWidget {
-  GameInfoWidget({super.key, this.clockOpacity = 1});
+  GameInfoWidget({
+    super.key,
+    this.clockOpacity = 1,
+    this.highlightTeams,
+    required this.shrinked,
+  });
 
+  final bool shrinked;
   final int clockOpacity;
+  final List<int>? highlightTeams;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     GameController _gameController = ref.watch(gameProvider);
 
     List<Widget> teams = [];
-
     for (int i = 0; i < _gameController.numberOfPlayers; i++) {
       bool isCurrentTeam = _gameController.currentTeam == i;
 
       teams.add(Expanded(
         child: TeamItem(
-            name: "Team".tr() + " ${i + 1}",
-            score: _gameController.scores[i],
-            disabled: !isCurrentTeam),
-      ));
-    }
-
-    return new Container(
-      decoration: new BoxDecoration(
-        color: darkPurple,
-        borderRadius: new BorderRadius.vertical(
-          bottom: const Radius.circular(20.0),
+          name: shrinked ? "T".tr() + " ${i + 1}" : "Team".tr() + " ${i + 1}",
+          score: _gameController.scores[i],
+          disabled: highlightTeams == null
+              ? !isCurrentTeam
+              : !highlightTeams!.contains(i + 1),
         ),
-      ),
-      padding: EdgeInsets.only(left: 28, right: 28, bottom: 28, top: 8),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TurnWidget(),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 10),
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-              decoration: new BoxDecoration(
-                color: lightPurple,
-                borderRadius: new BorderRadius.all(
-                  const Radius.circular(10.0),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: teams,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class GameInfoWidgetShrinked extends ConsumerWidget {
-  GameInfoWidgetShrinked({super.key, this.clockOpacity = 1});
-
-  final int clockOpacity;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
-
-    List<Widget> teams = [];
-
-    for (int i = 0; i < _gameController.numberOfPlayers; i++) {
-      bool isCurrentTeam = _gameController.currentTeam == i;
-
-      teams.add(Expanded(
-        child: TeamItem(
-            name: "T".tr() + " ${i + 1}",
-            score: _gameController.scores[i],
-            disabled: !isCurrentTeam),
       ));
     }
 
@@ -821,51 +782,74 @@ class GameInfoWidgetShrinked extends ConsumerWidget {
       maxLines: 1,
     );
 
-    switch (_gameController.gameState) {
-      case GameState.init:
-      case GameState.playing:
-      case GameState.countdown:
-        return new Container(
-          decoration: new BoxDecoration(
-            color: darkPurple,
-            borderRadius: new BorderRadius.vertical(
-              bottom: const Radius.circular(20.0),
-            ),
+    if (shrinked) {
+      // Shrinked Widget Logic
+      switch (_gameController.gameState) {
+        case GameState.init:
+        case GameState.playing:
+        case GameState.countdown:
+          return _buildShrinkedContainer(
+              [TurnWidget(), playingTeamScore], context);
+        case GameState.ready:
+        case GameState.pause:
+        case GameState.ended:
+          return _buildShrinkedContainer(teams, context);
+      }
+    } else {
+      // Normal Widget Logic
+      return new Container(
+        decoration: new BoxDecoration(
+          color: darkPurple,
+          borderRadius: new BorderRadius.vertical(
+            bottom: const Radius.circular(20.0),
           ),
-          padding: EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
-          child: SafeArea(
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                playingTeamScore,
-                TurnWidget(),
-              ],
-            ),
+        ),
+        padding: EdgeInsets.only(left: 28, right: 28, bottom: 28, top: 8),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TurnWidget(),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                decoration: new BoxDecoration(
+                  color: lightPurple,
+                  borderRadius: new BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: teams,
+                ),
+              ),
+            ],
           ),
-        );
-      case GameState.ready:
-      case GameState.pause:
-      case GameState.ended:
-        return new Container(
-          decoration: new BoxDecoration(
-            color: darkPurple,
-            borderRadius: new BorderRadius.vertical(
-              bottom: const Radius.circular(20.0),
-            ),
-          ),
-          padding: EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
-          child: SafeArea(
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: teams,
-            ),
-          ),
-        );
+        ),
+      );
     }
+  }
+
+  Widget _buildShrinkedContainer(List<Widget> children, BuildContext context) {
+    return new Container(
+      decoration: new BoxDecoration(
+        color: darkPurple,
+        borderRadius: new BorderRadius.vertical(
+          bottom: const Radius.circular(20.0),
+        ),
+      ),
+      padding: EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
+      child: SafeArea(
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      ),
+    );
   }
 }
 

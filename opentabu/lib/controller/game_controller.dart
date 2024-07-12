@@ -12,7 +12,7 @@ import 'package:speakeasy/model/word.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 final gameProvider =
-    ChangeNotifierProvider.autoDispose((ref) => GameController());
+ChangeNotifierProvider.autoDispose((ref) => GameController());
 
 enum GameState {
   init, //Initial state, not ready
@@ -64,6 +64,7 @@ class GameController extends ChangeNotifier {
 
     _currentTeam++;
     if (_currentTeam == _game!.numberOfPlayers) {
+      //if it's the last team, change turn
       _currentTeam = 0;
       _currentTurn++;
     }
@@ -77,6 +78,24 @@ class GameController extends ChangeNotifier {
 
     //Check if it's the end
     if (_currentTurn >= _numbersOfTurns!) gameState = GameState.ended;
+
+    notifyListeners();
+  }
+
+  void endTurn() {
+    if (_game == null) return;
+
+    var nextTurn = _currentTurn;
+    if (_currentTeam + 1 >= _game!.numberOfPlayers) {
+      //if it's the last team, change turn
+      nextTurn++;
+    }
+
+    //Check if it's the end
+    if (nextTurn >= _numbersOfTurns!)
+      gameState = GameState.ended;
+    else
+      gameState = GameState.ready;
 
     notifyListeners();
   }
@@ -146,7 +165,13 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<int> get winners => _game!.winners;
+  /// Get the winner(s) team number (i+1) of the game; if the game is not ended, it returns null
+  List<int>? get winners {
+    if (_game == null) return null;
+    if (_gameState != GameState.ended) return null;
+
+    return _game!.winners;
+  }
 
   int get currentTurn => _currentTurn + 1;
 
@@ -160,13 +185,17 @@ class GameController extends ChangeNotifier {
 
   int get nTurns => _numbersOfTurns ?? 0;
 
-  List<String> get teams => List<String>.generate(
-      _game?.numberOfPlayers ?? 0, (i) => "Team ${i + 1}");
+  List<String> get teams =>
+      List<String>.generate(
+          _game?.numberOfPlayers ?? 0, (i) => "Team ${i + 1}");
 
   int get currentTeam => _currentTeam;
 
   int get previousTeam =>
       _currentTeam - 1 >= 0 ? _currentTeam - 1 : numberOfPlayers - 1;
+
+  int get nextTeam =>
+      _currentTeam + 1 >= numberOfPlayers ? 0 : _currentTeam + 1;
 
   int get secondsPassed => _secondsPassed;
 }
