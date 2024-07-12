@@ -6,6 +6,7 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
@@ -47,7 +48,7 @@ Se esce questo simbolo, entrambe le squadre possono provare a indovinare le paro
 misteriose che vengono suggerite.*/
 
 List<Locale> supportedLanguages = const [
-  Locale('en', "US"),//this is the default language
+  Locale('en', "US"), //this is the default language
   Locale('it', "IT"),
 ];
 
@@ -84,9 +85,12 @@ Future<void> main() async {
   sp = await SharedPreferences.getInstance();
 
   await loadSounds();
-  hasVibration = await Vibration.hasVibrator() ?? false;
-  sp = await SharedPreferences.getInstance();
-  packageInfo = await PackageInfo.fromPlatform();
+  if (kIsWeb)
+    hasVibration = false;
+  else {
+    hasVibration = await Vibration.hasVibrator() ?? false;
+    packageInfo = await PackageInfo.fromPlatform();
+  }
 
   final riverpodContainer = ProviderContainer();
   await riverpodContainer
