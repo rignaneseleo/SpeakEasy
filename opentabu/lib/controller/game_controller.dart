@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speakeasy/model/game.dart';
 import 'package:speakeasy/model/settings.dart';
 import 'package:speakeasy/model/word.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 final gameProvider =
     ChangeNotifierProvider.autoDispose((ref) => GameController());
@@ -24,7 +25,21 @@ enum GameState {
 
 class GameController extends ChangeNotifier {
   Game? _game;
-  GameState gameState = GameState.init;
+  GameState _gameState = GameState.init;
+
+  GameState get gameState => _gameState;
+
+  set gameState(GameState value) {
+    _gameState = value;
+
+    // lock the screensever if the game is playing
+    if ([GameState.pause, GameState.ended].contains(value))
+      WakelockPlus.disable();
+    else
+      WakelockPlus.enable();
+
+    notifyListeners();
+  }
 
   int? _numbersOfTurns;
 
@@ -143,7 +158,7 @@ class GameController extends ChangeNotifier {
 
   int get numberOfPlayers => _game?.numberOfPlayers ?? 0;
 
-  int get nTurns => _numbersOfTurns??0;
+  int get nTurns => _numbersOfTurns ?? 0;
 
   List<String> get teams => List<String>.generate(
       _game?.numberOfPlayers ?? 0, (i) => "Team ${i + 1}");

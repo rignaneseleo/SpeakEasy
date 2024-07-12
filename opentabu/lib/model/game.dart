@@ -8,6 +8,8 @@ import 'dart:math';
 
 import 'package:speakeasy/model/word.dart';
 
+import '../utils/utils.dart';
+
 class Game {
   final List<Word> _words;
   int _wordIndex = 0;
@@ -16,7 +18,11 @@ class Game {
   List<int> _scores = [];
   List<int> _skips = [];
 
-  Game(this._words, {required int nTeams, required this.nSkips}) {
+  Game(
+    this._words, {
+    required int nTeams,
+    required this.nSkips,
+  }) {
     _words.shuffle();
 
     for (int i = 0; i < nTeams; i++) {
@@ -32,9 +38,9 @@ class Game {
     _wordIndex++;
 
     //TODO actually if it's the end, starts again from 0
-    if (_wordIndex == _words.length) {
-      _wordIndex = 0;
+    if (_wordIndex >= _words.length) {
       _words.shuffle();
+      _wordIndex = 0;
     }
 
     return _words[_wordIndex];
@@ -65,10 +71,14 @@ class Game {
     }
   }
 
+  /// Returns the team number that won, or an empty list if there is a tie
   List<int> get winners {
+    if(areAllElementsSame(_scores)) return [];
+
     int highestScore = _scores.reduce(max);
 
     List<int> winners = [];
+
     for (int i = 0; i < _scores.length; i++) {
       //Note: team number is index+1
       if (_scores[i] == highestScore) winners.add(i + 1);

@@ -89,8 +89,5 @@ class UpperCaseAutoSizeText extends AutoSizeText {
           stepGranularity: stepGranularity,
           textKey: textKey,
           wrapWords: wrapWords,
-        ) {
-    // TODO: implement UpperCaseAutoSizeText
-    throw UnimplementedError();
-  }
+        );
 }

@@ -1,17 +1,15 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:get/get.dart' hide Trans;
-import 'package:locale_emoji/locale_emoji.dart' as le;
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:restart_app/restart_app.dart';
+import 'package:locale_emoji/locale_emoji.dart' as le;
+import 'package:speakeasy/controller/words_controller.dart';
 import 'package:speakeasy/main.dart';
 import 'package:speakeasy/theme/theme.dart';
 import 'package:speakeasy/utils/toast.dart';
@@ -19,20 +17,20 @@ import 'package:speakeasy/view/analytics_page.dart';
 import 'package:speakeasy/view/rules_page.dart';
 import 'package:speakeasy/view/widget/my_scaffold.dart';
 
-import '../persistence/csv_data_reader.dart';
+import '../model/word.dart';
 import '../utils/utils.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
   bool openPaymentDialog = false;
 
   SettingsPage({Key? key, this.openPaymentDialog = false}) : super(key: key);
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   StreamSubscription<List<PurchaseDetails>>? _paymentSubscription;
 
   @override
@@ -54,15 +52,17 @@ class _SettingsPageState extends State<SettingsPage> {
           } else if (purchaseDetails.status == PurchaseStatus.purchased ||
               purchaseDetails.status == PurchaseStatus.restored) {
             if (purchaseDetails.productID.contains("words")) {
-              if (purchaseDetails.productID == "100words")
-                await sp.setBool("100words", true);
-              else if (purchaseDetails.productID == "1000words")
-                await sp.setBool("1000words", true);
-              else if (purchaseDetails.productID == "500words")
-                await sp.setBool("500words", true);
+              switch (purchaseDetails.productID) {
+                case "100words":
+                  await sp.setBool("100words", true);
+                case "500words":
+                  await sp.setBool("500words", true);
+                case "1000words":
+                  await sp.setBool("1000words", true);
+              }
 
               //load the new words
-              words = await CSVDataReader.loadWords();
+              ref.invalidate(wordsControllerProvider);
               setState(() {});
             }
 
@@ -119,10 +119,19 @@ class _SettingsPageState extends State<SettingsPage> {
                   text: "Version".tr(),
                   value: packageInfo?.version.toString(),
                 ),
-                buildLine(
-                  context,
-                  text: "#Words".tr(),
-                  value: words.length.toString(),
+                FutureBuilder<List<Word>>(
+                  future: ref.watch(
+                      wordsControllerProvider(getSelectedLocale()!.languageCode)
+                          .future),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Word>> snapshot) {
+                    var words = snapshot.data;
+                    return buildLine(
+                      context,
+                      text: "#Words".tr(),
+                      value: (words?.length ?? "...").toString(),
+                    );
+                  },
                 ),
               ],
             ),
@@ -335,13 +344,20 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text(
                       LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr),
                   onTap: () async {
-                    await sp.setString("saved_locale", localeStr);
-                    await context.setLocale(supportedLanguages[i]);
-                    //need to reboot so it reads the correct csv
-                    Restart.restartApp();
+                    Locale locale = supportedLanguages[i];
+                    await sp.setString(
+                        "saved_locale_langcode", locale.languageCode);
+
+                    // invalidate the words
+                    ref.invalidate(wordsControllerProvider);
+
+                    await context.setLocale(locale); // change `easy_localization` locale
+                    Get.updateLocale(locale); // change `Get` locale direction
+
+                    //close dialog
+                    Get.back();
                   },
-                  trailing: localeStr ==
-                          getSelectedLocale(context: context)!.toString()
+                  trailing: localeStr == getSelectedLocale()!.toString()
                       ? Icon(Icons.check)
                       : null,
                 );

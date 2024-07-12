@@ -16,9 +16,9 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:speakeasy/controller/analytics_controller.dart';
 import 'package:speakeasy/controller/game_controller.dart';
+import 'package:speakeasy/controller/words_controller.dart';
 import 'package:speakeasy/main.dart';
 import 'package:speakeasy/model/settings.dart';
-import 'package:speakeasy/persistence/sound_loader.dart';
 import 'package:speakeasy/theme/theme.dart';
 import 'package:speakeasy/utils/uppercase_text.dart';
 import 'package:speakeasy/view/rules_page.dart';
@@ -26,6 +26,9 @@ import 'package:speakeasy/view/widget/big_button.dart';
 import 'package:speakeasy/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
+import '../api/sound/sound_loader.dart';
+import '../utils/utils.dart';
 
 class GamePage extends ConsumerStatefulWidget {
   GamePage(this._settings, {super.key});
@@ -74,7 +77,9 @@ class GamePageState extends ConsumerState<GamePage>
     //Init game
 
     //Needed to fix this: https://github.com/rrousselGit/river_pod/issues/177
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration.zero, () async {
+      final words = await ref.read(
+          wordsControllerProvider(getSelectedLocale()!.languageCode).future);
       ref.read(gameProvider).init(settings, words);
 
       _countSecondsTimer =
@@ -156,7 +161,7 @@ class GamePageState extends ConsumerState<GamePage>
 
   @override
   Widget build(BuildContext context) {
-    Widget _body = Text("Loading".tr());
+    GameController _gameController = ref.watch(gameProvider);
 
     return WillPopScope(
         onWillPop: () async {
@@ -192,115 +197,76 @@ class GamePageState extends ConsumerState<GamePage>
                     children: [
                       if (!smallScreen) GameInfoWidget(),
                       if (smallScreen) GameInfoWidgetShrinked(),
-                      Consumer(builder: (context, ref, child) {
-                        GameController _gameController =
-                            ref.watch(gameProvider);
-                        if (_gameController.gameState != GameState.ended) {
-                          return Positioned(
-                              left: 10,
-                              top: 10,
-                              child: SafeArea(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    pauseGame();
-                                    showDialogToExit();
-                                  },
-                                  child: Transform.rotate(
-                                    angle: math.pi,
-                                    child: Icon(
-                                      Icons.exit_to_app,
-                                      color: txtWhite,
-                                    ),
+                      if (_gameController.gameState != GameState.ended)
+                        Positioned(
+                            left: 10,
+                            top: 10,
+                            child: SafeArea(
+                              child: GestureDetector(
+                                onTap: () {
+                                  pauseGame();
+                                  showDialogToExit();
+                                },
+                                child: Transform.rotate(
+                                  angle: math.pi,
+                                  child: Icon(
+                                    Icons.exit_to_app,
+                                    color: txtWhite,
                                   ),
                                 ),
-                              ));
-                        }
-                        return Container();
-                      }),
-                      Consumer(builder: (context, ref, child) {
-                        GameController _gameController =
-                            ref.watch(gameProvider);
-                        if (_gameController.gameState == GameState.playing ||
-                            _gameController.gameState == GameState.init) {
-                          return Positioned(
-                            right: 10,
-                            top: 10,
-                            child: SafeArea(
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.pause,
-                                  color: txtWhite,
-                                ),
-                                onTap: () => pauseGame(),
                               ),
-                            ),
-                          );
-                        } else if (_gameController.gameState ==
-                                GameState.pause ||
-                            _gameController.gameState == GameState.ended) {
-                          return Positioned(
-                            right: 10,
-                            top: 10,
-                            child: SafeArea(
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.book,
-                                  color: txtWhite,
-                                ),
-                                onTap: () => Get.to(() => RulesPage(),
-                                    transition: Transition.downToUp),
+                            )),
+                      if (_gameController.gameState == GameState.playing ||
+                          _gameController.gameState == GameState.init)
+                        Positioned(
+                          right: 10,
+                          top: 10,
+                          child: SafeArea(
+                            child: GestureDetector(
+                              child: Icon(
+                                Icons.pause,
+                                color: txtWhite,
                               ),
+                              onTap: () => pauseGame(),
                             ),
-                          );
-                        }
-
-                        return Container();
-                      }),
-                      Positioned(
-                        bottom: smallScreen ? -28 : -40,
-                        child: TimeWidget(_timerDuration, () => pauseGame()),
-                      ),
+                          ),
+                        )
+                      else if (_gameController.gameState == GameState.pause ||
+                          _gameController.gameState == GameState.ended)
+                        Positioned(
+                          right: 10,
+                          top: 10,
+                          child: SafeArea(
+                            child: GestureDetector(
+                              child: Icon(
+                                Icons.book,
+                                color: txtWhite,
+                              ),
+                              onTap: () => Get.to(() => RulesPage(),
+                                  transition: Transition.downToUp),
+                            ),
+                          ),
+                        ),
+                      if (_gameController.gameState != GameState.ended)
+                        Positioned(
+                          bottom: smallScreen ? -28 : -40,
+                          child: TimeWidget(_timerDuration, () => pauseGame()),
+                        ),
                     ],
                   ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      GameController _gameController = ref.watch(gameProvider);
-
-                      switch (_gameController.gameState) {
-                        case GameState.ready:
-                          _body = readyBody();
-                          WakelockPlus.enable();
-                          break;
-                        case GameState.countdown:
-                          _body = countDownBody();
-                          WakelockPlus.enable();
-                          break;
-                        case GameState.playing:
-                          _body = playingBody();
-                          WakelockPlus.enable();
-                          break;
-                        case GameState.ended:
-                          _body = endBody(_gameController.winners);
-                          WakelockPlus.disable();
-                          break;
-                        case GameState.pause:
-                          _body = pauseBody();
-                          WakelockPlus.disable();
-                          break;
-                        case GameState.init:
-                          break;
-                      }
-
-                      return Expanded(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 28,
-                          vertical: 28,
-                        ),
-                        child: _body,
-                      ));
-                    },
-                  )
+                  Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 28, vertical: 28),
+                        child: switch (_gameController.gameState) {
+                          GameState.ready => readyBody(_gameController),
+                          GameState.countdown => countDownBody(_gameController),
+                          GameState.playing => playingBody(_gameController),
+                          GameState.ended => endBody(_gameController),
+                          GameState.pause => pauseBody(_gameController),
+                          GameState.init => Text("Loading".tr()),
+                        }),
+                  ),
                 ],
               ),
             ),
@@ -361,7 +327,7 @@ class GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  Widget pauseBody() {
+  Widget pauseBody(GameController _gameController) {
     return Column(
       children: [
         Expanded(
@@ -387,7 +353,7 @@ class GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  Widget playingBody() {
+  Widget playingBody(GameController _gameController) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -406,7 +372,7 @@ class GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  Widget countDownBody() {
+  Widget countDownBody(GameController _gameController) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -431,8 +397,7 @@ class GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  Widget readyBody() {
-    GameController _gameController = ref.read(gameProvider);
+  Widget readyBody(GameController _gameController) {
     List<String> teams = _gameController.teams;
     int selectedIndex = _gameController.previousTeam;
     bool _isReady = false;
@@ -513,38 +478,51 @@ class GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  Widget endBody(List<int> winners) {
+  Widget endBody(GameController _gameController) {
     String text;
-    if (winners.length > 1) {
+    List<int> winners = _gameController.winners;
+    if (winners.isEmpty)
+      text = "tie".tr();
+    else if (winners.length > 1) {
       text = "winners_are".tr();
       for (int team in winners) text += "Team".tr() + " $team\n";
     } else
       text = "#is_the_winner".tr(args: [winners.first.toString()]);
 
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-          child: Center(
-            child: UpperCaseAutoSizeText(
-              text,
-              style: Theme.of(context)
-                  .textTheme
-                  .displayMedium
-                  ?.copyWith(color: darkPurple),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  winners.isEmpty ? "😐" : "🎉",
+                  style: TextStyle(fontSize: 50),
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(
+                child: Center(
+                  child: UpperCaseAutoSizeText(
+                    text,
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                          color: darkPurple,
+                          height: 1.3,
+                        ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        /* BigButton(
-          text: "PLAY AGAIN",
-          bgColor: myGreen,
-          textColor: txtBlack,
-          //onPressed: () => resumeGame(),
-        ),*/
         BigButton(
           text: "back_home".tr().toUpperCase(),
-          bgColor: lightPurple,
+          bgColor: darkPurple,
           textColor: txtWhite,
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -564,7 +542,10 @@ class TurnWidget extends ConsumerWidget {
     switch (_gameController.gameState) {
       case GameState.countdown:
       case GameState.playing:
-        turnText = "${"Turn".tr()} ${_gameController.currentTurn}";
+        if (_gameController.currentTurn == _gameController.nTurns)
+          turnText = "Final Turn".tr();
+        else
+          turnText = "${"Turn".tr()} ${_gameController.currentTurn}";
         break;
       case GameState.init:
       case GameState.ready:

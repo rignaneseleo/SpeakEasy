@@ -4,23 +4,31 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
-import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:speakeasy/model/word.dart';
 
-import '../main.dart';
-import '../utils/toast.dart';
+import '../../main.dart';
+import 'data_reader.dart';
 
-class CSVDataReader {
-  static Future<List<Word>> loadWords() async {
-    var localeName = sp.getString("saved_locale") ?? Platform.localeName;
-    var words =
-        await readWords('assets/words/${localeName.substring(0, 2)}/words.csv');
+class CSVDataReader extends DataReader {
+  @override
+  Future<List<Word>> loadWords(String langCode) async {
+    //if the language is not supported, return english
+    String csvRaw = "";
+    try {
+      csvRaw = await rootBundle.loadString('assets/words/$langCode/words.csv');
+    } catch (_) {
+      print("WARNING: Language $langCode not supported, loading english words");
+      langCode = "en";
+      csvRaw = await rootBundle.loadString('assets/words/$langCode/words.csv');
+    }
 
-    //if not payed, limit to 200
+    var words = await readWords(csvRaw);
+    print("Loaded ${words.length} unique rows from $langCode words.csv");
+
+    //if not payed, limit to first 200
     int wordsLimit = 200;
 
     if (!(sp.getBool("1000words") ?? false)) {
@@ -33,16 +41,13 @@ class CSVDataReader {
     //_printWords(words);
   }
 
-  static Future<List<Word>> readWords(String filePath) async {
+  Future<List<Word>> readWords(String wordsCSV) async {
     Map<String, Word> _words = {};
 
-    String wordsCSV =
-        await rootBundle.loadString(filePath, cache: kReleaseMode);
-
-    List<List> rows = CsvToListConverter().convert(wordsCSV, eol: "\n");
+    var rows = const CsvToListConverter().convert(wordsCSV, eol: "\n");
     print("CSV READER: ${rows.length} rows");
 
-    for (List row in rows) {
+    for (var row in rows) {
       var rowList = List<String>.from(row);
       String wordToGuess = rowList[0].toLowerCase().trim();
       if (wordToGuess.isEmpty) continue;
@@ -59,7 +64,6 @@ class CSVDataReader {
       }
     }
 
-    print("Loaded ${_words.length} unique rows from ${filePath}");
     return _words.values.toList();
   }
 }

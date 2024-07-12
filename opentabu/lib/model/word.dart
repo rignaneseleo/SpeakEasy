@@ -7,24 +7,21 @@
 import '../utils/utils.dart';
 
 class Word {
-  late String _wordToGuess;
-  List<String> _taboos = [];
+  late final String wordToGuess;
+  late final List<String> taboos;
 
-  String get wordToGuess => _wordToGuess;
+  int get nTabu => taboos.length;
 
-  List<String> get taboos => _taboos;
-
-  int get nTabu => _taboos.length;
-
-  Word(String wordToGuess, List<String> taboos) {
-    _wordToGuess = capitalize(wordToGuess.trim());
-    addTabus(taboos);
+  Word(String _wordToGuess, List<String> _taboos) {
+    wordToGuess = capitalize(_wordToGuess.trim());
+    taboos = [];
+    addTabus(_taboos);
 
     //every time I load the game, the taboos will be in different order
-    _taboos.shuffle();
+    taboos.shuffle();
 
-    assert(_wordToGuess.isNotEmpty);
-    assert(_taboos.isNotEmpty);
+    assert(wordToGuess.isNotEmpty, "wordToGuess is empty");
+    assert(taboos.isNotEmpty, "taboos is empty on $wordToGuess");
   }
 
   bool addTabus(List<String> taboos) {
@@ -37,9 +34,9 @@ class Word {
 
   bool addTabu(String tabu) {
     tabu = capitalize(tabu.trim());
-    if (tabu.length == 0) return false;
+    if (tabu.isEmpty) return false;
 
-    if (_taboos.contains(tabu)) return false;
+    if (taboos.contains(tabu)) return false;
 
     if (wordToGuess.contains(tabu)) {
       print(
@@ -47,7 +44,7 @@ class Word {
       return false;
     }
 
-    _taboos.add(tabu);
+    taboos.add(tabu);
     return true;
   }
 }

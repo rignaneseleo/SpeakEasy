@@ -4,10 +4,11 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'package:speakeasy/model/word.dart';
-import 'package:speakeasy/persistence/data_reader.dart';
+import 'data_reader.dart';
 
 class FakeDataReader extends DataReader {
-  get words {
+  @override
+  Future<List<Word>> loadWords(String langCode) async {
     return [
       new Word("Train", ["Fast", "Rails", "Station"]),
       new Word("Boat", ["Slow", "Sea", "Harbor"])

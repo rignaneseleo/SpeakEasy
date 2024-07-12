@@ -4,6 +4,9 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 
+import '../../model/word.dart';
+
 abstract class DataReader {
-  get words;
+ Future<List<Word>> loadWords(String langCode);
+
 }

@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:speakeasy/main.dart';
 
@@ -27,13 +26,16 @@ class BigButton extends StatelessWidget {
       child: MaterialButton(
         elevation: 0,
         minWidth: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         height: 90,
         child: AutoSizeText(
           text.toUpperCase(),
           maxLines: 1,
           textAlign: TextAlign.center,
-          style:
-              Theme.of(context).textTheme.displayMedium?.copyWith(color: textColor),
+          style: Theme.of(context)
+              .textTheme
+              .displayMedium
+              ?.copyWith(color: textColor),
         ),
         color: bgColor,
         disabledColor: bgColor.withOpacity(0.6),

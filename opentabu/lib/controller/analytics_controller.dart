@@ -35,14 +35,14 @@ class AnalyticsController {
   //---------
 
   static int _getVal(String key) {
-    return prefs.getInt(key) ?? 0;
+    return sp.getInt(key) ?? 0;
   }
 
   static Future _increaseSP(String key) async {
-    await prefs.setInt(key, (prefs.getInt(key) ?? 0) + 1);
+    await sp.setInt(key, (sp.getInt(key) ?? 0) + 1);
   }
 
   static Future _decreaseSP(String key) async {
-    await prefs.setInt(key, (prefs.getInt(key) ?? 0) + 1);
+    await sp.setInt(key, (sp.getInt(key) ?? 0) + 1);
   }
 }

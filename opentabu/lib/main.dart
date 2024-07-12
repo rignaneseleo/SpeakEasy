@@ -4,7 +4,6 @@
 * GITHUB: https://github.com/rignaneseleo/OpenTabu
 * */
 import 'dart:async';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -12,23 +11,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:speakeasy/model/word.dart';
-import 'package:speakeasy/persistence/sound_loader.dart';
+import 'package:package_info/package_info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speakeasy/controller/words_controller.dart';
 import 'package:speakeasy/theme/theme.dart';
-import 'package:speakeasy/utils/toast.dart';
 import 'package:speakeasy/utils/utils.dart';
 import 'package:speakeasy/view/home_page.dart';
 import 'package:speakeasy/view/splash_screen.dart';
-import 'package:package_info/package_info.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 
-import 'persistence/csv_data_reader.dart';
+import 'api/sound/sound_loader.dart';
 
-List<Word> words = [];
 bool hasVibration = false;
-late SharedPreferences prefs;
+late SharedPreferences sp;
 PackageInfo? packageInfo;
 
 bool smallScreen = false;
@@ -52,23 +47,22 @@ Se esce questo simbolo, entrambe le squadre possono provare a indovinare le paro
 misteriose che vengono suggerite.*/
 
 List<Locale> supportedLanguages = const [
-  Locale('en', "US"),
+  Locale('en', "US"),//this is the default language
   Locale('it', "IT"),
 ];
-
-late SharedPreferences sp;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  // Hide the nav bar
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   // Set the navigation bar color
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.black, // Set the navigation bar color
-    systemNavigationBarIconBrightness: Brightness.light, // Set the icon brightness
-
+    systemNavigationBarIconBrightness:
+        Brightness.light, // Set the icon brightness
   ));
 
   // Turn off landscape mode
@@ -89,28 +83,31 @@ Future<void> main() async {
 
   sp = await SharedPreferences.getInstance();
 
-  words = await CSVDataReader.loadWords();
-
   await loadSounds();
   hasVibration = await Vibration.hasVibrator() ?? false;
-  prefs = await SharedPreferences.getInstance();
+  sp = await SharedPreferences.getInstance();
   packageInfo = await PackageInfo.fromPlatform();
 
+  final riverpodContainer = ProviderContainer();
+  await riverpodContainer
+      .read(WordsControllerProvider(getSelectedLocale()!.languageCode).future);
+
   runApp(
-    ProviderScope(
+    UncontrolledProviderScope(
+      container: riverpodContainer,
       child: EasyLocalization(
         startLocale: getSelectedLocale(),
         supportedLocales: supportedLanguages,
         path: 'assets/lang',
         saveLocale: true,
         fallbackLocale: supportedLanguages.first,
-        child: SpeakEasyApp(),
+        child: const SpeakEasyApp(),
       ),
     ),
   );
 }
 
-void _printOrderedWords(List<Word> words) {
+/*void _printOrderedWords(List<Word> words) {
   words.sort((a, b) => a.nTabu.compareTo(b.nTabu));
 
   print("---------------------");
@@ -118,10 +115,10 @@ void _printOrderedWords(List<Word> words) {
     print("${w.wordToGuess},${w.taboos}");
   }
   print("---------------------");
-}
+}*/
 
 class SpeakEasyApp extends StatelessWidget {
-  const SpeakEasyApp({Key? key}) : super(key: key);
+  const SpeakEasyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
