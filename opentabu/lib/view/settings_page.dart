@@ -35,7 +35,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   void initState() {
-    _setupPaymentSubscription();
+    if (!kIsWeb) _setupPaymentSubscription();
     super.initState();
   }
 
@@ -351,7 +351,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     // invalidate the words
                     ref.invalidate(wordsControllerProvider);
 
-                    await context.setLocale(locale); // change `easy_localization` locale
+                    await context
+                        .setLocale(locale); // change `easy_localization` locale
                     Get.updateLocale(locale); // change `Get` locale direction
 
                     //close dialog
