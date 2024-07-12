@@ -28,7 +28,7 @@ dependencies:
   in_app_review: 2.0.9
   shared_preferences: 2.2.3
   flutter_svg: 2.0.10+1
-  package_info: 2.0.2
+  package_info_plus: 8.0.0
   in_app_purchase: 3.2.0
   locale_emoji: 0.2.1
   flutter_localized_locales: 2.0.5
