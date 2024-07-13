@@ -23,11 +23,4 @@ Future launchURL(String url) async {
   }
 }
 
-Locale? getSelectedLocale() {
-  var langCode = sp.getString("saved_locale_langcode");
-  if (langCode != null) {
-    return Locale.fromSubtags(languageCode: langCode);
-  }
 
-  return PlatformDispatcher.instance.locale;
-}

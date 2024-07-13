@@ -1,7 +1,12 @@
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
-Soundpool _soundpool = Soundpool(streamType: StreamType.music,maxStreams: 3);
+Soundpool _soundpool = Soundpool.fromOptions(
+  options: const SoundpoolOptions(
+    streamType: StreamType.music,
+    maxStreams: 3,
+  ),
+);
 late int _correctSoundId, _wrongSoundId, _skipSoundId, _timeoutId, _tickId;
 
 Future loadSounds() async {

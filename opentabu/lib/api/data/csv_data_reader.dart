@@ -9,43 +9,60 @@ import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:speakeasy/model/word.dart';
 
-import '../../main.dart';
 import 'data_reader.dart';
 
 class CSVDataReader extends DataReader {
   @override
-  Future<List<Word>> loadWords(String langCode) async {
-    //if the language is not supported, return english
-    String csvRaw = "";
-    try {
-      csvRaw = await rootBundle.loadString('assets/words/$langCode/words.csv');
-    } catch (_) {
-      print("WARNING: Language $langCode not supported, loading english words");
-      langCode = "en";
-      csvRaw = await rootBundle.loadString('assets/words/$langCode/words.csv');
-    }
-
-    var words = await readWords(csvRaw);
-    print("Loaded ${words.length} unique rows from $langCode words.csv");
-
+  Future<List<Word>> loadWords(int wordsLimit) async {
     //if not payed, limit to first 200
-    int wordsLimit = 200;
-
-    if (!(sp.getBool("1000words") ?? false)) {
-      if (sp.getBool("100words") ?? false) wordsLimit += 100;
-      if (sp.getBool("500words") ?? false) wordsLimit += 500;
-      if (words.length > wordsLimit) words = words.sublist(0, wordsLimit);
+    List<Word> words = [];
+    if (allWords!.length > wordsLimit) {
+      words = allWords!.sublist(0, wordsLimit);
+    } else {
+      words = allWords!;
     }
+
+    print("Loaded ${words.length} taboos in the app");
 
     return words..shuffle();
-    //_printWords(words);
   }
 
-  Future<List<Word>> readWords(String wordsCSV) async {
-    Map<String, Word> _words = {};
+  @override
+  Future<bool> loadFile(String langCode) async {
+    try {
+      String csvRaw = "";
+      try {
+        csvRaw =
+            await rootBundle.loadString('assets/words/$langCode/words.csv');
+      } catch (_) {
+        //if the language is not supported, return english
+        print(
+            "WARNING: Language $langCode not supported, loading english words");
+        langCode = "en";
+        csvRaw =
+            await rootBundle.loadString('assets/words/$langCode/words.csv');
+      }
 
-    var rows = const CsvToListConverter().convert(wordsCSV, eol: "\n");
-    print("CSV READER: ${rows.length} rows");
+      var csvRows = const CsvToListConverter().convert<String>(
+        csvRaw,
+        eol: "\n",
+        shouldParseNumbers: false,
+      );
+      print("The file $langCode/words.csv contains ${csvRows.length} rows");
+
+      allWords = await _convertCsvRowsIntoWords(csvRows);
+      print(
+          "There are ${allWords?.length} unique taboos in $langCode/words.csv");
+
+      return true;
+    } on Exception catch (e) {
+      print("Error loading data file $langCode: $e");
+      return false;
+    }
+  }
+
+  Future<List<Word>> _convertCsvRowsIntoWords(List<List<String>> rows) async {
+    Map<String, Word> _words = {};
 
     for (var row in rows) {
       var rowList = List<String>.from(row);

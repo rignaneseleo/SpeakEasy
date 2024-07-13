@@ -7,6 +7,9 @@
 import '../../model/word.dart';
 
 abstract class DataReader {
- Future<List<Word>> loadWords(String langCode);
+  List<Word>? allWords;
 
+  Future<bool> loadFile(String langCode);
+
+  Future<List<Word>> loadWords(int wordsNumber);
 }

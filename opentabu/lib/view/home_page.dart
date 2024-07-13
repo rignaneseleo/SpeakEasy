@@ -6,10 +6,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:speakeasy/controller/analytics_controller.dart';
 import 'package:speakeasy/model/settings.dart';
+import 'package:speakeasy/providers/shared_pref_provider.dart';
 import 'package:speakeasy/theme/theme.dart';
 import 'package:speakeasy/view/widget/big_button.dart';
 import 'package:speakeasy/view/widget/incremental_button.dart';
@@ -23,14 +25,14 @@ import '../main.dart';
 import 'game_page.dart';
 import 'settings_page.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   @override
-  State<StatefulWidget> createState() {
+createState() {
     return HomePageState();
   }
 }
 
-class HomePageState extends State<HomePage> with AnimationMixin {
+class HomePageState extends ConsumerState<HomePage> with AnimationMixin {
   late Settings _settings;
 
   late Animation<double> sizeMenuItems;
@@ -61,7 +63,7 @@ class HomePageState extends State<HomePage> with AnimationMixin {
               Get.to(() => SettingsPage(), transition: Transition.upToDown),
         ),
         topRightWidget: AnalyticsController.getStartedMatches() == 0 ||
-                (sp.getBool("1000words") ?? false)
+                (ref.read(sharedPreferencesProvider).getBool("1000words") ?? false)
             ? null
             : GestureDetector(
                 child: Text(

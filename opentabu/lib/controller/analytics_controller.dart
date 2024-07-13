@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speakeasy/main.dart';
 
 class AnalyticsController {
@@ -35,14 +36,19 @@ class AnalyticsController {
   //---------
 
   static int _getVal(String key) {
-    return sp.getInt(key) ?? 0;
+   /* final sp=await SharedPreferences.getInstance();
+
+    return sp.getInt(key) ?? 0;*/
+    return 0;
   }
 
   static Future _increaseSP(String key) async {
+    final sp = await SharedPreferences.getInstance();
     await sp.setInt(key, (sp.getInt(key) ?? 0) + 1);
   }
 
   static Future _decreaseSP(String key) async {
+    final sp = await SharedPreferences.getInstance();
     await sp.setInt(key, (sp.getInt(key) ?? 0) + 1);
   }
 }

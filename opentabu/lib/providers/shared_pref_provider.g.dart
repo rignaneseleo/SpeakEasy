@@ -1,26 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'words_controller.dart';
+part of 'shared_pref_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$wordsControllerHash() => r'8ece740af949a8893ba5566d1a771caa6764294b';
+String _$sharedPreferencesHash() => r'272c76102d75c2263b8c0eeb5bcf379ebcd23426';
 
-/// See also [WordsController].
-@ProviderFor(WordsController)
-final wordsControllerProvider =
-    AsyncNotifierProvider<WordsController, List<Word>>.internal(
-  WordsController.new,
-  name: r'wordsControllerProvider',
+/// See also [sharedPreferences].
+@ProviderFor(sharedPreferences)
+final sharedPreferencesProvider = Provider<SharedPreferences>.internal(
+  sharedPreferences,
+  name: r'sharedPreferencesProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$wordsControllerHash,
+      : _$sharedPreferencesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$WordsController = AsyncNotifier<List<Word>>;
+typedef SharedPreferencesRef = ProviderRef<SharedPreferences>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

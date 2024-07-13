@@ -30,7 +30,6 @@ import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../api/sound/sound_loader.dart';
-import '../utils/utils.dart';
 
 class GamePage extends ConsumerStatefulWidget {
   GamePage(this._settings, {super.key});
@@ -80,8 +79,7 @@ class GamePageState extends ConsumerState<GamePage>
 
     //Needed to fix this: https://github.com/rrousselGit/river_pod/issues/177
     Future.delayed(Duration.zero, () async {
-      final words = await ref.read(
-          wordsControllerProvider(getSelectedLocale()!.languageCode).future);
+      final words = await ref.watch(wordsControllerProvider.future);
       ref.read(gameProvider).init(settings, words);
 
       _countSecondsTimer =

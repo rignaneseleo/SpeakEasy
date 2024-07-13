@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'words_controller.dart';
+part of 'unlocked_words_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$wordsControllerHash() => r'8ece740af949a8893ba5566d1a771caa6764294b';
+String _$unlockedWordsCountHash() =>
+    r'801c4abea8b7b48d75deeab04bcf2c52870ecd71';
 
-/// See also [WordsController].
-@ProviderFor(WordsController)
-final wordsControllerProvider =
-    AsyncNotifierProvider<WordsController, List<Word>>.internal(
-  WordsController.new,
-  name: r'wordsControllerProvider',
+/// See also [unlockedWordsCount].
+@ProviderFor(unlockedWordsCount)
+final unlockedWordsCountProvider = Provider<int>.internal(
+  unlockedWordsCount,
+  name: r'unlockedWordsCountProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$wordsControllerHash,
+      : _$unlockedWordsCountHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$WordsController = AsyncNotifier<List<Word>>;
+typedef UnlockedWordsCountRef = ProviderRef<int>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

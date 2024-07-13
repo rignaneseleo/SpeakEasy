@@ -11,6 +11,8 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:locale_emoji/locale_emoji.dart' as le;
 import 'package:speakeasy/controller/words_controller.dart';
 import 'package:speakeasy/main.dart';
+import 'package:speakeasy/providers/saved_locale_provider.dart';
+import 'package:speakeasy/providers/shared_pref_provider.dart';
 import 'package:speakeasy/theme/theme.dart';
 import 'package:speakeasy/utils/toast.dart';
 import 'package:speakeasy/view/analytics_page.dart';
@@ -18,6 +20,7 @@ import 'package:speakeasy/view/rules_page.dart';
 import 'package:speakeasy/view/widget/my_scaffold.dart';
 
 import '../model/word.dart';
+import '../providers/unlocked_words_provider.dart';
 import '../utils/utils.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -54,15 +57,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             if (purchaseDetails.productID.contains("words")) {
               switch (purchaseDetails.productID) {
                 case "100words":
-                  await sp.setBool("100words", true);
+                  await ref.read(sharedPreferencesProvider).setBool("100words", true);
                 case "500words":
-                  await sp.setBool("500words", true);
+                  await ref.read(sharedPreferencesProvider).setBool("500words", true);
                 case "1000words":
-                  await sp.setBool("1000words", true);
+                  await ref.read(sharedPreferencesProvider).setBool("1000words", true);
               }
 
               //load the new words
-              ref.invalidate(wordsControllerProvider);
+              ref.invalidate(unlockedWordsCountProvider);
               setState(() {});
             }
 
@@ -120,9 +123,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   value: packageInfo?.version.toString(),
                 ),
                 FutureBuilder<List<Word>>(
-                  future: ref.watch(
-                      wordsControllerProvider(getSelectedLocale()!.languageCode)
-                          .future),
+                  future: ref.watch(wordsControllerProvider.future),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Word>> snapshot) {
                     var words = snapshot.data;
@@ -135,12 +136,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ),
               ],
             ),
+            SizedBox(height: 20),
             Expanded(
               child: ListView(
                 shrinkWrap: false,
                 physics: BouncingScrollPhysics(),
                 children: [
-                  if (!(sp.getBool("1000words") ?? false)) ...[
+                  if (!(ref.read(sharedPreferencesProvider).getBool("1000words") ?? false)) ...[
                     buildLine(
                       context,
                       text: "🚀  " + "Buy more words".tr(),
@@ -179,9 +181,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ),
                   if (kDebugMode)
                     buildLine(context, text: "--- reset sp", onTap: () {
-                      sp.remove("100words");
-                      sp.remove("500words");
-                      sp.remove("1000words");
+
+                      ref.read(sharedPreferencesProvider).remove("100words");
+                      ref.read(sharedPreferencesProvider).remove("500words");
+                      ref.read(sharedPreferencesProvider).remove("1000words");
+
+                      ref.invalidate(unlockedWordsCountProvider);
 
                       showToast("done");
                     }),
@@ -215,7 +220,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future showPaymentDialog() async {
     const Set<String> _kIds = <String>{
       '100words',
-      '500words',
+      //'500words',
       '1000words',
     };
     final ProductDetailsResponse response =
@@ -240,7 +245,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           if (_100words != null)
             ListTile(
-              enabled: !(sp.getBool("100words") ?? false),
+              enabled: !(ref.read(sharedPreferencesProvider).getBool("100words") ?? false),
               trailing: Icon(
                 Icons.chat_bubble_outlined,
                 size: 20,
@@ -257,7 +262,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           if (_500words != null)
             ListTile(
-              enabled: !(sp.getBool("500words") ?? false),
+              enabled: !(ref.read(sharedPreferencesProvider).getBool("500words") ?? false),
               trailing: Icon(
                 Icons.chat_bubble_outlined,
                 size: 25,
@@ -274,7 +279,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           if (_1000words != null)
             ListTile(
-              enabled: !(sp.getBool("1000words") ?? false),
+              enabled: !(ref.read(sharedPreferencesProvider).getBool("1000words") ?? false),
               trailing: Icon(
                 Icons.chat_bubble_outlined,
                 size: 35,
@@ -334,7 +339,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               shrinkWrap: true,
               itemCount: supportedLanguages.length,
               itemBuilder: (context, i) {
-                var localeStr = supportedLanguages[i].toString();
+                final locale = supportedLanguages[i];
+                final localeStr = supportedLanguages[i].toString();
                 return ListTile(
                   leading: Text(
                       le.getFlagEmoji(
@@ -345,11 +351,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr),
                   onTap: () async {
                     Locale locale = supportedLanguages[i];
-                    await sp.setString(
+                    await ref.read(sharedPreferencesProvider).setString(
                         "saved_locale_langcode", locale.languageCode);
 
-                    // invalidate the words
-                    ref.invalidate(wordsControllerProvider);
+                    //invalidate the locale provider, so that all the rest of the data will be updated
+                    ref.invalidate(savedLocaleProvider);
 
                     await context
                         .setLocale(locale); // change `easy_localization` locale
@@ -358,8 +364,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     //close dialog
                     Get.back();
                   },
-                  trailing: localeStr == getSelectedLocale()!.toString()
-                      ? Icon(Icons.check)
+                  trailing: locale == ref.watch(savedLocaleProvider)
+                      ? const Icon(Icons.check)
                       : null,
                 );
               },

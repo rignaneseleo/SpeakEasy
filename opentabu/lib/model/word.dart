@@ -40,8 +40,7 @@ class Word {
 
     if (wordToGuess.contains(tabu)) {
       print(
-          "WARNING: $tabu is a substring of $wordToGuess, it will be ignored");
-      return false;
+          "WARNING: $wordToGuess is a substring of the taboo $tabu");
     }
 
     taboos.add(tabu);

@@ -15,8 +15,9 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speakeasy/controller/words_controller.dart';
+import 'package:speakeasy/providers/saved_locale_provider.dart';
+import 'package:speakeasy/providers/shared_pref_provider.dart';
 import 'package:speakeasy/theme/theme.dart';
-import 'package:speakeasy/utils/utils.dart';
 import 'package:speakeasy/view/home_page.dart';
 import 'package:speakeasy/view/splash_screen.dart';
 import 'package:vibration/vibration.dart';
@@ -24,7 +25,6 @@ import 'package:vibration/vibration.dart';
 import 'api/sound/sound_loader.dart';
 
 bool hasVibration = false;
-late SharedPreferences sp;
 PackageInfo? packageInfo;
 
 bool smallScreen = false;
@@ -82,25 +82,30 @@ Future<void> main() async {
     ),
   );
 
-  sp = await SharedPreferences.getInstance();
-
   await loadSounds();
   if (kIsWeb)
     hasVibration = false;
   else {
     hasVibration = await Vibration.hasVibrator() ?? false;
-    packageInfo = await PackageInfo.fromPlatform();
   }
 
-  final riverpodContainer = ProviderContainer();
-  await riverpodContainer
-      .read(WordsControllerProvider(getSelectedLocale()!.languageCode).future);
+  packageInfo = await PackageInfo.fromPlatform();
+
+  final ref = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider
+          .overrideWithValue(await SharedPreferences.getInstance()),
+    ],
+  );
+
+  //preload the words
+  await ref.read(wordsControllerProvider.future);
 
   runApp(
     UncontrolledProviderScope(
-      container: riverpodContainer,
+      container: ref,
       child: EasyLocalization(
-        startLocale: getSelectedLocale(),
+        startLocale: ref.read(savedLocaleProvider),
         supportedLocales: supportedLanguages,
         path: 'assets/lang',
         saveLocale: true,
