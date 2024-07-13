@@ -1,16 +1,13 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speakeasy/controller/words_controller.dart';
 import 'package:speakeasy/providers/shared_pref_provider.dart';
-import 'package:speakeasy/providers/unlocked_words_provider.dart';
 
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final languages = ['it', 'en'];
-
+  final languages = ['it', 'en', "es"];
 
   for (final lang in languages) {
     await _defineTest(
@@ -49,10 +46,10 @@ void main() async {
 }
 
 Future<void> _defineTest(
-    Map<String, Object> preferences,
-    int expectedWords,
-    String testName,
-    ) async {
+  Map<String, Object> preferences,
+  int expectedWords,
+  String testName,
+) async {
   SharedPreferences.setMockInitialValues(preferences);
   final container = ProviderContainer(overrides: [
     sharedPreferencesProvider
