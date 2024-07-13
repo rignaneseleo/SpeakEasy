@@ -10,7 +10,7 @@ int unlockedWordsCount(UnlockedWordsCountRef ref) {
 
   var wordsLimit = 200;
   if (sp.getBool("1000words") ?? false) {
-    wordsLimit = 1000;
+    wordsLimit += 1000;
   } else {
     if (sp.getBool("100words") ?? false) wordsLimit += 100;
     if (sp.getBool("500words") ?? false) wordsLimit += 500;
