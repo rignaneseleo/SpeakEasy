@@ -107,7 +107,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       child: MyScaffold(
           topLeftWidget: IconButton(
               icon: Icon(
-                Icons.arrow_back_ios_rounded,
+                Icons.keyboard_arrow_up_rounded,
                 color: Theme.of(context).canvasColor,
               ),
               onPressed: () => Get.back()),
