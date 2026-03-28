@@ -1,53 +1,45 @@
-import 'dart:async';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:speakeasy/theme/theme.dart';
+
+import '../../theme/app_theme.dart';
 
 class SelectorButton extends StatefulWidget {
+  const SelectorButton({
+    super.key,
+    required this.items,
+    required this.indexSelected,
+    required this.onValueChanged,
+  });
+
   final List<String> items;
   final int indexSelected;
   final ValueChanged<int> onValueChanged;
 
-  const SelectorButton(
-      {Key? key,
-      required this.items,
-      required this.indexSelected,
-      required this.onValueChanged})
-      : super(key: key);
-
   @override
-  _SelectorButtonState createState() => _SelectorButtonState(indexSelected);
+  State<SelectorButton> createState() => _SelectorButtonState();
 }
 
 class _SelectorButtonState extends State<SelectorButton> {
-  int _selected;
-
-  _SelectorButtonState(this._selected);
+  late int _selected = widget.indexSelected;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 20),
-      decoration: new BoxDecoration(
-        color: midPurple,
-        borderRadius: new BorderRadius.all(
-          const Radius.circular(10.0),
-        ),
+      margin: const EdgeInsets.only(top: 20),
+      decoration: const BoxDecoration(
+        color: AppColors.midPurple,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       height: 32,
-      padding: EdgeInsets.symmetric(horizontal: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 3),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          for (String item in widget.items)
+          for (int i = 0; i < widget.items.length; i++)
             Expanded(
               child: SelectionItem(
-                text: item,
-                highlighted: widget.items.indexOf(item) == _selected,
+                text: widget.items[i],
+                highlighted: i == _selected,
                 onPressed: () {
-                  int i = widget.items.indexOf(item);
                   setState(() {
                     _selected = i;
                     widget.onValueChanged(i);
@@ -62,6 +54,16 @@ class _SelectorButtonState extends State<SelectorButton> {
 }
 
 class SelectionItem extends StatelessWidget {
+  const SelectionItem({
+    super.key,
+    required this.text,
+    this.highlighted = false,
+    this.onPressed,
+    this.disabled = false,
+    this.onLongPressStart,
+    this.onLongPressEnd,
+  });
+
   final String text;
   final bool highlighted;
   final bool disabled;
@@ -69,31 +71,22 @@ class SelectionItem extends StatelessWidget {
   final GestureLongPressStartCallback? onLongPressStart;
   final GestureLongPressEndCallback? onLongPressEnd;
 
-  SelectionItem({
-    Key? key,
-    required this.text,
-    this.highlighted = false,
-    this.onPressed,
-    this.disabled = false,
-    this.onLongPressStart,
-    this.onLongPressEnd,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Opacity(
       opacity: disabled ? 0.4 : 1,
       child: GestureDetector(
+        onTap: onPressed,
+        onLongPressStart: onLongPressStart,
+        onLongPressEnd: onLongPressEnd,
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 1),
+          margin: const EdgeInsets.symmetric(horizontal: 1),
           height: 22,
-          decoration: new BoxDecoration(
-            color: highlighted ? darkPurple : Colors.transparent,
-            borderRadius: new BorderRadius.all(
-              const Radius.circular(6.0),
-            ),
+          decoration: BoxDecoration(
+            color: highlighted ? AppColors.darkPurple : Colors.transparent,
+            borderRadius: const BorderRadius.all(Radius.circular(6)),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Center(
             child: AutoSizeText(
               text,
@@ -103,9 +96,6 @@ class SelectionItem extends StatelessWidget {
             ),
           ),
         ),
-        onTap: onPressed,
-        onLongPressStart: onLongPressStart,
-        onLongPressEnd: onLongPressEnd,
       ),
     );
   }

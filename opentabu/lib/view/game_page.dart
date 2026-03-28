@@ -1,8 +1,3 @@
-/*
-* OpenTabu is an Open Source game developed by Leonardo Rignanese <dev.rignanese@gmail.com>
-* GNU Affero General Public License v3.0: https://choosealicense.com/licenses/agpl-3.0/
-* GITHUB: https://github.com/rignaneseleo/OpenTabu
-* */
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -13,54 +8,69 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+import 'package:go_router/go_router.dart';
 import 'package:in_app_review/in_app_review.dart';
-import 'package:speakeasy/controller/analytics_controller.dart';
-import 'package:speakeasy/controller/game_controller.dart';
-import 'package:speakeasy/controller/words_controller.dart';
-import 'package:speakeasy/main.dart';
-import 'package:speakeasy/model/settings.dart';
-import 'package:speakeasy/theme/theme.dart';
-import 'package:speakeasy/utils/uppercase_text.dart';
-import 'package:speakeasy/view/rules_page.dart';
-import 'package:speakeasy/view/widget/big_button.dart';
-import 'package:speakeasy/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../api/sound/sound_loader.dart';
+import '../model/game_settings.dart';
+import '../provider/analytics_provider.dart';
+import '../provider/device_provider.dart';
+import '../provider/game/game_controller.dart';
+import '../provider/game/game_state.dart';
+import '../provider/sound_provider.dart';
+import '../provider/words_provider.dart';
+import '../theme/app_theme.dart';
+import 'widget/big_button.dart';
+import 'widget/blinking_text.dart';
 
 class GamePage extends ConsumerStatefulWidget {
-  GamePage(this._settings, {super.key});
+  const GamePage({super.key, required this.settings});
 
-  final Settings _settings;
+  final GameSettings settings;
 
   @override
-  createState() {
-    return new GamePageState(_settings);
-  }
+  ConsumerState<GamePage> createState() => _GamePageState();
 }
 
-class GamePageState extends ConsumerState<GamePage>
+class _GamePageState extends ConsumerState<GamePage>
     with WidgetsBindingObserver {
-  //team name, score
-
-  GamePageState(this.settings) {
-    _timerDuration = settings.turnDurationInSeconds;
-    _nTaboosToShow = settings.nTaboos;
-  }
-
-  final Settings settings;
-
   Timer? _turnTimer;
   Timer? _countSecondsTimer;
 
-  late int _timerDuration;
-  late int _nTaboosToShow;
+  int get _timerDuration => widget.settings.turnDurationInSeconds;
+  int get _nTaboosToShow => widget.settings.nTaboos;
 
-  //info to show:
-  Map<String, int> matchInfo = {};
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final words = await ref.read(wordsControllerProvider.future);
+      ref
+          .read(gameControllerProvider.notifier)
+          .initialize(widget.settings, words);
+
+      _countSecondsTimer =
+          Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_turnTimer?.isActive ?? false) {
+          final controller = ref.read(gameControllerProvider.notifier);
+          controller.oneSecPassed();
+
+          final game = ref.read(gameControllerProvider);
+          final secondsLeft = _timerDuration - game.secondsPassed;
+          if (secondsLeft <= 5 && secondsLeft > 0) {
+            final device = ref.read(deviceInfoProvider);
+            if (device.hasVibration) Vibration.vibrate(duration: 100);
+            ref.read(soundServiceProvider.notifier).playTick();
+          }
+        }
+      });
+
+      _initCountdown(3);
+    });
+  }
 
   @override
   void dispose() {
@@ -72,327 +82,277 @@ class GamePageState extends ConsumerState<GamePage>
   }
 
   @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-    //Init game
-
-    //Needed to fix this: https://github.com/rrousselGit/river_pod/issues/177
-    Future.delayed(Duration.zero, () async {
-      final words = await ref.watch(wordsControllerProvider.future);
-      ref.read(gameProvider).init(settings, words);
-
-      _countSecondsTimer =
-          new Timer.periodic(new Duration(seconds: 1), (timer) {
-        if (_turnTimer?.isActive ?? false) {
-          GameController _gameController = ref.read(gameProvider);
-          _gameController.oneSecPassed();
-
-          int secondsLeft = _timerDuration - _gameController.secondsPassed;
-          if (secondsLeft <= 5 && secondsLeft > 0) {
-            if (hasVibration) Vibration.vibrate(duration: 100);
-            playTick();
-          }
-        }
-      });
-
-      initCountdown(3);
-    });
-  }
-
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-        break;
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-      case AppLifecycleState.hidden:
-        pauseGame();
-        break;
+    if (state != AppLifecycleState.resumed) {
+      _pauseGame();
     }
   }
 
-  void initCountdown(int seconds) {
-    ref.read(gameProvider).startCountdown(seconds);
-    Timer(Duration(seconds: seconds), () => initGame());
+  void _initCountdown(int seconds) {
+    ref.read(gameControllerProvider.notifier).startCountdown();
+    Timer(Duration(seconds: seconds), _startGame);
   }
 
-  void initGame() {
-    //Start the turn
-    ref.read(gameProvider).startTurn();
-
-    //Launch the timer
-    startTimer(_timerDuration);
+  void _startGame() {
+    ref.read(gameControllerProvider.notifier).startTurn();
+    _startTimer(_timerDuration);
   }
 
-  void pauseGame() {
-    GameController _gameController = ref.read(gameProvider);
-    if (!(_gameController.gameState == GameState.playing) &&
-        !(_gameController.gameState == GameState.init)) return;
-
-    //Cancel timer
+  void _pauseGame() {
+    final game = ref.read(gameControllerProvider);
+    if (game.phase != GamePhase.playing && game.phase != GamePhase.initial) {
+      return;
+    }
     _turnTimer?.cancel();
-
-    //Pause game
-    _gameController.pauseGame();
+    ref.read(gameControllerProvider.notifier).pauseGame();
   }
 
-  void resumeGame() {
-    GameController _gameController = ref.read(gameProvider);
-
-    //Launch the timer
-    startTimer(_timerDuration - _gameController.secondsPassed);
-
-    //Resume the turn
-    ref.read(gameProvider).resumeGame();
+  void _resumeGame() {
+    final game = ref.read(gameControllerProvider);
+    _startTimer(_timerDuration - game.secondsPassed);
+    ref.read(gameControllerProvider.notifier).resumeGame();
   }
 
-  void startTimer(int seconds) {
-    _turnTimer = new Timer(new Duration(seconds: seconds), () {
-      //TIMEOUT
-      if (hasVibration) Vibration.vibrate(duration: 1000);
-
-      playTimeoutSound();
-
-      ref.read(gameProvider).endTurn();
+  void _startTimer(int seconds) {
+    _turnTimer = Timer(Duration(seconds: seconds), () {
+      final device = ref.read(deviceInfoProvider);
+      if (device.hasVibration) Vibration.vibrate(duration: 1000);
+      ref.read(soundServiceProvider.notifier).playTimeout();
+      ref.read(gameControllerProvider.notifier).endTurn();
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    GameController _gameController = ref.watch(gameProvider);
-
-    return WillPopScope(
-        onWillPop: () async {
-          switch (_gameController.gameState) {
-            case GameState.init:
-            case GameState.playing:
-              pauseGame();
-              break;
-            case GameState.countdown:
-            case GameState.ready:
-            case GameState.pause:
-            case GameState.ended:
-              showDialogToExit();
-              break;
-          }
-
-          return false;
-        },
-        child: Scaffold(
-          body: Material(
-            child: Container(
-              width: double.infinity,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      GameInfoWidget(
-                        shrinked: smallScreen,
-                        highlightTeams: _gameController.winners,
-                      ),
-                      if (_gameController.gameState != GameState.ended)
-                        Positioned(
-                            left: 10,
-                            top: 10,
-                            child: SafeArea(
-                              child: GestureDetector(
-                                onTap: () {
-                                  pauseGame();
-                                  showDialogToExit();
-                                },
-                                child: Transform.rotate(
-                                  angle: math.pi,
-                                  child: Icon(
-                                    Icons.exit_to_app,
-                                    color: txtWhite,
-                                  ),
-                                ),
-                              ),
-                            )),
-                      if (_gameController.gameState == GameState.playing ||
-                          _gameController.gameState == GameState.init)
-                        Positioned(
-                          right: 10,
-                          top: 10,
-                          child: SafeArea(
-                            child: GestureDetector(
-                              child: Icon(
-                                Icons.pause,
-                                color: txtWhite,
-                              ),
-                              onTap: () => pauseGame(),
-                            ),
-                          ),
-                        )
-                      else if (_gameController.gameState == GameState.pause ||
-                          _gameController.gameState == GameState.ended)
-                        Positioned(
-                          right: 10,
-                          top: 10,
-                          child: SafeArea(
-                            child: GestureDetector(
-                              child: Icon(
-                                Icons.book,
-                                color: txtWhite,
-                              ),
-                              onTap: () => Get.to(() => RulesPage(),
-                                  transition: Transition.downToUp),
-                            ),
-                          ),
-                        ),
-                      if (![
-                        GameState.ended,
-                        GameState.ready,
-                      ].contains(_gameController.gameState))
-                        Positioned(
-                          bottom: smallScreen ? -28 : -40,
-                          child: TimeWidget(_timerDuration, () => pauseGame()),
-                        ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 28, vertical: 28),
-                        child: switch (_gameController.gameState) {
-                          GameState.ready => readyBody(_gameController),
-                          GameState.countdown => countDownBody(_gameController),
-                          GameState.playing => playingBody(_gameController),
-                          GameState.ended => endBody(_gameController),
-                          GameState.pause => pauseBody(_gameController),
-                          GameState.init => Text("Loading".tr()),
-                        }),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ));
-  }
-
-  void showDialogToExit() {
-    Get.dialog(
-      AlertDialog(
+  void _showExitDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
         title: Text(
           'want_exit?'.tr(),
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: darkPurple),
+              ?.copyWith(color: AppColors.darkPurple),
         ),
         content: SingleChildScrollView(
           child: ListBody(
-            children: <Widget>[
+            children: [
               Text('are_going_back_home'.tr()),
               Text('match_will_end'.tr()),
             ],
           ),
         ),
-        actions: <Widget>[
+        actions: [
           TextButton(
-            child: Text('Nope'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(color: lightPurple)),
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Nope'.tr(),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(color: AppColors.lightPurple),
+            ),
           ),
           TextButton(
-            child: Text('Yep'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(color: lightPurple)),
             onPressed: () async {
-              Get.back(canPop: true);
-              Get.back(canPop: true);
+              Navigator.of(ctx).pop();
+              if (context.mounted) context.pop();
 
               if (await InAppReview.instance.isAvailable()) {
-                if (await AnalyticsController.getStartedMatches() == 3 ||
-                    await AnalyticsController.getStartedMatches() == 8 ||
-                    await AnalyticsController.getStartedMatches() == 15)
+                final analytics = ref.read(analyticsControllerProvider);
+                final matches = analytics.matchesPlayed;
+                if (matches == 3 || matches == 8 || matches == 15) {
                   InAppReview.instance.requestReview();
+                }
               }
             },
+            child: Text(
+              'Yep'.tr(),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(color: AppColors.lightPurple),
+            ),
           ),
         ],
       ),
-      useSafeArea: true,
     );
   }
 
-  Widget pauseBody(GameController _gameController) {
+  @override
+  Widget build(BuildContext context) {
+    final game = ref.watch(gameControllerProvider);
+    final device = ref.watch(deviceInfoProvider);
+    final smallScreen = device.isSmallScreen;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        switch (game.phase) {
+          case GamePhase.initial:
+          case GamePhase.playing:
+            _pauseGame();
+          case GamePhase.countdown:
+          case GamePhase.ready:
+          case GamePhase.paused:
+          case GamePhase.ended:
+            _showExitDialog();
+        }
+      },
+      child: Scaffold(
+        body: Material(
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    _GameInfoWidget(
+                      smallScreen: smallScreen,
+                      highlightTeams: game.phase == GamePhase.ended
+                          ? game.winners
+                          : null,
+                    ),
+                    if (game.phase != GamePhase.ended)
+                      Positioned(
+                        left: 10,
+                        top: 10,
+                        child: SafeArea(
+                          child: GestureDetector(
+                            onTap: () {
+                              _pauseGame();
+                              _showExitDialog();
+                            },
+                            child: Transform.rotate(
+                              angle: math.pi,
+                              child: const Icon(
+                                Icons.exit_to_app,
+                                color: AppColors.txtWhite,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (game.phase == GamePhase.playing ||
+                        game.phase == GamePhase.initial)
+                      Positioned(
+                        right: 10,
+                        top: 10,
+                        child: SafeArea(
+                          child: GestureDetector(
+                            onTap: _pauseGame,
+                            child: const Icon(
+                              Icons.pause,
+                              color: AppColors.txtWhite,
+                            ),
+                          ),
+                        ),
+                      )
+                    else if (game.phase == GamePhase.paused ||
+                        game.phase == GamePhase.ended)
+                      Positioned(
+                        right: 10,
+                        top: 10,
+                        child: SafeArea(
+                          child: GestureDetector(
+                            onTap: () => context.push('/rules'),
+                            child: const Icon(
+                              Icons.book,
+                              color: AppColors.txtWhite,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (game.phase != GamePhase.ended &&
+                        game.phase != GamePhase.ready)
+                      Positioned(
+                        bottom: smallScreen ? -28 : -40,
+                        child: _TimeWidget(
+                          timerDuration: _timerDuration,
+                          onTap: _pauseGame,
+                          smallScreen: smallScreen,
+                        ),
+                      ),
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: switch (game.phase) {
+                      GamePhase.ready => _readyBody(game),
+                      GamePhase.countdown => _countdownBody(),
+                      GamePhase.playing => _playingBody(game),
+                      GamePhase.ended => _endBody(game),
+                      GamePhase.paused => _pauseBody(),
+                      GamePhase.initial => Text('Loading'.tr()),
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pauseBody() {
     return Column(
       children: [
         Expanded(
           child: Center(
             child: BlinkingText(
-              UpperCaseText(
-                "Pause".tr().toUpperCase(),
+              child: Text(
+                'Pause'.tr().toUpperCase(),
                 style: Theme.of(context)
                     .textTheme
                     .displayMedium
-                    ?.copyWith(color: darkPurple),
+                    ?.copyWith(color: AppColors.darkPurple),
               ),
             ),
           ),
         ),
         BigButton(
-          text: "Resume".tr().toUpperCase(),
-          bgColor: myYellow,
-          textColor: txtBlack,
-          onPressed: () => resumeGame(),
+          text: 'Resume'.tr(),
+          bgColor: AppColors.myYellow,
+          textColor: AppColors.txtBlack,
+          onPressed: _resumeGame,
         ),
       ],
     );
   }
 
-  Widget playingBody(GameController _gameController) {
+  Widget _playingBody(GameState game) {
     return Column(
-      mainAxisSize: MainAxisSize.max,
       children: [
-        Expanded(child: WordWidget(_nTaboosToShow)),
-        //SkipTextWidget(),
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            IncorrectAnswerButton(),
-            SkipButton(),
-            CorrectAnswerButton(),
+        Expanded(child: _WordWidget(nTaboos: _nTaboosToShow)),
+        Row(
+          children: [
+            _IncorrectAnswerButton(),
+            _SkipButton(),
+            _CorrectAnswerButton(),
           ],
         ),
       ],
     );
   }
 
-  Widget countDownBody(GameController _gameController) {
+  Widget _countdownBody() {
     return Column(
-      mainAxisSize: MainAxisSize.max,
       children: [
-        Expanded(child: CountDownWidget(seconds: 3)),
-        //SkipTextWidget(),
+        Expanded(child: _CountDownWidget(seconds: 3)),
         AbsorbPointer(
-          absorbing: true,
           child: Opacity(
             opacity: 0.4,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                IncorrectAnswerButton(),
-                SkipButton(),
-                CorrectAnswerButton(),
+              children: [
+                _IncorrectAnswerButton(),
+                _SkipButton(),
+                _CorrectAnswerButton(),
               ],
             ),
           ),
@@ -401,200 +361,192 @@ class GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  Widget readyBody(GameController _gameController) {
-    List<String> teams = _gameController.teams;
-    int selectedIndex = _gameController.currentTeam;
-    bool _isReady = false;
+  Widget _readyBody(GameState game) {
+    bool isReady = false;
 
     return Column(
       children: [
         Expanded(
           child: Column(
-            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              UpperCaseAutoSizeText(
-                "turn_is_over".tr().toUpperCase(),
+              AutoSizeText(
+                'turn_is_over'.tr().toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
                     .displayMedium
-                    ?.copyWith(color: darkPurple),
+                    ?.copyWith(color: AppColors.darkPurple),
                 maxLines: 2,
-                maxFontSize:
-                    Theme.of(context).textTheme.displayMedium?.fontSize ?? 48,
               ),
               TextButton(
+                onPressed: () => _showScoreAdjustDialog(game.currentTeam),
                 child: Text(
-                  "missed_point_fix_score".tr().toUpperCase(),
+                  'missed_point_fix_score'.tr().toUpperCase(),
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
-                      ?.copyWith(color: lightPurple),
+                      ?.copyWith(color: AppColors.lightPurple),
                 ),
-                onPressed: () => Get.dialog(
-                    barrierColor: Colors.black38,
-                    AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text("adjust_score"
-                                .tr(args: [(selectedIndex + 1).toString()])),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IncorrectAnswerButton(
-                                    customTeam: selectedIndex),
-                                CorrectAnswerButton(customTeam: selectedIndex),
-                              ],
-                            ),
-                          ],
-                        ))),
               ),
             ],
           ),
         ),
         Text(
-          "pass_the_phone".tr(args: [teams[_gameController.nextTeam]]),
+          'pass_the_phone'.tr(args: [game.teamNames[game.nextTeam]]),
           style: Theme.of(context)
               .textTheme
               .titleLarge
-              ?.copyWith(color: darkPurple),
+              ?.copyWith(color: AppColors.darkPurple),
         ),
-        StatefulBuilder(builder: (context, setState) {
-          Timer t = Timer(Duration(seconds: 1), () {
-            setState(() => _isReady = true);
-          });
+        StatefulBuilder(
+          builder: (context, setInnerState) {
+            final t = Timer(const Duration(seconds: 1), () {
+              setInnerState(() => isReady = true);
+            });
 
-          return BigButton(
-            text: "Hold to start".tr(),
-            bgColor: myYellow,
-            textColor: txtBlack,
-            onLongPressed: (!_isReady)
-                ? null
-                : () {
-                    ref.read(gameProvider).changeTurn();
-                    initCountdown(3);
-                    t.cancel();
-                  },
-          );
-        }),
+            return BigButton(
+              text: 'Hold to start'.tr(),
+              bgColor: AppColors.myYellow,
+              textColor: AppColors.txtBlack,
+              onLongPressed: !isReady
+                  ? null
+                  : () {
+                      ref.read(gameControllerProvider.notifier).changeTurn();
+                      _initCountdown(3);
+                      t.cancel();
+                    },
+            );
+          },
+        ),
       ],
     );
   }
 
-  Widget endBody(GameController _gameController) {
+  void _showScoreAdjustDialog(int teamIndex) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black38,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('adjust_score'.tr(args: [(teamIndex + 1).toString()])),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _IncorrectAnswerButton(customTeam: teamIndex),
+                _CorrectAnswerButton(customTeam: teamIndex),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _endBody(GameState game) {
+    final winners = game.winners;
     String text;
-    List<int> winners = _gameController.winners!;
-    if (winners.length == _gameController.numberOfPlayers)
-      text = "tie".tr();
-    else if (winners.length > 1) {
-      text = "winners_are".tr();
-      for (int team in winners) text += "Team".tr() + " $team\n";
-    } else
-      text = "#is_the_winner".tr(args: [winners.first.toString()]);
+    if (winners.length == game.numberOfPlayers) {
+      text = 'tie'.tr();
+    } else if (winners.length > 1) {
+      text = 'winners_are'.tr();
+      for (final team in winners) {
+        text += '${'Team'.tr()} $team\n';
+      }
+    } else {
+      text = '#is_the_winner'.tr(args: [winners.first.toString()]);
+    }
 
     return Column(
-      mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (winners.isEmpty)
-                const AnimatedEmoji(
-                  AnimatedEmojis.neutralFace,
-                  size: 100,
-                )
-              else
-                const AnimatedEmoji(
-                  AnimatedEmojis.partyPopper,
-                  size: 100,
-                ),
-              SizedBox(height: 20),
-              Container(
-                child: Center(
-                  child: UpperCaseAutoSizeText(
-                    text,
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          color: darkPurple,
-                          height: 1.3,
-                        ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                  ),
+              AnimatedEmoji(
+                winners.isEmpty
+                    ? AnimatedEmojis.neutralFace
+                    : AnimatedEmojis.partyPopper,
+                size: 100,
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: AutoSizeText(
+                  text.toUpperCase(),
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        color: AppColors.darkPurple,
+                        height: 1.3,
+                      ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
                 ),
               ),
             ],
           ),
         ),
         BigButton(
-          text: "back_home".tr().toUpperCase(),
-          bgColor: darkPurple,
-          textColor: txtWhite,
-          onPressed: () => Navigator.of(context).pop(),
+          text: 'back_home'.tr(),
+          bgColor: AppColors.darkPurple,
+          textColor: AppColors.txtWhite,
+          onPressed: () => context.pop(),
         ),
       ],
     );
   }
 }
 
-class TurnWidget extends ConsumerWidget {
-  const TurnWidget({super.key});
+// --- Sub-widgets ---
+
+class _TurnWidget extends ConsumerWidget {
+  const _TurnWidget();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
+    final game = ref.watch(gameControllerProvider);
 
-    String turnText = "";
-    switch (_gameController.gameState) {
-      case GameState.countdown:
-      case GameState.playing:
-        if (_gameController.currentTurn == _gameController.nTurns)
-          turnText = "Final Turn".tr();
-        else
-          turnText = "${"Turn".tr()} ${_gameController.currentTurn}";
-        break;
-      case GameState.init:
-      case GameState.ready:
-      case GameState.pause:
-        turnText =
-            "${"Turn".tr()} ${_gameController.currentTurn}/${_gameController.nTurns}";
-        break;
-      case GameState.ended:
-        turnText = "End".tr();
-        break;
-    }
+    final turnText = switch (game.phase) {
+      GamePhase.countdown ||
+      GamePhase.playing =>
+        game.displayTurn == game.totalTurns
+            ? 'Final Turn'.tr()
+            : '${'Turn'.tr()} ${game.displayTurn}',
+      GamePhase.ended => 'End'.tr(),
+      _ => '${'Turn'.tr()} ${game.displayTurn}/${game.totalTurns}',
+    };
 
     return Center(
-      child: new Text(
+      child: Text(
         turnText,
         style: Theme.of(context)
             .textTheme
             .headlineSmall
-            ?.copyWith(color: txtWhite),
+            ?.copyWith(color: AppColors.txtWhite),
       ),
     );
   }
 }
 
-class TimeWidget extends ConsumerWidget {
-  const TimeWidget(this._timerDuration, this.onTap, {super.key});
+class _TimeWidget extends ConsumerWidget {
+  const _TimeWidget({
+    required this.timerDuration,
+    required this.onTap,
+    required this.smallScreen,
+  });
 
-  final int _timerDuration;
+  final int timerDuration;
   final VoidCallback onTap;
+  final bool smallScreen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //every second this is called
-    final _gameController = ref.watch(gameProvider);
-
-    final secondsLeft = _timerDuration - _gameController.secondsPassed;
+    final game = ref.watch(gameControllerProvider);
+    final secondsLeft = timerDuration - game.secondsPassed;
 
     return Center(
       child: GestureDetector(
@@ -603,16 +555,14 @@ class TimeWidget extends ConsumerWidget {
           height: smallScreen ? 50 : 65,
           width: smallScreen ? 50 : 65,
           decoration: const BoxDecoration(
-            color: lightPurple,
+            color: AppColors.lightPurple,
             shape: BoxShape.circle,
           ),
           child: Center(
-            child: new Text(
+            child: Text(
               secondsLeft.toString(),
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: _timerDuration - _gameController.secondsPassed < 8
-                        ? myRed
-                        : txtWhite,
+                    color: secondsLeft < 8 ? AppColors.myRed : AppColors.txtWhite,
                   ),
             ),
           ),
@@ -622,40 +572,39 @@ class TimeWidget extends ConsumerWidget {
   }
 }
 
-class CountDownWidget extends StatefulWidget {
-  CountDownWidget({super.key, required this.seconds}) {}
+class _CountDownWidget extends StatefulWidget {
+  const _CountDownWidget({required this.seconds});
   final int seconds;
 
   @override
-  State<CountDownWidget> createState() => _CountDownWidgetState();
+  State<_CountDownWidget> createState() => _CountDownWidgetState();
 }
 
-class _CountDownWidgetState extends State<CountDownWidget> {
-  int secondsPassed = 0;
-  List<String> countdownWords = ["ready?".tr(), "set".tr(), "go!".tr()];
-  Timer? t;
+class _CountDownWidgetState extends State<_CountDownWidget> {
+  int _step = 0;
+  Timer? _timer;
+
+  List<String> get _words => ['ready?'.tr(), 'set'.tr(), 'go!'.tr()];
 
   @override
   void initState() {
-    t = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (secondsPassed < countdownWords.length - 1) secondsPassed++;
-      });
-    });
     super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_step < _words.length - 1) setState(() => _step++);
+    });
   }
 
   @override
   void dispose() {
-    t?.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: new Text(
-        countdownWords[secondsPassed].tr().toUpperCase(),
+      child: Text(
+        _words[_step].toUpperCase(),
         style: Theme.of(context)
             .textTheme
             .displayMedium
@@ -665,32 +614,28 @@ class _CountDownWidgetState extends State<CountDownWidget> {
   }
 }
 
-class WordWidget extends ConsumerWidget {
-  WordWidget(this._nTaboosToShow, {super.key});
-
-  final int _nTaboosToShow;
+class _WordWidget extends ConsumerWidget {
+  const _WordWidget({required this.nTaboos});
+  final int nTaboos;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
-    List<String> _taboos = _gameController.currentWord!.taboos;
+    final game = ref.watch(gameControllerProvider);
+    final word = game.currentWord;
+    if (word == null) return const SizedBox.shrink();
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      //physics: BouncingScrollPhysics(),
-      children: <Widget>[
-        Container(
-          //width: double.infinity,
+      children: [
+        SizedBox(
           height: 150,
           child: Center(
-            child: new UpperCaseAutoSizeText(
-              _gameController.currentWord!.wordToGuess,
+            child: AutoSizeText(
+              word.wordToGuess.toUpperCase(),
               style: Theme.of(context)
                   .textTheme
                   .displayMedium
-                  ?.copyWith(color: txtGrey),
+                  ?.copyWith(color: AppColors.txtGrey),
               maxFontSize: 56,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -699,151 +644,123 @@ class WordWidget extends ConsumerWidget {
         ),
         FittedBox(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
             children: [
-              for (int i = 0; i < _nTaboosToShow; i++)
+              for (int i = 0; i < nTaboos && i < word.taboos.length; i++)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: UpperCaseAutoSizeText(
-                    _taboos[i],
-                    maxFontSize: 35.0,
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: AutoSizeText(
+                    word.taboos[i].toUpperCase(),
+                    maxFontSize: 35,
                     style: Theme.of(context)
                         .textTheme
                         .displayMedium
-                        ?.copyWith(color: txtBlack),
+                        ?.copyWith(color: AppColors.txtBlack),
                     maxLines: 1,
                   ),
                 ),
             ],
           ),
-        )
-
-        /* Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: taboos,
-          ),
-        ),*/
+        ),
       ],
     );
-
-    if (_gameController.skipLeftCurrentTeam > 0) {
-      playSkipSound();
-      _gameController.skipAnswer();
-    }
   }
 }
 
-class GameInfoWidget extends ConsumerWidget {
-  GameInfoWidget({
-    super.key,
-    this.clockOpacity = 1,
+class _GameInfoWidget extends ConsumerWidget {
+  const _GameInfoWidget({
     this.highlightTeams,
-    required this.shrinked,
+    required this.smallScreen,
   });
 
-  final bool shrinked;
-  final int clockOpacity;
+  final bool smallScreen;
   final List<int>? highlightTeams;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
+    final game = ref.watch(gameControllerProvider);
 
-    List<Widget> teams = [];
-    for (int i = 0; i < _gameController.numberOfPlayers; i++) {
-      bool isCurrentTeam = _gameController.currentTeam == i;
-
-      teams.add(Expanded(
-        child: TeamItem(
-          name: shrinked ? "T".tr() + " ${i + 1}" : "Team".tr() + " ${i + 1}",
-          score: _gameController.scores[i],
-          disabled: highlightTeams == null
-              ? !isCurrentTeam
-              : !highlightTeams!.contains(i + 1),
-        ),
-      ));
-    }
-
-    Widget playingTeamScore = AutoSizeText(
-      "Team".tr() +
-          " ${_gameController.currentTeam + 1}: " +
-          _gameController.scores[_gameController.currentTeam].toString(),
-      style: Theme.of(context)
-          .textTheme
-          .headlineSmall
-          ?.copyWith(fontWeight: FontWeight.bold),
-      maxLines: 1,
-    );
-
-    if (shrinked) {
-      // Shrinked Widget Logic
-      switch (_gameController.gameState) {
-        case GameState.init:
-        case GameState.playing:
-        case GameState.countdown:
-          return _buildShrinkedContainer(
-              [TurnWidget(), playingTeamScore], context);
-        case GameState.ready:
-        case GameState.pause:
-        case GameState.ended:
-          return _buildShrinkedContainer(teams, context);
-      }
-    } else {
-      // Normal Widget Logic
-      return new Container(
-        decoration: new BoxDecoration(
-          color: darkPurple,
-          borderRadius: new BorderRadius.vertical(
-            bottom: const Radius.circular(20.0),
+    final teamWidgets = <Widget>[
+      for (int i = 0; i < game.numberOfPlayers; i++)
+        Expanded(
+          child: _TeamItem(
+            name: smallScreen
+                ? '${'T'.tr()} ${i + 1}'
+                : '${'Team'.tr()} ${i + 1}',
+            score: game.scores[i],
+            disabled: highlightTeams == null
+                ? game.currentTeam != i
+                : !highlightTeams!.contains(i + 1),
+            smallScreen: smallScreen,
           ),
         ),
-        padding: EdgeInsets.only(left: 28, right: 28, bottom: 28, top: 8),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TurnWidget(),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                decoration: new BoxDecoration(
-                  color: lightPurple,
-                  borderRadius: new BorderRadius.all(
-                    const Radius.circular(10.0),
-                  ),
+    ];
+
+    if (smallScreen) {
+      final showScoreboard = game.phase == GamePhase.ready ||
+          game.phase == GamePhase.paused ||
+          game.phase == GamePhase.ended;
+
+      return _buildContainer(
+        showScoreboard
+            ? teamWidgets
+            : [
+                const _TurnWidget(),
+                AutoSizeText(
+                  '${'Team'.tr()} ${game.currentTeam + 1}: '
+                  '${game.scores[game.currentTeam]}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                  maxLines: 1,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: teams,
-                ),
-              ),
-            ],
-          ),
-        ),
+              ],
+        padding: const EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
       );
     }
-  }
 
-  Widget _buildShrinkedContainer(List<Widget> children, BuildContext context) {
-    return new Container(
-      decoration: new BoxDecoration(
-        color: darkPurple,
-        borderRadius: new BorderRadius.vertical(
-          bottom: const Radius.circular(20.0),
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.darkPurple,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.only(left: 28, right: 28, bottom: 28, top: 8),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const _TurnWidget(),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: const BoxDecoration(
+                color: AppColors.lightPurple,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: teamWidgets,
+              ),
+            ),
+          ],
         ),
       ),
-      padding: EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
+    );
+  }
+
+  Widget _buildContainer(List<Widget> children, {EdgeInsets? padding}) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.darkPurple,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      ),
+      padding:
+          padding ?? const EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
       child: SafeArea(
+        bottom: false,
         child: Row(
-          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: children,
         ),
       ),
@@ -851,16 +768,18 @@ class GameInfoWidget extends ConsumerWidget {
   }
 }
 
-class TeamItem extends StatelessWidget {
-  const TeamItem(
-      {Key? key,
-      required this.disabled,
-      required this.name,
-      required this.score})
-      : super(key: key);
+class _TeamItem extends StatelessWidget {
+  const _TeamItem({
+    required this.disabled,
+    required this.name,
+    required this.score,
+    required this.smallScreen,
+  });
+
   final bool disabled;
   final String name;
   final int score;
+  final bool smallScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -868,25 +787,25 @@ class TeamItem extends StatelessWidget {
       opacity: disabled ? 0.4 : 1,
       child: Container(
         margin: EdgeInsets.symmetric(
-            horizontal: smallScreen ? 2 : 5, vertical: smallScreen ? 0 : 8),
+          horizontal: smallScreen ? 2 : 5,
+          vertical: smallScreen ? 0 : 8,
+        ),
         padding: EdgeInsets.symmetric(vertical: smallScreen ? 0 : 8),
-        decoration: new BoxDecoration(
-          color: darkPurple,
-          borderRadius: new BorderRadius.all(
-            const Radius.circular(10.0),
-          ),
+        decoration: const BoxDecoration(
+          color: AppColors.darkPurple,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Center(
           child: Column(
             children: [
-              UpperCaseAutoSizeText(
-                name,
+              AutoSizeText(
+                name.toUpperCase(),
                 maxFontSize:
                     Theme.of(context).textTheme.headlineSmall?.fontSize ?? 20,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              UpperCaseAutoSizeText(
-                score.toString(),
+              AutoSizeText(
+                score.toString().toUpperCase(),
                 maxFontSize:
                     Theme.of(context).textTheme.headlineMedium?.fontSize ?? 25,
                 style: Theme.of(context).textTheme.headlineMedium,
@@ -899,96 +818,76 @@ class TeamItem extends StatelessWidget {
   }
 }
 
-class SkipTextWidget extends ConsumerWidget {
-  const SkipTextWidget({super.key});
+class _IncorrectAnswerButton extends ConsumerWidget {
+  const _IncorrectAnswerButton({this.customTeam});
+  final int? customTeam;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      child: UpperCaseText(
-        _gameController.skipLeftCurrentTeam.toString() +
-            " " +
-            "Skips".tr().toUpperCase(),
-        style:
-            Theme.of(context).textTheme.titleLarge?.copyWith(color: darkPurple),
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.all(3),
+        child: BigIconButton(
+          bgColor: AppColors.myRed,
+          icon: SvgPicture.asset('assets/icons/cross.svg'),
+          onPressed: () {
+            ref.read(soundServiceProvider.notifier).playWrong();
+            ref
+                .read(gameControllerProvider.notifier)
+                .wrongAnswer(team: customTeam);
+            ref.read(analyticsControllerProvider.notifier).addWrongAnswer();
+          },
+        ),
       ),
     );
   }
 }
 
-class IncorrectAnswerButton extends ConsumerWidget {
-  IncorrectAnswerButton({super.key, this.customTeam});
-
-  //This is used to fix the scores
-  final int? customTeam;
+class _SkipButton extends ConsumerWidget {
+  const _SkipButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
+    final game = ref.watch(gameControllerProvider);
+    final device = ref.watch(deviceInfoProvider);
+    final skipsLeft = game.skipsLeft.isEmpty
+        ? 0
+        : game.skipsLeft[game.currentTeam];
 
-    return new Expanded(
-        child: Container(
-      margin: EdgeInsets.all(3),
-      child: BigIconButton(
-          bgColor: myRed,
-          icon: SvgPicture.asset('assets/icons/cross.svg'),
-          onPressed: () {
-            playWrongAnswerSound();
-            _gameController.wrongAnswer(team: customTeam);
-            AnalyticsController.addWrongAnswer();
-          }),
-    ));
-  }
-}
-
-class SkipButton extends ConsumerWidget {
-  SkipButton({super.key, this.customTeam});
-
-  //This is used to fix the scores
-  final int? customTeam;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
-
-    return new Expanded(
+    return Expanded(
       child: Opacity(
-        opacity: _gameController.skipLeftCurrentTeam == 0 ? 0.3 : 1,
+        opacity: skipsLeft == 0 ? 0.3 : 1,
         child: Container(
-          margin: EdgeInsets.all(smallScreen ? 0 : 3),
+          margin: EdgeInsets.all(device.isSmallScreen ? 0 : 3),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Container(
-              margin: EdgeInsets.only(top: 20),
+              margin: const EdgeInsets.only(top: 20),
               child: MaterialButton(
                 height: 80,
                 minWidth: double.infinity,
+                color: AppColors.myYellow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                onPressed: () {
+                  if (skipsLeft == 0) return;
+                  ref.read(soundServiceProvider.notifier).playSkip();
+                  ref.read(gameControllerProvider.notifier).skipAnswer();
+                  ref.read(analyticsControllerProvider.notifier).addSkip();
+                },
                 child: Column(
-                  mainAxisSize: MainAxisSize.max,
                   children: [
                     SvgPicture.asset('assets/icons/skip.svg'),
                     Text(
-                      _gameController.skipLeftCurrentTeam.toString(),
+                      skipsLeft.toString(),
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall
-                          ?.copyWith(color: txtBlack),
+                          ?.copyWith(color: AppColors.txtBlack),
                     ),
                   ],
                 ),
-                color: myYellow,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                onPressed: () {
-                  if (_gameController.skipLeftCurrentTeam == 0) return;
-
-                  playSkipSound();
-                  _gameController.skipAnswer();
-                  AnalyticsController.addNewSkip();
-                },
               ),
             ),
           ),
@@ -998,27 +897,26 @@ class SkipButton extends ConsumerWidget {
   }
 }
 
-class CorrectAnswerButton extends ConsumerWidget {
-  CorrectAnswerButton({super.key, this.customTeam});
-
-  //This is used to fix the scores
+class _CorrectAnswerButton extends ConsumerWidget {
+  const _CorrectAnswerButton({this.customTeam});
   final int? customTeam;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GameController _gameController = ref.watch(gameProvider);
-
-    return new Expanded(
+    return Expanded(
       child: Container(
-        margin: EdgeInsets.all(3),
+        margin: const EdgeInsets.all(3),
         child: BigIconButton(
-            bgColor: myGreen,
-            icon: SvgPicture.asset('assets/icons/check.svg'),
-            onPressed: () {
-              playCorrectAnswerSound();
-              _gameController.rightAnswer(team: customTeam);
-              AnalyticsController.addCorrectAnswer();
-            }),
+          bgColor: AppColors.myGreen,
+          icon: SvgPicture.asset('assets/icons/check.svg'),
+          onPressed: () {
+            ref.read(soundServiceProvider.notifier).playCorrect();
+            ref
+                .read(gameControllerProvider.notifier)
+                .rightAnswer(team: customTeam);
+            ref.read(analyticsControllerProvider.notifier).addCorrectAnswer();
+          },
+        ),
       ),
     );
   }

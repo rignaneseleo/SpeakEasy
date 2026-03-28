@@ -1,44 +1,39 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class BlinkingText extends StatefulWidget {
-  final Text _target;
+  const BlinkingText({super.key, required this.child});
 
-  BlinkingText(this._target);
+  final Text child;
 
   @override
-  BlinkingTextState createState() => BlinkingTextState();
+  State<BlinkingText> createState() => _BlinkingTextState();
 }
 
-class BlinkingTextState extends State<BlinkingText> {
-  bool _show = true;
-  late Timer _timer;
+class _BlinkingTextState extends State<BlinkingText> {
+  bool _visible = true;
+  late final Timer _timer;
 
   @override
   void initState() {
-    _timer = Timer.periodic(Duration(milliseconds: 800), (_) {
-      setState(() => _show = !_show);
-    });
     super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    TextStyle? style;
-
-    if (_show)
-      style = widget._target.style;
-    else
-      style = widget._target.style?.copyWith(color: Colors.transparent);
-
-    return Text(widget._target.data!, style: style);
+    _timer = Timer.periodic(const Duration(milliseconds: 800), (_) {
+      setState(() => _visible = !_visible);
+    });
   }
 
   @override
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = _visible
+        ? widget.child.style
+        : widget.child.style?.copyWith(color: Colors.transparent);
+    return Text(widget.child.data!, style: style);
   }
 }

@@ -1,81 +1,77 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
-import 'package:speakeasy/controller/analytics_controller.dart';
-import 'package:speakeasy/theme/theme.dart';
-import 'package:speakeasy/view/widget/my_scaffold.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class AnalyticsPage extends StatelessWidget {
+import '../provider/analytics_provider.dart';
+import '../theme/app_theme.dart';
+import 'widget/app_scaffold.dart';
+
+class AnalyticsPage extends ConsumerWidget {
+  const AnalyticsPage({super.key});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final analytics = ref.watch(analyticsControllerProvider);
+
     return GestureDetector(
       onVerticalDragUpdate: (details) {
-        int sensitivity = 8;
-        if (details.delta.dy < -sensitivity) {
-          // Up Swipe
-          Get.back();
-        }
+        if (details.delta.dy < -8) context.pop();
       },
-      child: MyScaffold(
-          topLeftWidget: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: Theme.of(context).canvasColor,
-            ),
-            onPressed: () => Get.back(),
+      child: AppScaffold(
+        topLeftWidget: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).canvasColor,
           ),
-          widgets: [
-            //new Text("VERSIONE ${Weco.AppVersion}"),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  new AutoSizeText(
-                    "Analytics".tr(),
-                    style: Theme.of(context).textTheme.displayMedium,
-                    maxLines: 2,
+          onPressed: () => context.pop(),
+        ),
+        widgets: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  'Analytics'.tr(),
+                  style: Theme.of(context).textTheme.displayMedium,
+                  maxLines: 2,
+                ),
+                Expanded(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      Text(
+                        'Match'.tr().toUpperCase(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .displaySmall
+                            ?.copyWith(color: AppColors.myYellow),
+                      ),
+                      SettingsLine(
+                        text: '#Played'.tr(),
+                        value: analytics.matchesPlayed,
+                      ),
+                      SettingsLine(
+                        text: 'Correct'.tr(),
+                        value: analytics.correctAnswers,
+                      ),
+                      SettingsLine(
+                        text: 'Wrong'.tr(),
+                        value: analytics.wrongAnswers,
+                      ),
+                      SettingsLine(
+                        text: 'Skips'.tr(),
+                        value: analytics.skipsUsed,
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: ListView(
-                      physics: BouncingScrollPhysics(),
-                      children: [
-                        Text(
-                          "Match".tr().toUpperCase(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .displaySmall
-                              ?.copyWith(color: myYellow),
-                        ),
-                        buildLine(
-                          context,
-                          text: "#Played".tr(),
-                          value: AnalyticsController.getStartedMatches(),
-                        ),
-                        buildLine(
-                          context,
-                          text: "Correct".tr(),
-                          value: AnalyticsController.getCorrectAnswers(),
-                        ),
-                        buildLine(
-                          context,
-                          text: "Wrong".tr(),
-                          value: AnalyticsController.getWrongAnswers(),
-                        ),
-                        buildLine(
-                          context,
-                          text: "Skips".tr(),
-                          value: AnalyticsController.getSkipUsed(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ]),
+          ),
+        ],
+      ),
     );
   }
 }
