@@ -17,7 +17,10 @@ abstract final class AppColors {
 ThemeData buildAppTheme() {
   return ThemeData(
     useMaterial3: true,
-    colorSchemeSeed: AppColors.darkPurple,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.darkPurple,
+      primary: AppColors.darkPurple,
+    ),
     brightness: Brightness.light,
     fontFamily: 'SFPro',
     pageTransitionsTheme: const PageTransitionsTheme(builders: {

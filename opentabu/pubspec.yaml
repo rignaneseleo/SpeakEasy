@@ -36,7 +36,7 @@ dependencies:
   animated_emoji: ^3.1.0
 
   # Platform
-  soundpool: ^2.4.1
+  audioplayers: ^6.1.0
   url_launcher: ^6.3.1
   vibration: ^2.0.1
   wakelock_plus: ^1.2.8
