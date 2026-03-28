@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:speakeasy/model/word.dart';
 import 'package:speakeasy/provider/game/game_state.dart';
 
 void main() {
