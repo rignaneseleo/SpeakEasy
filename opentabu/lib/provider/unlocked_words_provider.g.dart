@@ -7,7 +7,7 @@ part of 'unlocked_words_provider.dart';
 // **************************************************************************
 
 String _$unlockedWordsCountHash() =>
-    r'4ced24b9f4db3c97b89ce88dc03e0a7779488c53';
+    r'1b5df5ae2e98af7199f6d1a00477c3e47d747693';
 
 /// See also [unlockedWordsCount].
 @ProviderFor(unlockedWordsCount)
