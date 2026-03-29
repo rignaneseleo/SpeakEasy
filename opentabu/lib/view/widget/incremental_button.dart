@@ -7,7 +7,13 @@ import 'package:speakeasy/view/widget/selector_button.dart';
 
 class IncrementalButton extends StatefulWidget {
   const IncrementalButton({
-    required this.increment, required this.onValueChanged, required this.initialValue, required this.text, required this.min, required this.max, super.key,
+    required this.increment,
+    required this.onValueChanged,
+    required this.initialValue,
+    required this.text,
+    required this.min,
+    required this.max,
+    super.key,
     this.smallScreen = false,
   });
 

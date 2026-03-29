@@ -23,10 +23,12 @@ ThemeData buildAppTheme() {
     ),
     brightness: Brightness.light,
     fontFamily: 'SFPro',
-    pageTransitionsTheme: const PageTransitionsTheme(builders: {
-      TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-      TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    },),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
     primaryColor: AppColors.darkPurple,
     textTheme: const TextTheme(
       displayLarge: TextStyle(

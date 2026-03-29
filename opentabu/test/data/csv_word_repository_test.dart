@@ -80,16 +80,22 @@ void main() {
       test('words have non-empty taboos', () {
         final words = repo.loadWords(9999);
         for (final word in words) {
-          expect(word.taboos, isNotEmpty,
-              reason: '${word.wordToGuess} has no taboos',);
+          expect(
+            word.taboos,
+            isNotEmpty,
+            reason: '${word.wordToGuess} has no taboos',
+          );
         }
       });
 
       test('wordToGuess is capitalized', () {
         final words = repo.loadWords(9999);
         for (final word in words) {
-          expect(word.wordToGuess[0], word.wordToGuess[0].toUpperCase(),
-              reason: '${word.wordToGuess} is not capitalized',);
+          expect(
+            word.wordToGuess[0],
+            word.wordToGuess[0].toUpperCase(),
+            reason: '${word.wordToGuess} is not capitalized',
+          );
         }
       });
 
@@ -97,8 +103,11 @@ void main() {
         final words = repo.loadWords(9999);
         for (final word in words) {
           for (final taboo in word.taboos) {
-            expect(taboo[0], taboo[0].toUpperCase(),
-                reason: '$taboo in ${word.wordToGuess} is not capitalized',);
+            expect(
+              taboo[0],
+              taboo[0].toUpperCase(),
+              reason: '$taboo in ${word.wordToGuess} is not capitalized',
+            );
           }
         }
       });
@@ -107,8 +116,11 @@ void main() {
         final words = repo.loadWords(9999);
         final allWords = words.map((w) => w.wordToGuess.toLowerCase()).toList();
         final uniqueWords = allWords.toSet();
-        expect(allWords.length, uniqueWords.length,
-            reason: 'Found duplicate words',);
+        expect(
+          allWords.length,
+          uniqueWords.length,
+          reason: 'Found duplicate words',
+        );
       });
     });
   });

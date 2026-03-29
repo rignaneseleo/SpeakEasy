@@ -4,7 +4,8 @@ import 'package:speakeasy/theme/app_theme.dart';
 
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
-    required this.widgets, super.key,
+    required this.widgets,
+    super.key,
     this.topRightWidget,
     this.topLeftWidget,
   });
@@ -51,7 +52,8 @@ class AppScaffold extends StatelessWidget {
 
 class SettingsLine extends StatelessWidget {
   const SettingsLine({
-    required this.text, super.key,
+    required this.text,
+    super.key,
     this.value,
     this.onTap,
   });

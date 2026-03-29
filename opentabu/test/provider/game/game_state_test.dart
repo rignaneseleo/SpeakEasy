@@ -127,15 +127,16 @@ void main() {
   group('GamePhase', () {
     test('has all expected values', () {
       expect(
-          GamePhase.values,
-          containsAll([
-            GamePhase.initial,
-            GamePhase.ready,
-            GamePhase.countdown,
-            GamePhase.playing,
-            GamePhase.paused,
-            GamePhase.ended,
-          ]),);
+        GamePhase.values,
+        containsAll([
+          GamePhase.initial,
+          GamePhase.ready,
+          GamePhase.countdown,
+          GamePhase.playing,
+          GamePhase.paused,
+          GamePhase.ended,
+        ]),
+      );
     });
 
     test('has exactly 6 phases', () {

@@ -115,7 +115,8 @@ class _HomePageState extends ConsumerState<HomePage>
                             .copyWith(top: 15),
                         child: Text(
                           'advanced_preferences'.tr(
-                              args: [if (_showAdvanced) '↓' else '↑'],).toUpperCase(),
+                            args: [if (_showAdvanced) '↓' else '↑'],
+                          ).toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge

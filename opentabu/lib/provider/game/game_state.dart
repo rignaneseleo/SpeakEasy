@@ -8,7 +8,6 @@ enum GamePhase { initial, ready, countdown, playing, paused, ended }
 
 @freezed
 class GameState with _$GameState {
-
   const factory GameState({
     @Default(GamePhase.initial) GamePhase phase,
     @Default([]) List<int> scores,

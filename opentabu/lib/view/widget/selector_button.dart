@@ -5,7 +5,10 @@ import 'package:speakeasy/theme/app_theme.dart';
 
 class SelectorButton extends StatefulWidget {
   const SelectorButton({
-    required this.items, required this.indexSelected, required this.onValueChanged, super.key,
+    required this.items,
+    required this.indexSelected,
+    required this.onValueChanged,
+    super.key,
   });
 
   final List<String> items;
@@ -52,7 +55,8 @@ class _SelectorButtonState extends State<SelectorButton> {
 
 class SelectionItem extends StatelessWidget {
   const SelectionItem({
-    required this.text, super.key,
+    required this.text,
+    super.key,
     this.highlighted = false,
     this.onPressed,
     this.disabled = false,

@@ -665,7 +665,8 @@ class _WordWidget extends ConsumerWidget {
 
 class _GameInfoWidget extends ConsumerWidget {
   const _GameInfoWidget({
-    required this.smallScreen, this.highlightTeams,
+    required this.smallScreen,
+    this.highlightTeams,
   });
 
   final bool smallScreen;
