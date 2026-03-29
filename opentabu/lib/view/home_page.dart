@@ -1,90 +1,100 @@
-/*
-* OpenTabu is an Open Source game developed by Leonardo Rignanese <dev.rignanese@gmail.com>
-* GNU Affero General Public License v3.0: https://choosealicense.com/licenses/agpl-3.0/
-* GITHUB: https://github.com/rignaneseleo/OpenTabu
-* */
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
-import 'package:speakeasy/controller/analytics_controller.dart';
-import 'package:speakeasy/model/settings.dart';
-import 'package:speakeasy/providers/shared_pref_provider.dart';
-import 'package:speakeasy/theme/theme.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:speakeasy/model/game_settings.dart';
+import 'package:speakeasy/provider/analytics_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/view/widget/app_scaffold.dart';
+import 'package:speakeasy/view/widget/app_title.dart';
 import 'package:speakeasy/view/widget/big_button.dart';
 import 'package:speakeasy/view/widget/incremental_button.dart';
-import 'package:speakeasy/view/widget/my_scaffold.dart';
-import 'package:speakeasy/view/widget/my_title.dart';
 import 'package:speakeasy/view/widget/selector_button.dart';
-import 'package:speakeasy/view/widget/tiny_button.dart';
-import 'package:simple_animations/simple_animations.dart';
-
-import '../main.dart';
-import 'game_page.dart';
-import 'settings_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
+  const HomePage({super.key});
+
   @override
-createState() {
-    return HomePageState();
-  }
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class HomePageState extends ConsumerState<HomePage> with AnimationMixin {
-  late Settings _settings;
-
-  late Animation<double> sizeMenuItems;
-  bool _displayAdvancedPreferences = false;
-
-  HomePageState() {
-    _settings = new Settings();
-  }
+class _HomePageState extends ConsumerState<HomePage>
+    with SingleTickerProviderStateMixin {
+  GameSettings _settings = const GameSettings();
+  bool _showAdvanced = false;
+  late final AnimationController _animController;
+  late final Animation<double> _expandAnimation;
 
   @override
   void initState() {
-    sizeMenuItems = Tween(begin: 0.00000001, end: 5000.0).animate(controller);
-
     super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _expandAnimation = Tween<double>(begin: 0, end: 1).animate(_animController);
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _toggleAdvanced() {
+    setState(() => _showAdvanced = !_showAdvanced);
+    if (_showAdvanced) {
+      _animController.forward();
+    } else {
+      _animController.reverse();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final analytics = ref.watch(analyticsControllerProvider);
+    final sp = ref.read(sharedPreferencesProvider);
+    final showMoreWords =
+        analytics.matchesPlayed > 0 && !(sp.getBool('1000words') ?? false);
+
     return GestureDetector(
-      child: MyScaffold(
+      onVerticalDragUpdate: (details) {
+        if (details.delta.dy > 10) {
+          _animController.reverse();
+        } else if (details.delta.dy < -10) {
+          _animController.forward();
+        }
+      },
+      child: AppScaffold(
         topLeftWidget: GestureDetector(
-          child: Icon(
-            Icons.settings,
-            color: txtWhite,
-            size: 28,
-          ),
-          onTap: () =>
-              Get.to(() => SettingsPage(), transition: Transition.upToDown),
+          onTap: () => context.push('/settings'),
+          child:
+              const Icon(Icons.settings, color: AppColors.txtWhite, size: 28),
         ),
-        topRightWidget: AnalyticsController.getStartedMatches() == 0 ||
-                (ref.read(sharedPreferencesProvider).getBool("1000words") ?? false)
-            ? null
-            : GestureDetector(
+        topRightWidget: showMoreWords
+            ? GestureDetector(
+                onTap: () => context.push('/settings', extra: true),
                 child: Text(
-                  "More words".tr() + "?",
-                  style: TextStyle(
-                    color: txtWhite,
+                  '${'More words'.tr()}?',
+                  style: const TextStyle(
+                    color: AppColors.txtWhite,
                     fontSize: 18,
                   ),
                 ),
-                onTap: () => Get.to(() => SettingsPage(openPaymentDialog: true),
-                    transition: Transition.upToDown),
-              ),
-        widgets: <Widget>[
+              )
+            : null,
+        widgets: [
           Expanded(
             child: Align(
               alignment: Alignment.bottomCenter,
               child: ListView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 shrinkWrap: true,
                 children: [
-                  MyTitle(),
+                  const AppTitle(),
                   SelectorButton(
                     indexSelected: 0,
                     items: [
@@ -94,80 +104,78 @@ class HomePageState extends ConsumerState<HomePage> with AnimationMixin {
                       '#Teams'.tr(args: ['5']),
                     ],
                     onValueChanged: (i) {
-                      print("Team number set to ${i + 2}");
-                      _settings.nPlayers = i + 2;
+                      _settings = _settings.copyWith(nPlayers: i + 2);
                     },
                   ),
                   Center(
-                    child: TinyButton(
-                      text: "advanced_preferences"
-                          .tr(args: [_displayAdvancedPreferences ? "↓" : "↑"]),
-                      textColor: txtGrey,
-                      onPressed: () {
-                        if (_displayAdvancedPreferences) {
-                          controller.playReverse(
-                              duration: Duration(milliseconds: 100));
-                        } else {
-                          controller.play(
-                              duration: Duration(milliseconds: 100));
-                        }
-                        _displayAdvancedPreferences =
-                            !_displayAdvancedPreferences;
-                      },
+                    child: GestureDetector(
+                      onTap: _toggleAdvanced,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10)
+                            .copyWith(top: 15),
+                        child: Text(
+                          'advanced_preferences'.tr(
+                            args: [if (_showAdvanced) '↓' else '↑'],
+                          ).toUpperCase(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(color: AppColors.txtGrey),
+                        ),
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: sizeMenuItems.value / 100,
-                    child: SelectorButton(
-                      indexSelected: _settings.nTaboos - 3,
-                      items: [
-                        '#Taboos'.tr(args: ['3']),
-                        '#Taboos'.tr(args: ['4']),
-                        '#Taboos'.tr(args: ['5']),
+                  AnimatedBuilder(
+                    animation: _expandAnimation,
+                    builder: (context, child) => SizeTransition(
+                      sizeFactor: _expandAnimation,
+                      child: child,
+                    ),
+                    child: Column(
+                      children: [
+                        SelectorButton(
+                          indexSelected: _settings.nTaboos - 3,
+                          items: [
+                            '#Taboos'.tr(args: ['3']),
+                            '#Taboos'.tr(args: ['4']),
+                            '#Taboos'.tr(args: ['5']),
+                          ],
+                          onValueChanged: (i) {
+                            _settings = _settings.copyWith(nTaboos: i + 3);
+                          },
+                        ),
+                        IncrementalButton(
+                          increment: 1,
+                          initialValue: _settings.nTurns,
+                          text: 'Turns'.tr(),
+                          min: 3,
+                          max: 20,
+                          onValueChanged: (i) {
+                            _settings = _settings.copyWith(nTurns: i);
+                          },
+                        ),
+                        IncrementalButton(
+                          increment: 10,
+                          text: 'Sec'.tr(),
+                          min: kReleaseMode ? 30 : 5,
+                          max: 180,
+                          initialValue: _settings.turnDurationInSeconds,
+                          onValueChanged: (i) {
+                            _settings =
+                                _settings.copyWith(turnDurationInSeconds: i);
+                          },
+                        ),
+                        IncrementalButton(
+                          increment: 1,
+                          initialValue: _settings.nSkip,
+                          text: 'Skips'.tr(),
+                          min: 0,
+                          max: 10,
+                          onValueChanged: (i) {
+                            _settings = _settings.copyWith(nSkip: i);
+                          },
+                        ),
                       ],
-                      onValueChanged: (i) {
-                        print("Taboo number set to ${i + 3}");
-                        _settings.nTaboos = i + 3;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: sizeMenuItems.value / 100,
-                    child: IncrementalButton(
-                      increment: 1,
-                      initialValue: _settings.nTurns,
-                      text: "Turns".tr(),
-                      min: 3,
-                      max: 20,
-                      onValueChanged: (i) {
-                        _settings.nTurns = i;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: sizeMenuItems.value / 100,
-                    child: IncrementalButton(
-                      increment: 10,
-                      text: "Sec".tr(),
-                      min: kReleaseMode ? 30 : 5,
-                      max: 180,
-                      initialValue: _settings.turnDurationInSeconds,
-                      onValueChanged: (i) {
-                        _settings.turnDurationInSeconds = i;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: sizeMenuItems.value / 100,
-                    child: IncrementalButton(
-                      increment: 1,
-                      initialValue: _settings.nSkip,
-                      text: "Skips".tr(),
-                      min: 0,
-                      max: 10,
-                      onValueChanged: (i) {
-                        _settings.nSkip = i;
-                      },
                     ),
                   ),
                 ],
@@ -175,26 +183,16 @@ class HomePageState extends ConsumerState<HomePage> with AnimationMixin {
             ),
           ),
           BigButton(
-            text: "Start".tr(),
-            bgColor: lightPurple,
-            textColor: txtWhite,
-            onPressed: () async {
-              AnalyticsController.addNewMatch();
-              await Get.to(() => GamePage(_settings),
-                  transition: Transition.downToUp);
-              return;
+            text: 'Start'.tr(),
+            bgColor: AppColors.lightPurple,
+            textColor: AppColors.txtWhite,
+            onPressed: () {
+              ref.read(analyticsControllerProvider.notifier).addMatch();
+              context.push('/game', extra: _settings);
             },
           ),
         ],
       ),
-      onVerticalDragUpdate: (details) {
-        // Note: Sensitivity is integer used when you don't want to mess up vertical drag
-        if (details.delta.dy > 10) {
-          controller.playReverse(duration: Duration(milliseconds: 100));
-        } else if (details.delta.dy < -10) {
-          controller.play(duration: Duration(milliseconds: 100));
-        }
-      },
     );
   }
 }

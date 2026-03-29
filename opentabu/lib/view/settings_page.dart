@@ -6,31 +6,29 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart' hide Trans;
+import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:locale_emoji/locale_emoji.dart' as le;
-import 'package:speakeasy/controller/words_controller.dart';
-import 'package:speakeasy/main.dart';
-import 'package:speakeasy/providers/saved_locale_provider.dart';
-import 'package:speakeasy/providers/shared_pref_provider.dart';
-import 'package:speakeasy/theme/theme.dart';
-import 'package:speakeasy/utils/toast.dart';
-import 'package:speakeasy/view/analytics_page.dart';
-import 'package:speakeasy/view/rules_page.dart';
-import 'package:speakeasy/view/widget/my_scaffold.dart';
 
-import '../model/word.dart';
-import '../providers/unlocked_words_provider.dart';
-import '../utils/utils.dart';
+import 'package:speakeasy/model/word.dart';
+import 'package:speakeasy/provider/device_provider.dart';
+import 'package:speakeasy/provider/locale_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
+import 'package:speakeasy/provider/unlocked_words_provider.dart';
+import 'package:speakeasy/provider/words_provider.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/util/toast.dart';
+import 'package:speakeasy/util/url_launcher.dart';
+import 'package:speakeasy/view/widget/app_scaffold.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
-  static const String emailLeo = "dev.rignaneseleo%2Btabu%40gmail.com";
-  bool openPaymentDialog = false;
+  const SettingsPage({super.key, this.openPaymentDialog = false});
 
-  SettingsPage({Key? key, this.openPaymentDialog = false}) : super(key: key);
+  static const String emailLeo = 'dev.rignaneseleo%2Btabu%40gmail.com';
+  final bool openPaymentDialog;
 
   @override
-  createState() => _SettingsPageState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
@@ -38,54 +36,48 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   void initState() {
-    if (!kIsWeb) _setupPaymentSubscription();
     super.initState();
+    if (!kIsWeb) _setupPaymentSubscription();
   }
 
-  _setupPaymentSubscription() {
-    //set the listener
+  void _setupPaymentSubscription() {
     _paymentSubscription ??= InAppPurchase.instance.purchaseStream.listen(
-        (List<PurchaseDetails> purchaseDetailsList) {
-      // handle  purchaseDetailsList
-      purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-        if (purchaseDetails.status == PurchaseStatus.pending) {
-        } else {
-          if (purchaseDetails.status == PurchaseStatus.error) {
-            showToast("error_trylater".tr());
-          } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-              purchaseDetails.status == PurchaseStatus.restored) {
-            if (purchaseDetails.productID.contains("words")) {
-              switch (purchaseDetails.productID) {
-                case "100words":
-                  await ref.read(sharedPreferencesProvider).setBool("100words", true);
-                case "500words":
-                  await ref.read(sharedPreferencesProvider).setBool("500words", true);
-                case "1000words":
-                  await ref.read(sharedPreferencesProvider).setBool("1000words", true);
+      (purchases) {
+        for (final details in purchases) {
+          if (details.status == PurchaseStatus.error) {
+            showToast('error_trylater'.tr());
+          } else if (details.status == PurchaseStatus.purchased ||
+              details.status == PurchaseStatus.restored) {
+            if (details.productID.contains('words')) {
+              final sp = ref.read(sharedPreferencesProvider);
+              switch (details.productID) {
+                case '100words':
+                  sp.setBool('100words', true);
+                case '500words':
+                  sp.setBool('500words', true);
+                case '1000words':
+                  sp.setBool('1000words', true);
               }
-
-              //load the new words
               ref.invalidate(unlockedWordsCountProvider);
               setState(() {});
             }
-
-            showToast("thankyou".tr() + " ❤️");
+            showToast('${'thankyou'.tr()} ❤️');
           }
-          if (purchaseDetails.pendingCompletePurchase) {
-            await InAppPurchase.instance.completePurchase(purchaseDetails);
+          if (details.pendingCompletePurchase) {
+            InAppPurchase.instance.completePurchase(details);
           }
         }
-      });
-    }, onDone: () {
-      showToast("thankyou".tr() + " 🍻");
-      print("Close subscription");
-    }, onError: (error) {
-      print("Payment error: " + error.toString());
-      showToast("error_trylater".tr());
-    });
+      },
+      onDone: () => showToast('${'thankyou'.tr()} 🍻'),
+      onError: (_) => showToast('error_trylater'.tr()),
+    );
 
-    if (widget.openPaymentDialog)
-      Future.delayed(Duration(milliseconds: 500), () => showPaymentDialog());
+    if (widget.openPaymentDialog) {
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        _showPaymentDialog,
+      );
+    }
   }
 
   @override
@@ -96,283 +88,223 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final device = ref.watch(deviceInfoProvider);
+    final sp = ref.read(sharedPreferencesProvider);
+    final smallScreen = device.isSmallScreen;
+
     return GestureDetector(
       onVerticalDragUpdate: (details) {
-        int sensitivity = 8;
-        if (details.delta.dy < -sensitivity) {
-          // Up Swipe
-          Get.back();
-        }
+        if (details.delta.dy < -8) context.pop();
       },
-      child: MyScaffold(
-          topLeftWidget: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Theme.of(context).canvasColor,
+      child: AppScaffold(
+        topLeftWidget: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Theme.of(context).canvasColor,
+          ),
+          onPressed: () => context.pop(),
+        ),
+        widgets: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SettingsLine(
+                text: 'Version'.tr(),
+                value: device.packageInfo?.version,
               ),
-              onPressed: () => Get.back()),
-          widgets: [
-            //Expanded(child: Container()),
-            //SizedBox(height: 30),
-            Column(
-              mainAxisSize: MainAxisSize.min,
+              FutureBuilder<List<Word>>(
+                future: ref.watch(wordsControllerProvider.future),
+                builder: (context, snapshot) {
+                  return SettingsLine(
+                    text: '#Words'.tr(),
+                    value: (snapshot.data?.length ?? '...').toString(),
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: ListView(
+              physics: const BouncingScrollPhysics(),
               children: [
-                buildLine(
-                  context,
-                  text: "Version".tr(),
-                  value: packageInfo?.version.toString(),
+                if (!(sp.getBool('1000words') ?? false)) ...[
+                  SettingsLine(
+                    text: '🚀  ${'Buy more words'.tr()}',
+                    onTap: _showPaymentDialog,
+                  ),
+                  SizedBox(height: smallScreen ? 0 : 20),
+                ],
+                SettingsLine(
+                  text: '🌍  ${'language'.tr()}',
+                  onTap: () => _showLanguageDialog(context),
                 ),
-                FutureBuilder<List<Word>>(
-                  future: ref.watch(wordsControllerProvider.future),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Word>> snapshot) {
-                    var words = snapshot.data;
-                    return buildLine(
-                      context,
-                      text: "#Words".tr(),
-                      value: (words?.length ?? "...").toString(),
-                    );
-                  },
+                SettingsLine(
+                  text: '📙  ${'Rules'.tr()}',
+                  onTap: () => context.push('/rules'),
                 ),
+                SettingsLine(
+                  text: '📈  ${'Analytics'.tr()}',
+                  onTap: () => context.push('/analytics'),
+                ),
+                SettingsLine(
+                  text: '👨🏽‍💻  ${'look_code'.tr()}',
+                  onTap: () =>
+                      launchURL('https://github.com/rignaneseleo/SpeakEasy'),
+                ),
+                SettingsLine(
+                  text: '🤯  ${'report_bug'.tr()}',
+                  onTap: () => launchURL(
+                    'mailto:${SettingsPage.emailLeo}?subject=Bug%20tabu%20',
+                  ),
+                ),
+                if (kDebugMode)
+                  SettingsLine(
+                    text: '--- reset sp',
+                    onTap: () {
+                      sp
+                        ..remove('100words')
+                        ..remove('500words')
+                        ..remove('1000words');
+                      ref.invalidate(unlockedWordsCountProvider);
+                      showToast('done');
+                    },
+                  ),
               ],
             ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView(
-                shrinkWrap: false,
-                physics: BouncingScrollPhysics(),
-                children: [
-                  if (!(ref.read(sharedPreferencesProvider).getBool("1000words") ?? false)) ...[
-                    buildLine(
-                      context,
-                      text: "🚀  " + "Buy more words".tr(),
-                      onTap: () => showPaymentDialog(),
-                    ),
-                    Container(height: smallScreen ? 0 : 20),
-                  ],
-                  buildLine(
-                    context,
-                    text: "🌍  " + "language".tr(),
-                    onTap: () => showLanguageDialog(context),
-                  ),
-                  buildLine(
-                    context,
-                    text: "📙  " + "Rules".tr(),
-                    onTap: () => Get.to(() => RulesPage(),
-                        transition: Transition.downToUp),
-                  ),
-                  buildLine(
-                    context,
-                    text: "📈  " + "Analytics".tr(),
-                    onTap: () => Get.to(() => AnalyticsPage(),
-                        transition: Transition.downToUp),
-                  ),
-                  buildLine(
-                    context,
-                    text: "👨🏽‍💻  " + "look_code".tr(),
-                    onTap: () =>
-                        launchURL("https://github.com/rignaneseleo/SpeakEasy"),
-                  ),
-                  buildLine(
-                    context,
-                    text: "🤯  " + "report_bug".tr(),
-                    onTap: () => launchURL(
-                        "mailto:${SettingsPage.emailLeo}?subject=Bug%20tabu%20"),
-                  ),
-                  if (kDebugMode)
-                    buildLine(context, text: "--- reset sp", onTap: () {
-
-                      ref.read(sharedPreferencesProvider).remove("100words");
-                      ref.read(sharedPreferencesProvider).remove("500words");
-                      ref.read(sharedPreferencesProvider).remove("1000words");
-
-                      ref.invalidate(unlockedWordsCountProvider);
-
-                      showToast("done");
-                    }),
-                ],
-              ),
-            ),
-            Container(height: smallScreen ? 0 : 30),
-            new AutoSizeText(
-              "Made by",
-              maxFontSize:
-                  Theme.of(context).textTheme.displayMedium?.fontSize ?? 48,
-              style: Theme.of(context)
-                  .textTheme
-                  .displayLarge
-                  ?.copyWith(color: materialPurple),
-              maxLines: 1,
-            ),
-            GestureDetector(
-              child: new AutoSizeText(
-                "Leonardo Rignanese",
-                style: Theme.of(context).textTheme.displayLarge,
-                maxLines: 2,
-              ),
-              onTap: () async =>
-                  await launchURL("https://www.twitter.com/leorigna/"),
-            ),
-          ]),
-    );
-  }
-
-  Future showPaymentDialog() async {
-    const Set<String> _kIds = <String>{
-      '100words',
-      //'500words',
-      '1000words',
-    };
-    final ProductDetailsResponse response =
-        await InAppPurchase.instance.queryProductDetails(_kIds);
-    if (response.notFoundIDs.isNotEmpty) {
-      print("Product not found");
-      showToast("error_trylater".tr());
-      return;
-    }
-    List<ProductDetails> products = response.productDetails;
-    var _100words = products.firstWhereOrNull((p) => p.id == "100words");
-    var _500words = products.firstWhereOrNull((p) => p.id == "500words");
-    var _1000words = products.firstWhereOrNull((p) => p.id == "1000words");
-
-    AlertDialog alert = AlertDialog(
-      contentPadding: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(15.0))),
-      //title: Text("Buy more words",style: TextStyle(color: Colors.black),),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_100words != null)
-            ListTile(
-              enabled: !(ref.read(sharedPreferencesProvider).getBool("100words") ?? false),
-              trailing: Icon(
-                Icons.chat_bubble_outlined,
-                size: 20,
-              ),
-              title: Text("Buy {} words".tr(args: ["100"])),
-              subtitle: Text(_100words.price),
-              onTap: () async {
-                final PurchaseParam purchaseParam =
-                    PurchaseParam(productDetails: _100words);
-                var res = await InAppPurchase.instance
-                    .buyNonConsumable(purchaseParam: purchaseParam);
-                if (res) Get.back();
-              },
-            ),
-          if (_500words != null)
-            ListTile(
-              enabled: !(ref.read(sharedPreferencesProvider).getBool("500words") ?? false),
-              trailing: Icon(
-                Icons.chat_bubble_outlined,
-                size: 25,
-              ),
-              title: Text("Buy {} words".tr(args: ["500"])),
-              subtitle: Text(_500words.price),
-              onTap: () async {
-                final PurchaseParam purchaseParam =
-                    PurchaseParam(productDetails: _500words);
-                var res = await InAppPurchase.instance
-                    .buyNonConsumable(purchaseParam: purchaseParam);
-                if (res) Get.back();
-              },
-            ),
-          if (_1000words != null)
-            ListTile(
-              enabled: !(ref.read(sharedPreferencesProvider).getBool("1000words") ?? false),
-              trailing: Icon(
-                Icons.chat_bubble_outlined,
-                size: 35,
-              ),
-              title: Text("Buy {} words".tr(args: ["1000"])),
-              subtitle: Text(_1000words.price),
-              onTap: () async {
-                final PurchaseParam purchaseParam =
-                    PurchaseParam(productDetails: _1000words);
-                var res = await InAppPurchase.instance
-                    .buyNonConsumable(purchaseParam: purchaseParam);
-                if (res) Get.back();
-              },
-            ),
-          //restore
-          ListTile(
-            title: Text("Restore".tr()),
-            subtitle: Text("Restore your purchases".tr()),
-            onTap: () async {
-              await InAppPurchase.instance.restorePurchases();
-              Get.back();
-            },
           ),
-          /*ListTile(
-            title: Text("secret_code".tr()),
-            subtitle: Text("unlock_cool_stuff".tr()),
-            onTap: () async {
-
-
-              await InAppPurchase.instance.restorePurchases();
-              Get.back();
-            },
-          ),*/
+          SizedBox(height: smallScreen ? 0 : 30),
+          AutoSizeText(
+            'Made by',
+            maxFontSize:
+                Theme.of(context).textTheme.displayMedium?.fontSize ?? 48,
+            style: Theme.of(context)
+                .textTheme
+                .displayLarge
+                ?.copyWith(color: AppColors.materialPurple),
+            maxLines: 1,
+          ),
+          GestureDetector(
+            onTap: () => launchURL('https://www.twitter.com/leorigna/'),
+            child: AutoSizeText(
+              'Leonardo Rignanese',
+              style: Theme.of(context).textTheme.displayLarge,
+              maxLines: 2,
+            ),
+          ),
         ],
       ),
     );
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => alert,
-    );
-    return;
   }
 
-  showLanguageDialog(BuildContext context) {
-    showDialog(
+  Future<void> _showPaymentDialog() async {
+    const ids = <String>{'100words', '1000words'};
+    final response = await InAppPurchase.instance.queryProductDetails(ids);
+    if (response.notFoundIDs.isNotEmpty) {
+      showToast('error_trylater'.tr());
+      return;
+    }
+
+    final products = response.productDetails;
+    final w100 = products.where((p) => p.id == '100words').firstOrNull;
+    final w1000 = products.where((p) => p.id == '1000words').firstOrNull;
+    final sp = ref.read(sharedPreferencesProvider);
+
+    if (!mounted) return;
+
+    showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          contentPadding: EdgeInsets.all(0),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15.0))),
-          //title: Text("language".tr()),
-          content: Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: supportedLanguages.length,
-              itemBuilder: (context, i) {
-                final locale = supportedLanguages[i];
-                final localeStr = supportedLanguages[i].toString();
-                return ListTile(
-                  leading: Text(
-                      le.getFlagEmoji(
-                              languageCode: localeStr.substring(0, 2)) ??
-                          "",
-                      style: TextStyle(fontSize: 28)),
-                  title: Text(
-                      LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr),
-                  onTap: () async {
-                    Locale locale = supportedLanguages[i];
-                    await ref.read(sharedPreferencesProvider).setString(
-                        "saved_locale_langcode", locale.languageCode);
-
-                    //invalidate the locale provider, so that all the rest of the data will be updated
-                    ref.invalidate(savedLocaleProvider);
-
-                    await context
-                        .setLocale(locale); // change `easy_localization` locale
-                    Get.updateLocale(locale); // change `Get` locale direction
-
-                    //close dialog
-                    Get.back();
-                  },
-                  trailing: locale == ref.watch(savedLocaleProvider)
-                      ? const Icon(Icons.check)
-                      : null,
-                );
+      builder: (ctx) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (w100 != null)
+              ListTile(
+                enabled: !(sp.getBool('100words') ?? false),
+                trailing: const Icon(Icons.chat_bubble_outlined, size: 20),
+                title: Text('Buy {} words'.tr(args: ['100'])),
+                subtitle: Text(w100.price),
+                onTap: () async {
+                  final param = PurchaseParam(productDetails: w100);
+                  final ok = await InAppPurchase.instance
+                      .buyNonConsumable(purchaseParam: param);
+                  if (ok && ctx.mounted) Navigator.of(ctx).pop();
+                },
+              ),
+            if (w1000 != null)
+              ListTile(
+                enabled: !(sp.getBool('1000words') ?? false),
+                trailing: const Icon(Icons.chat_bubble_outlined, size: 35),
+                title: Text('Buy {} words'.tr(args: ['1000'])),
+                subtitle: Text(w1000.price),
+                onTap: () async {
+                  final param = PurchaseParam(productDetails: w1000);
+                  final ok = await InAppPurchase.instance
+                      .buyNonConsumable(purchaseParam: param);
+                  if (ok && ctx.mounted) Navigator.of(ctx).pop();
+                },
+              ),
+            ListTile(
+              title: Text('Restore'.tr()),
+              subtitle: Text('Restore your purchases'.tr()),
+              onTap: () async {
+                await InAppPurchase.instance.restorePurchases();
+                if (ctx.mounted) Navigator.of(ctx).pop();
               },
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: supportedLocales.length,
+            itemBuilder: (context, i) {
+              final locale = supportedLocales[i];
+              final localeStr = locale.toString();
+              return ListTile(
+                leading: Text(
+                  le.getFlagEmoji(languageCode: localeStr.substring(0, 2)) ??
+                      '',
+                  style: const TextStyle(fontSize: 28),
+                ),
+                title: Text(
+                  LocaleNames.of(context)!.nameOf(localeStr) ?? localeStr,
+                ),
+                trailing: locale == ref.watch(savedLocaleProvider)
+                    ? const Icon(Icons.check)
+                    : null,
+                onTap: () async {
+                  final sp = ref.read(sharedPreferencesProvider);
+                  await sp.setString(
+                    'saved_locale_langcode',
+                    locale.languageCode,
+                  );
+                  ref.invalidate(savedLocaleProvider);
+                  if (context.mounted) await context.setLocale(locale);
+                  if (ctx.mounted) Navigator.of(ctx).pop();
+                },
+              );
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
