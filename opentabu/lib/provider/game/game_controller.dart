@@ -1,9 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:speakeasy/model/game_settings.dart';
+import 'package:speakeasy/model/word.dart';
+import 'package:speakeasy/provider/game/game_state.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-
-import '../../model/game_settings.dart';
-import '../../model/word.dart';
-import 'game_state.dart';
 
 part 'game_controller.g.dart';
 
@@ -22,7 +21,6 @@ class GameController extends _$GameController {
       totalTurns: settings.nTurns,
       words: shuffled,
       currentWord: shuffled.first,
-      wordIndex: 0,
     );
     WakelockPlus.enable();
   }
@@ -135,9 +133,8 @@ class GameController extends _$GameController {
     state = state.copyWith(secondsPassed: state.secondsPassed + 1);
   }
 
-  int get skipLeftCurrentTeam => state.skipsLeft.isEmpty
-      ? 0
-      : state.skipsLeft[state.currentTeam];
+  int get skipLeftCurrentTeam =>
+      state.skipsLeft.isEmpty ? 0 : state.skipsLeft[state.currentTeam];
 
   void _updateWakelock(GamePhase phase) {
     if (phase == GamePhase.paused || phase == GamePhase.ended) {

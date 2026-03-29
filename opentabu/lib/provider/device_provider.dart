@@ -20,10 +20,18 @@ class DeviceInfo extends _$DeviceInfo {
       vibration = await Vibration.hasVibrator() == true;
     }
     final info = await PackageInfo.fromPlatform();
-    state = (hasVibration: vibration, isSmallScreen: state.isSmallScreen, packageInfo: info);
+    state = (
+      hasVibration: vibration,
+      isSmallScreen: state.isSmallScreen,
+      packageInfo: info
+    );
   }
 
   void setSmallScreen(bool value) {
-    state = (hasVibration: state.hasVibration, isSmallScreen: value, packageInfo: state.packageInfo);
+    state = (
+      hasVibration: state.hasVibration,
+      isSmallScreen: value,
+      packageInfo: state.packageInfo
+    );
   }
 }

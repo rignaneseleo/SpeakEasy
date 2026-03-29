@@ -1,8 +1,7 @@
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
-import '../model/word.dart';
-import '../util/extensions.dart';
+import 'package:speakeasy/model/word.dart';
+import 'package:speakeasy/util/extensions.dart';
 
 class CsvWordRepository {
   List<Word>? _allWords;
@@ -10,12 +9,10 @@ class CsvWordRepository {
   Future<void> loadFile(String langCode) async {
     String csvRaw;
     try {
-      csvRaw =
-          await rootBundle.loadString('assets/words/$langCode/words.csv');
+      csvRaw = await rootBundle.loadString('assets/words/$langCode/words.csv');
     } catch (_) {
       langCode = 'en';
-      csvRaw =
-          await rootBundle.loadString('assets/words/$langCode/words.csv');
+      csvRaw = await rootBundle.loadString('assets/words/$langCode/words.csv');
     }
 
     final csvRows = const CsvToListConverter().convert<String>(

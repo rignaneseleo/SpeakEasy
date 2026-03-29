@@ -56,9 +56,9 @@ void main() {
     test('has cupertino page transitions for both platforms', () {
       final builders = theme.pageTransitionsTheme.builders;
       expect(builders[TargetPlatform.android],
-          isA<CupertinoPageTransitionsBuilder>());
-      expect(builders[TargetPlatform.iOS],
-          isA<CupertinoPageTransitionsBuilder>());
+          isA<CupertinoPageTransitionsBuilder>(),);
+      expect(
+          builders[TargetPlatform.iOS], isA<CupertinoPageTransitionsBuilder>(),);
     });
 
     group('text theme', () {

@@ -10,22 +10,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:speakeasy/model/game_settings.dart';
+import 'package:speakeasy/provider/analytics_provider.dart';
+import 'package:speakeasy/provider/device_provider.dart';
+import 'package:speakeasy/provider/game/game_controller.dart';
+import 'package:speakeasy/provider/game/game_state.dart';
+import 'package:speakeasy/provider/sound_provider.dart';
+import 'package:speakeasy/provider/words_provider.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/view/widget/big_button.dart';
+import 'package:speakeasy/view/widget/blinking_text.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../model/game_settings.dart';
-import '../provider/analytics_provider.dart';
-import '../provider/device_provider.dart';
-import '../provider/game/game_controller.dart';
-import '../provider/game/game_state.dart';
-import '../provider/sound_provider.dart';
-import '../provider/words_provider.dart';
-import '../theme/app_theme.dart';
-import 'widget/big_button.dart';
-import 'widget/blinking_text.dart';
-
 class GamePage extends ConsumerStatefulWidget {
-  const GamePage({super.key, required this.settings});
+  const GamePage({required this.settings, super.key});
 
   final GameSettings settings;
 
@@ -52,8 +51,7 @@ class _GamePageState extends ConsumerState<GamePage>
           .read(gameControllerProvider.notifier)
           .initialize(widget.settings, words);
 
-      _countSecondsTimer =
-          Timer.periodic(const Duration(seconds: 1), (timer) {
+      _countSecondsTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (_turnTimer?.isActive ?? false) {
           final controller = ref.read(gameControllerProvider.notifier);
           controller.oneSecPassed();
@@ -213,9 +211,8 @@ class _GamePageState extends ConsumerState<GamePage>
                   children: [
                     _GameInfoWidget(
                       smallScreen: smallScreen,
-                      highlightTeams: game.phase == GamePhase.ended
-                          ? game.winners
-                          : null,
+                      highlightTeams:
+                          game.phase == GamePhase.ended ? game.winners : null,
                     ),
                     if (game.phase != GamePhase.ended)
                       Positioned(
@@ -330,7 +327,7 @@ class _GamePageState extends ConsumerState<GamePage>
     return Column(
       children: [
         Expanded(child: _WordWidget(nTaboos: _nTaboosToShow)),
-        Row(
+        const Row(
           children: [
             _IncorrectAnswerButton(),
             _SkipButton(),
@@ -342,7 +339,7 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   Widget _countdownBody() {
-    return Column(
+    return const Column(
       children: [
         Expanded(child: _CountDownWidget(seconds: 3)),
         AbsorbPointer(
@@ -362,7 +359,7 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   Widget _readyBody(GameState game) {
-    bool isReady = false;
+    var isReady = false;
 
     return Column(
       children: [
@@ -562,7 +559,8 @@ class _TimeWidget extends ConsumerWidget {
             child: Text(
               secondsLeft.toString(),
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: secondsLeft < 8 ? AppColors.myRed : AppColors.txtWhite,
+                    color:
+                        secondsLeft < 8 ? AppColors.myRed : AppColors.txtWhite,
                   ),
             ),
           ),
@@ -625,7 +623,6 @@ class _WordWidget extends ConsumerWidget {
     if (word == null) return const SizedBox.shrink();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
           height: 150,
@@ -668,8 +665,7 @@ class _WordWidget extends ConsumerWidget {
 
 class _GameInfoWidget extends ConsumerWidget {
   const _GameInfoWidget({
-    this.highlightTeams,
-    required this.smallScreen,
+    required this.smallScreen, this.highlightTeams,
   });
 
   final bool smallScreen;
@@ -715,7 +711,8 @@ class _GameInfoWidget extends ConsumerWidget {
                   maxLines: 1,
                 ),
               ],
-        padding: const EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
+        padding:
+            const EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
       );
     }
 
@@ -755,8 +752,8 @@ class _GameInfoWidget extends ConsumerWidget {
         color: AppColors.darkPurple,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
-      padding:
-          padding ?? const EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
+      padding: padding ??
+          const EdgeInsets.only(left: 50, right: 50, bottom: 28, top: 10),
       child: SafeArea(
         bottom: false,
         child: Row(
@@ -850,9 +847,8 @@ class _SkipButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final game = ref.watch(gameControllerProvider);
     final device = ref.watch(deviceInfoProvider);
-    final skipsLeft = game.skipsLeft.isEmpty
-        ? 0
-        : game.skipsLeft[game.currentTeam];
+    final skipsLeft =
+        game.skipsLeft.isEmpty ? 0 : game.skipsLeft[game.currentTeam];
 
     return Expanded(
       child: Opacity(

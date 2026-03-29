@@ -4,12 +4,9 @@ import 'package:flutter_svg/svg.dart';
 
 class BigButton extends StatelessWidget {
   const BigButton({
-    super.key,
-    required this.bgColor,
-    required this.textColor,
+    required this.bgColor, required this.textColor, required this.text, super.key,
     this.onPressed,
     this.onLongPressed,
-    required this.text,
   });
 
   final Color bgColor;
@@ -48,10 +45,7 @@ class BigButton extends StatelessWidget {
 
 class BigIconButton extends StatelessWidget {
   const BigIconButton({
-    super.key,
-    required this.bgColor,
-    required this.onPressed,
-    required this.icon,
+    required this.bgColor, required this.onPressed, required this.icon, super.key,
     this.size = 90,
     this.smallScreen = false,
   });

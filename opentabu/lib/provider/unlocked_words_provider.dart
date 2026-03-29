@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'shared_preferences_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
 
 part 'unlocked_words_provider.g.dart';
 

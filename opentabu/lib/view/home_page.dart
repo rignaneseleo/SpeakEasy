@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../model/game_settings.dart';
-import '../provider/analytics_provider.dart';
-import '../provider/shared_preferences_provider.dart';
-import '../theme/app_theme.dart';
-import 'widget/app_scaffold.dart';
-import 'widget/app_title.dart';
-import 'widget/big_button.dart';
-import 'widget/incremental_button.dart';
-import 'widget/selector_button.dart';
+import 'package:speakeasy/model/game_settings.dart';
+import 'package:speakeasy/provider/analytics_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/view/widget/app_scaffold.dart';
+import 'package:speakeasy/view/widget/app_title.dart';
+import 'package:speakeasy/view/widget/big_button.dart';
+import 'package:speakeasy/view/widget/incremental_button.dart';
+import 'package:speakeasy/view/widget/selector_button.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -35,8 +35,7 @@ class _HomePageState extends ConsumerState<HomePage>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _expandAnimation =
-        Tween<double>(begin: 0, end: 1).animate(_animController);
+    _expandAnimation = Tween<double>(begin: 0, end: 1).animate(_animController);
   }
 
   @override
@@ -58,8 +57,8 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     final analytics = ref.watch(analyticsControllerProvider);
     final sp = ref.read(sharedPreferencesProvider);
-    final showMoreWords = analytics.matchesPlayed > 0 &&
-        !(sp.getBool('1000words') ?? false);
+    final showMoreWords =
+        analytics.matchesPlayed > 0 && !(sp.getBool('1000words') ?? false);
 
     return GestureDetector(
       onVerticalDragUpdate: (details) {
@@ -72,7 +71,8 @@ class _HomePageState extends ConsumerState<HomePage>
       child: AppScaffold(
         topLeftWidget: GestureDetector(
           onTap: () => context.push('/settings'),
-          child: const Icon(Icons.settings, color: AppColors.txtWhite, size: 28),
+          child:
+              const Icon(Icons.settings, color: AppColors.txtWhite, size: 28),
         ),
         topRightWidget: showMoreWords
             ? GestureDetector(
@@ -114,9 +114,8 @@ class _HomePageState extends ConsumerState<HomePage>
                         padding: const EdgeInsets.symmetric(horizontal: 10)
                             .copyWith(top: 15),
                         child: Text(
-                          'advanced_preferences'
-                              .tr(args: [_showAdvanced ? '↓' : '↑'])
-                              .toUpperCase(),
+                          'advanced_preferences'.tr(
+                              args: [if (_showAdvanced) '↓' else '↑'],).toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge

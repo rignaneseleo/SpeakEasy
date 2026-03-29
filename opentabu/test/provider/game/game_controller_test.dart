@@ -1,11 +1,10 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:speakeasy/model/game_settings.dart';
 import 'package:speakeasy/model/word.dart';
 import 'package:speakeasy/provider/game/game_controller.dart';
 import 'package:speakeasy/provider/game/game_state.dart';
-
-import 'package:flutter/services.dart';
 
 /// Test words fixture.
 List<Word> _testWords([int count = 20]) => List.generate(
@@ -14,11 +13,8 @@ List<Word> _testWords([int count = 20]) => List.generate(
     );
 
 const _defaultSettings = GameSettings(
-  nPlayers: 2,
   turnDurationInSeconds: 60,
-  nSkip: 3,
   nTurns: 2,
-  nTaboos: 5,
 );
 
 ProviderContainer _createContainer() => ProviderContainer();
@@ -100,7 +96,10 @@ void main() {
 
       test('startCountdown transitions from ready to countdown', () {
         controller.startCountdown();
-        expect(container.read(gameControllerProvider).phase, GamePhase.countdown);
+        expect(
+          container.read(gameControllerProvider).phase,
+          GamePhase.countdown,
+        );
       });
 
       test('startTurn transitions to playing', () {
@@ -280,7 +279,7 @@ void main() {
       });
 
       test('increments multiple times', () {
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
           controller.oneSecPassed();
         }
         expect(container.read(gameControllerProvider).secondsPassed, 10);
@@ -383,7 +382,7 @@ void main() {
 
         // Use more answers than words to force reshuffle
         final seenWords = <String>{};
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
           final word = container.read(gameControllerProvider).currentWord;
           seenWords.add(word!.wordToGuess);
           controller.rightAnswer();

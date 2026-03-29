@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../data/csv_word_repository.dart';
-import '../model/word.dart';
-import 'locale_provider.dart';
-import 'unlocked_words_provider.dart';
+import 'package:speakeasy/data/csv_word_repository.dart';
+import 'package:speakeasy/model/word.dart';
+import 'package:speakeasy/provider/locale_provider.dart';
+import 'package:speakeasy/provider/unlocked_words_provider.dart';
 
 part 'words_provider.g.dart';
 

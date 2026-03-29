@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'app.dart';
-import 'provider/device_provider.dart';
-import 'provider/locale_provider.dart';
-import 'provider/shared_preferences_provider.dart';
-import 'provider/sound_provider.dart';
-import 'provider/words_provider.dart';
+import 'package:speakeasy/app.dart';
+import 'package:speakeasy/provider/device_provider.dart';
+import 'package:speakeasy/provider/locale_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
+import 'package:speakeasy/provider/sound_provider.dart';
+import 'package:speakeasy/provider/words_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +52,6 @@ Future<void> main() async {
         startLocale: startLocale,
         supportedLocales: supportedLocales,
         path: 'assets/lang',
-        saveLocale: true,
         fallbackLocale: supportedLocales.first,
         child: const SpeakEasyApp(),
       ),

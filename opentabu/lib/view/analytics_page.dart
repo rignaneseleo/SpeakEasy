@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../provider/analytics_provider.dart';
-import '../theme/app_theme.dart';
-import 'widget/app_scaffold.dart';
+import 'package:speakeasy/provider/analytics_provider.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/view/widget/app_scaffold.dart';
 
 class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});

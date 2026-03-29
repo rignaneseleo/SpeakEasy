@@ -10,16 +10,16 @@ import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:locale_emoji/locale_emoji.dart' as le;
 
-import '../model/word.dart';
-import '../provider/device_provider.dart';
-import '../provider/locale_provider.dart';
-import '../provider/shared_preferences_provider.dart';
-import '../provider/unlocked_words_provider.dart';
-import '../provider/words_provider.dart';
-import '../theme/app_theme.dart';
-import '../util/toast.dart';
-import '../util/url_launcher.dart';
-import 'widget/app_scaffold.dart';
+import 'package:speakeasy/model/word.dart';
+import 'package:speakeasy/provider/device_provider.dart';
+import 'package:speakeasy/provider/locale_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
+import 'package:speakeasy/provider/unlocked_words_provider.dart';
+import 'package:speakeasy/provider/words_provider.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/util/toast.dart';
+import 'package:speakeasy/util/url_launcher.dart';
+import 'package:speakeasy/view/widget/app_scaffold.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key, this.openPaymentDialog = false});
@@ -75,7 +75,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     if (widget.openPaymentDialog) {
       Future.delayed(
         const Duration(milliseconds: 500),
-        () => _showPaymentDialog(),
+        _showPaymentDialog,
       );
     }
   }

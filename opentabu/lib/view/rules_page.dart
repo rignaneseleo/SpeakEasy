@@ -3,8 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/app_theme.dart';
-import 'widget/app_scaffold.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/view/widget/app_scaffold.dart';
 
 class RulesPage extends StatelessWidget {
   const RulesPage({super.key});

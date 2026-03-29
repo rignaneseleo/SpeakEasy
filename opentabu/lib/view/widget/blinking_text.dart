@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class BlinkingText extends StatefulWidget {
-  const BlinkingText({super.key, required this.child});
+  const BlinkingText({required this.child, super.key});
 
   final Text child;
 

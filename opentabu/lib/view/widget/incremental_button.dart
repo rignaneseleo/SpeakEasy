@@ -2,18 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../theme/app_theme.dart';
-import 'selector_button.dart';
+import 'package:speakeasy/theme/app_theme.dart';
+import 'package:speakeasy/view/widget/selector_button.dart';
 
 class IncrementalButton extends StatefulWidget {
   const IncrementalButton({
-    super.key,
-    required this.increment,
-    required this.onValueChanged,
-    required this.initialValue,
-    required this.text,
-    required this.min,
-    required this.max,
+    required this.increment, required this.onValueChanged, required this.initialValue, required this.text, required this.min, required this.max, super.key,
     this.smallScreen = false,
   });
 

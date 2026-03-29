@@ -34,7 +34,7 @@ void main() {
 
     group('nextTeam', () {
       test('returns next team index', () {
-        const state = GameState(scores: [0, 0, 0], currentTeam: 0);
+        const state = GameState(scores: [0, 0, 0]);
         expect(state.nextTeam, 1);
       });
 
@@ -56,14 +56,14 @@ void main() {
       });
 
       test('wraps around to last team', () {
-        const state = GameState(scores: [0, 0, 0], currentTeam: 0);
+        const state = GameState(scores: [0, 0, 0]);
         expect(state.previousTeam, 2);
       });
     });
 
     group('displayTurn', () {
       test('returns 1-based turn number', () {
-        const state = GameState(currentTurn: 0);
+        const state = GameState();
         expect(state.displayTurn, 1);
       });
 
@@ -126,14 +126,16 @@ void main() {
 
   group('GamePhase', () {
     test('has all expected values', () {
-      expect(GamePhase.values, containsAll([
-        GamePhase.initial,
-        GamePhase.ready,
-        GamePhase.countdown,
-        GamePhase.playing,
-        GamePhase.paused,
-        GamePhase.ended,
-      ]));
+      expect(
+          GamePhase.values,
+          containsAll([
+            GamePhase.initial,
+            GamePhase.ready,
+            GamePhase.countdown,
+            GamePhase.playing,
+            GamePhase.paused,
+            GamePhase.ended,
+          ]),);
     });
 
     test('has exactly 6 phases', () {

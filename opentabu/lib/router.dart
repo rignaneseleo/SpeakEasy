@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'model/game_settings.dart';
-import 'view/analytics_page.dart';
-import 'view/game_page.dart';
-import 'view/home_page.dart';
-import 'view/rules_page.dart';
-import 'view/settings_page.dart';
+import 'package:speakeasy/model/game_settings.dart';
+import 'package:speakeasy/view/analytics_page.dart';
+import 'package:speakeasy/view/game_page.dart';
+import 'package:speakeasy/view/home_page.dart';
+import 'package:speakeasy/view/rules_page.dart';
+import 'package:speakeasy/view/settings_page.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -35,9 +35,8 @@ final appRouter = GoRouter(
         final openPayment = state.extra as bool? ?? false;
         return CustomTransitionPage(
           child: SettingsPage(openPaymentDialog: openPayment),
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) =>
-                  SlideTransition(
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, -1),
               end: Offset.zero,

@@ -81,7 +81,7 @@ void main() {
         final words = repo.loadWords(9999);
         for (final word in words) {
           expect(word.taboos, isNotEmpty,
-              reason: '${word.wordToGuess} has no taboos');
+              reason: '${word.wordToGuess} has no taboos',);
         }
       });
 
@@ -89,7 +89,7 @@ void main() {
         final words = repo.loadWords(9999);
         for (final word in words) {
           expect(word.wordToGuess[0], word.wordToGuess[0].toUpperCase(),
-              reason: '${word.wordToGuess} is not capitalized');
+              reason: '${word.wordToGuess} is not capitalized',);
         }
       });
 
@@ -98,7 +98,7 @@ void main() {
         for (final word in words) {
           for (final taboo in word.taboos) {
             expect(taboo[0], taboo[0].toUpperCase(),
-                reason: '$taboo in ${word.wordToGuess} is not capitalized');
+                reason: '$taboo in ${word.wordToGuess} is not capitalized',);
           }
         }
       });
@@ -108,7 +108,7 @@ void main() {
         final allWords = words.map((w) => w.wordToGuess.toLowerCase()).toList();
         final uniqueWords = allWords.toSet();
         expect(allWords.length, uniqueWords.length,
-            reason: 'Found duplicate words');
+            reason: 'Found duplicate words',);
       });
     });
   });

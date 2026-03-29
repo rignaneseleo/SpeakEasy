@@ -26,7 +26,7 @@ ThemeData buildAppTheme() {
     pageTransitionsTheme: const PageTransitionsTheme(builders: {
       TargetPlatform.android: CupertinoPageTransitionsBuilder(),
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    }),
+    },),
     primaryColor: AppColors.darkPurple,
     textTheme: const TextTheme(
       displayLarge: TextStyle(

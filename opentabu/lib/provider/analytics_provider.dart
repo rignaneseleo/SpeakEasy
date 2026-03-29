@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'shared_preferences_provider.dart';
+import 'package:speakeasy/provider/shared_preferences_provider.dart';
 
 part 'analytics_provider.freezed.dart';
 part 'analytics_provider.g.dart';

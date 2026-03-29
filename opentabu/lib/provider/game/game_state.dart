@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../model/word.dart';
+import 'package:speakeasy/model/word.dart';
 
 part 'game_state.freezed.dart';
 
@@ -8,7 +8,6 @@ enum GamePhase { initial, ready, countdown, playing, paused, ended }
 
 @freezed
 class GameState with _$GameState {
-  const GameState._();
 
   const factory GameState({
     @Default(GamePhase.initial) GamePhase phase,
@@ -23,11 +22,11 @@ class GameState with _$GameState {
     @Default(0) int wordIndex,
     Word? currentWord,
   }) = _GameState;
+  const GameState._();
 
   int get numberOfPlayers => scores.length;
 
-  int get nextTeam =>
-      currentTeam + 1 >= numberOfPlayers ? 0 : currentTeam + 1;
+  int get nextTeam => currentTeam + 1 >= numberOfPlayers ? 0 : currentTeam + 1;
 
   int get previousTeam =>
       currentTeam - 1 >= 0 ? currentTeam - 1 : numberOfPlayers - 1;
