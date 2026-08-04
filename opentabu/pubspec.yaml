@@ -1,6 +1,6 @@
 name: speakeasy
 description: Open source version of tabu
-version: 2.0.1+29
+version: 2.0.1+30
 publish_to: 'none'
 
 environment:
